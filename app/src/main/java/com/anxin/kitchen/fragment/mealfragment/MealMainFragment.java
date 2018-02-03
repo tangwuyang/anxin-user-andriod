@@ -10,7 +10,7 @@ import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
 
 /**
- * 主界面
+ * 点餐主界面
  */
 public class MealMainFragment extends HomeBaseFragment implements View.OnClickListener {
     private Log LOG = Log.getLog();

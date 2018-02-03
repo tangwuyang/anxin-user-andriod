@@ -18,12 +18,14 @@
         android:orientation="vertical">
 
         <RadioGroup
+            android:id="@+id/bottom_radiogroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal">
 
             <RadioButton
+                android:id="@+id/meal_radioBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -39,6 +41,7 @@
                 android:gravity="center" />
 
             <RadioButton
+                android:id="@+id/group_radioBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -54,6 +57,7 @@
                 android:gravity="center" />
 
             <RadioButton
+                android:id="@+id/order_radioBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -69,6 +73,7 @@
                 android:gravity="center" />
 
             <RadioButton
+                android:id="@+id/my_radioBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
