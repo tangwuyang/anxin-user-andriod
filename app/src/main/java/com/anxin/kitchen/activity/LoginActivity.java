@@ -20,6 +20,10 @@ public class LoginActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+
+
+
+
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
