@@ -5,5 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.anxin.kitchen.tangwuyangs_test.TestMapActivity">
-
+    <com.amap.api.maps2d.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></com.amap.api.maps2d.MapView>
 </android.support.constraint.ConstraintLayout>
