@@ -14,4 +14,12 @@
         android:layout_marginTop="16dp"
         android:text="我的"
         android:textStyle="bold" />
+
+<Button
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="测试地图"
+    android:id="@+id/test_map_bt"
+    />
+
 </LinearLayout>
