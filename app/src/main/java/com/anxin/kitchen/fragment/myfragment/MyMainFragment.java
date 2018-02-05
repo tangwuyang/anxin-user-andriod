@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.anxin.kitchen.fragment.HomeBaseFragment;
+import com.anxin.kitchen.tangwuyangs_test.TestMapActivity;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
 
