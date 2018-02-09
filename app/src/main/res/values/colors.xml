@@ -4,4 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="main_bg_color">#FFF2EEEE</color>   //主体背景颜色
+    <color name="main_text_color">#000</color>    //主字体颜色 黑
+    <color name="black">#000</color>
 </resources>

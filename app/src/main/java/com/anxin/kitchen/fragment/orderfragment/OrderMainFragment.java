@@ -12,6 +12,7 @@ import com.anxin.kitchen.utils.Log;
 /**
  * 订单主界面
  */
+
 public class OrderMainFragment extends HomeBaseFragment implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private View view;

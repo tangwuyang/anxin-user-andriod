@@ -3,4 +3,9 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="title_text_size">20sp</dimen>  //标题大小
+    <dimen name="big_text_size">18sp</dimen>    //大字号
+    <dimen name="mid_text_size">16sp</dimen>    // 中等字号
+    <dimen name="normal_text_size">14sp</dimen>  //普通字号
+    <dimen name="small_text_size">12sp</dimen>   //小字号
 </resources>

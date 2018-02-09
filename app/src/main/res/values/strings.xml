@@ -15,4 +15,7 @@
         completions."
     </string>
     <string name="title_activity_main">MainActivity</string>
+
+    <string name="loacation">腾讯大厦(科技北五道)</string>
+    <string name="take_time_text">约35分钟到达</string>
 </resources>

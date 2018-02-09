@@ -1,23 +1,111 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:gravity="center_horizontal"
     android:orientation="vertical">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="50dp">
-    <ImageView
-        android:src="@drawable/message_drawable"
-        android:layout_width="50dp"
-        android:scaleType="centerInside"
-        android:layout_height="match_parent"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="钟国华是一头猪"
-        />
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
 
-    
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+
+            android:scaleType="centerInside"
+            android:src="@drawable/message_drawable" />
+        <RelativeLayout
+            android:layout_marginLeft="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+           >
+            <TextView
+                android:id="@+id/location_tv"
+                android:textSize="@dimen/big_text_size"
+                android:textColor="#000000"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/loacation"/>
+            <TextView
+                android:id="@+id/take_time_tv"
+                android:layout_below="@+id/location_tv"
+                android:gravity="center"
+                android:layout_alignRight="@id/location_tv"
+                android:text="@string/take_time_text"
+                android:textColor="#666666"
+                android:layout_width="match_parent"
+                android:textSize="@dimen/small_text_size"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+
+    </LinearLayout>
+    <ScrollView
+        android:layout_below="@id/top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/broadcast_banner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/banner"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="10dp"
+                />
+
+            <LinearLayout
+                android:id="@+id/chose_food_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/broadcast_banner"
+                android:layout_below="@+id/broadcast_banner"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                >
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/preserver_drawable" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/health_food_drawable" />
+
+
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_below="@id/chose_food_ll"
+                android:id="@+id/preserver_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"></android.support.v7.widget.RecyclerView>
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+
+
+
 </RelativeLayout>
