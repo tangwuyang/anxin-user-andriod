@@ -10,11 +10,11 @@
         android:layout_height="50dp">
 
         <ImageView
+            android:id="@+id/message_img"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-
             android:scaleType="centerInside"
             android:src="@drawable/message_drawable" />
         <RelativeLayout
@@ -54,13 +54,14 @@
         android:layout_height="wrap_content">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/broadcast_banner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:src="@drawable/banner"
+                android:scaleType="fitXY"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="10dp"
@@ -70,10 +71,12 @@
                 android:id="@+id/chose_food_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/broadcast_banner"
+
                 android:layout_below="@+id/broadcast_banner"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
                 >
 
                 <ImageView
@@ -81,19 +84,22 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="8dp"
                     android:layout_weight="1"
-                    android:src="@drawable/preserver_drawable" />
+                    android:src="@drawable/preserver_normal" />
 
                 <ImageView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:src="@drawable/health_food_drawable" />
+                    android:src="@drawable/heath_food_normal" />
 
 
             </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
+                android:background="@color/main_bg_color"
+                android:paddingTop="10dp"
+
                 android:layout_below="@id/chose_food_ll"
                 android:id="@+id/preserver_rv"
                 android:layout_width="match_parent"

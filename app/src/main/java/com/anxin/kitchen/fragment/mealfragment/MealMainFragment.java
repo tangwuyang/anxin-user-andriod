@@ -1,6 +1,7 @@
 package com.anxin.kitchen.fragment.mealfragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,11 +9,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.anxin.kitchen.activity.MessageCenterActivity;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.view.CustomGridView;
 
 /**
  * 点餐主界面
@@ -22,6 +28,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     private View view;
     private RecyclerView mPreserverRv;
     private LinearLayoutManager mLiearManager;
+    private ImageView mMessageImg;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +42,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.meal_main_fragment, null);
-        //initView();//初始化界面控制
         mPreserverRv = view.findViewById(R.id.preserver_rv);
+        mMessageImg = view.findViewById(R.id.message_img);
         return view;
     }
 
@@ -48,7 +55,12 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     public void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
+        setListener();
         setAdapter();
+    }
+
+    private void setListener() {
+        mMessageImg.setOnClickListener(this);
     }
 
     //设置点餐适配器
@@ -62,6 +74,10 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.message_img:
+                Intent intent = new Intent(getContext(), MessageCenterActivity.class);
+                startActivity(intent);
+                break;
             default:
                 break;
         }
@@ -83,8 +99,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         @Override
         public void onBindViewHolder(ViewHolderw holder, int position) {
             GridLayoutManager layoutManage = new GridLayoutManager(getContext(), 2);
-            holder.mPreserverDayRv.setLayoutManager(layoutManage);
-            holder.mPreserverDayRv.setAdapter(new PreserverFoodAdapter());
+           // holder.mPreserverDayRv.setLayoutManager(layoutManage);
+            holder.mPreserverDayRv.setAdapter(new PreserverGridAdapter());
         }
 
         @Override
@@ -94,7 +110,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
 
         public class ViewHolderw extends RecyclerView.ViewHolder {
             private TextView dateTv;
-            private RecyclerView mPreserverDayRv;
+            private CustomGridView mPreserverDayRv;
             public ViewHolderw(View itemView) {
                 super(itemView);
             }
@@ -125,6 +141,30 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             public ViewHolder(View itemView) {
                 super(itemView);
             }
+        }
+    }
+
+    private class PreserverGridAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_food_item,viewGroup,false);
+            return view;
         }
     }
 

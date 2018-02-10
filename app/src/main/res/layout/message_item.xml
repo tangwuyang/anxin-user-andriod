@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:background="@color/main_bg_color"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">i
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@color/white"
+        >
+        <TextView
+            android:id="@+id/message_type_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="订单通知"
+            android:textColor="@color/shallow_text_color"
+            />
+        <TextView
+            android:layout_marginRight="10dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:textColor="@color/shallow_text_color"
+            android:text="11-11 12:20"
+            />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginTop="1dp">
+        <ImageView
+            android:layout_marginRight="10dp"
+            android:id="@+id/message_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/update_message_icon"
+            />
+        <TextView
+            android:id="@+id/message_title_tv"
+            android:text="订单已发货"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/main_text_color"
+            android:layout_toRightOf="@id/message_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/message_content_tv"
+            android:layout_toRightOf="@+id/message_img"
+            android:layout_below="@id/message_title_tv"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:textColor="@color/shallow_text_color"
+            android:text="订单已发货，预计到达时间11：30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            />
+
+        <ImageView
+            android:id="@+id/enter_message_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/enter_message_drawable"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

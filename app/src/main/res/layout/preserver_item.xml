@@ -1,26 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/date_tv"
-        android:background="@drawable/date_bg"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="2018.1.20"
-        android:textSize="@dimen/big_text_size"
-        android:gravity="center"
-        android:textColor="@color/main_text_color"
-        />
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
 
-    <android.support.v7.widget.RecyclerView
+    android:background="@color/white"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"/>
+        <TextView
+
+            android:id="@+id/date_tv"
+            android:background="@drawable/date_bg"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="2018.1.20"
+            android:textSize="@dimen/big_text_size"
+            android:gravity="center"
+            android:textColor="@color/main_text_color"
+            />
+
+    </RelativeLayout>
+
+    <com.anxin.kitchen.view.CustomGridView
+        android:background="@color/white"
         android:id="@+id/preserver_rv"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_marginBottom="15dp"
+        android:numColumns="2"
+        android:horizontalSpacing="10dp"
+        android:verticalSpacing="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-    </android.support.v7.widget.RecyclerView>
+    </com.anxin.kitchen.view.CustomGridView>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/white"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/main_bg_color"
+        />
 </LinearLayout>

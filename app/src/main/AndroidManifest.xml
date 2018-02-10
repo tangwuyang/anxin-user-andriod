@@ -5,8 +5,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
-
     //地图包、搜索包需要的基础权限
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -18,8 +16,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -29,8 +28,9 @@
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="5832fd25989ff5dfbd86f77e98c015d0"/>
-        <activity android:name="com.anxin.kitchen.activity.MainActivity"></activity>
+            android:value="5832fd25989ff5dfbd86f77e98c015d0" />
+
+        <activity android:name="com.anxin.kitchen.activity.MainActivity" />
         <activity android:name="com.anxin.kitchen.activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,9 +38,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.anxin.kitchen.tangwuyangs_test.TestMapActivity"></activity>
+        <activity android:name="com.anxin.kitchen.tangwuyangs_test.TestMapActivity" />
 
-        <service android:name="com.amap.api.location.APSService"/>
+        <service android:name="com.amap.api.location.APSService" />
+
+        <activity android:name="com.anxin.kitchen.activity.MessageCenterActivity"></activity>
     </application>
 
 </manifest>
