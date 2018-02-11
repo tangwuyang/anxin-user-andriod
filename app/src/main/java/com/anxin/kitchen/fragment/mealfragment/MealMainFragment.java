@@ -15,10 +15,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.anxin.kitchen.activity.MessageCenterActivity;
+import com.anxin.kitchen.activity.RecoveryMealActivity;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.view.CustomGridView;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * 点餐主界面
@@ -28,7 +31,9 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     private View view;
     private RecyclerView mPreserverRv;
     private LinearLayoutManager mLiearManager;
-    private ImageView mMessageImg;
+    private ImageView mMessageImg;  //消息中心
+    private ImageView mRecoveryMealImg;   //康复食疗
+    private ImageView mPreserverMealImg;  //预约点餐
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +48,10 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.meal_main_fragment, null);
         mPreserverRv = view.findViewById(R.id.preserver_rv);
+
         mMessageImg = view.findViewById(R.id.message_img);
+        mRecoveryMealImg = view.findViewById(R.id.recovery_meal_img);
+        mPreserverMealImg = view.findViewById(R.id.preserver_meal_img);
         return view;
     }
 
@@ -61,6 +69,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
 
     private void setListener() {
         mMessageImg.setOnClickListener(this);
+        mPreserverMealImg.setOnClickListener(this);
+        mRecoveryMealImg.setOnClickListener(this);
     }
 
     //设置点餐适配器
@@ -75,12 +85,21 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.message_img:
-                Intent intent = new Intent(getContext(), MessageCenterActivity.class);
-                startActivity(intent);
+                startNewActivity(MessageCenterActivity.class);
+                break;
+            case R.id.preserver_meal_img:
+                break;
+            case R.id.recovery_meal_img:
+                startNewActivity(RecoveryMealActivity.class);
                 break;
             default:
                 break;
         }
+    }
+
+    private void startNewActivity(Class classType) {
+        Intent intent = new Intent(getContext(), classType);
+        startActivity(intent);
     }
 
 
