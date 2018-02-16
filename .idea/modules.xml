@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/anxin-user-andriod.iml" filepath="$PROJECT_DIR$/anxin-user-andriod.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fantuanlibrary/fantuanlibrary.iml" filepath="$PROJECT_DIR$/fantuanlibrary/fantuanlibrary.iml" />
       <module fileurl="file://D:\workspace\anxin\anxin-user-andriod\kitchen.iml" filepath="D:\workspace\anxin\anxin-user-andriod\kitchen.iml" />
     </modules>
   </component>

@@ -44,7 +44,9 @@
 
         <activity android:name="com.anxin.kitchen.activity.MessageCenterActivity" />
         <activity android:name="com.anxin.kitchen.activity.RecoveryMealActivity" />
-        <activity android:name="com.anxin.kitchen.activity.BaseActivity"></activity>
+        <activity android:name="com.anxin.kitchen.activity.BaseActivity" />
+        <activity android:name="com.anxin.kitchen.activity.LocationActivity" />
+        <activity android:name="com.anxin.kitchen.activity.PreserveActivity"></activity>
     </application>
 
 </manifest>

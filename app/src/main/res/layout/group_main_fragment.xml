@@ -5,13 +5,15 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
-
-    <Button
-        android:id="@+id/email_sign_in_button"
-        style="?android:textAppearanceSmall"
+    <include layout="@layout/title_bar"/>
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="饭团"
-        android:textStyle="bold" />
+        android:layout_height="match_parent">
+        <com.bluetooth.tangwuyang.fantuanlibrary.IndexStickyView
+            android:id="@+id/indexStickyView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.bluetooth.tangwuyang.fantuanlibrary.IndexStickyView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

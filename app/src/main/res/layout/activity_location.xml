@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.anxin.kitchen.tangwuyangs_test.TestMapActivity">
+    <include layout="@layout/title_bar"
+        android:id="@+id/top_layout"
+        />
+
+    <LinearLayout
+        android:id="@+id/search_ll"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_below="@id/top_layout"
+        android:layout_width="match_parent"
+        android:paddingBottom="10.7dp"
+        android:paddingTop="10.7dp"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:layout_height="58.7dp">
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="18.7dp"
+            android:src="@drawable/location_icon"
+            />
+        <TextView
+            android:id="@+id/location_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/big_text_size"
+            android:text="深圳"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            />
+        <android.support.v7.widget.SearchView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/search_bg"
+            ></android.support.v7.widget.SearchView>
+
+    </LinearLayout>
+
+    <com.amap.api.maps2d.MapView
+        android:id="@+id/map_view"
+        android:layout_below="@+id/search_ll"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+
+        ></com.amap.api.maps2d.MapView>
+</RelativeLayout>

@@ -14,7 +14,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.anxin.kitchen.activity.LocationActivity;
 import com.anxin.kitchen.activity.MessageCenterActivity;
+import com.anxin.kitchen.activity.PreserveActivity;
 import com.anxin.kitchen.activity.RecoveryMealActivity;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
@@ -34,6 +36,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     private ImageView mMessageImg;  //消息中心
     private ImageView mRecoveryMealImg;   //康复食疗
     private ImageView mPreserverMealImg;  //预约点餐
+    private TextView mLocationTv;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,10 +51,10 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.meal_main_fragment, null);
         mPreserverRv = view.findViewById(R.id.preserver_rv);
-
         mMessageImg = view.findViewById(R.id.message_img);
         mRecoveryMealImg = view.findViewById(R.id.recovery_meal_img);
         mPreserverMealImg = view.findViewById(R.id.preserver_meal_img);
+        mLocationTv = view.findViewById(R.id.location_tv);
         return view;
     }
 
@@ -71,6 +74,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         mMessageImg.setOnClickListener(this);
         mPreserverMealImg.setOnClickListener(this);
         mRecoveryMealImg.setOnClickListener(this);
+        mLocationTv.setOnClickListener(this);
     }
 
     //设置点餐适配器
@@ -88,10 +92,13 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 startNewActivity(MessageCenterActivity.class);
                 break;
             case R.id.preserver_meal_img:
+                startNewActivity(PreserveActivity.class);
                 break;
             case R.id.recovery_meal_img:
                 startNewActivity(RecoveryMealActivity.class);
                 break;
+            case R.id.location_tv:
+                startNewActivity(LocationActivity.class);
             default:
                 break;
         }
@@ -185,6 +192,4 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_food_item,viewGroup,false);
             return view;
         }
-    }
-
-}
+    }}

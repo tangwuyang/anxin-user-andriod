@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:paddingTop="6.7dp"
+    android:paddingBottom="6.7dp"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/day_tv"
+        android:gravity="center"
+        android:layout_width="74.7dp"
+        android:layout_height="match_parent"
+        android:background="@color/main_bg_color"
+        android:text="周一"
+        android:textColor="@color/black"
+        />
+    <LinearLayout
+        android:layout_marginLeft="6.7dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent">
+        <include layout="@layout/preserver_food_item2"
+           />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dinner_ll"
+        android:layout_marginLeft="6.7dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent">
+        <include layout="@layout/preserver_food_item2"
+            android:id="@+id/dinner_item"
+            />
+        <ImageView
+            android:id="@+id/add_img"
+            android:src="@drawable/add_drawable"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:scaleType="centerInside"
+            />
+
+    </LinearLayout>
+</LinearLayout>

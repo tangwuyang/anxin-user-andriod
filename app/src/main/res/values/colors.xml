@@ -12,7 +12,10 @@
     <color name="red">#FF3232</color>
     
     <color name="transparent">#00FFFFFF</color>
-    <color name="shallow_black">#666666</color> //浅黑色
+    <color name="shallow_black">#969696</color> //浅黑色
+
+    <color name="divider_color">#c9c9c9</color>
+    <color name="main__tran_bg_color">#00F8F8F8</color>
 
 
 </resources>
