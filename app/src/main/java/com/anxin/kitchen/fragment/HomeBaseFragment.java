@@ -40,13 +40,13 @@ public class HomeBaseFragment extends Fragment implements OnClickListener {
 
 
     public void hideMainBottom() {
-//        if (main != null)
-//            main.hideMainBottom();
+        if (main != null)
+            main.hideMainBottom();
     }
 
     public void showMainBottom() {
-//        if (main != null)
-//            main.showMainBotton();
+        if (main != null)
+            main.showMainBotton();
     }
 
     @Override

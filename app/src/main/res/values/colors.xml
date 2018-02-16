@@ -6,7 +6,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="main_bg_color">#F8F8F8</color>   //主体背景颜色
     <color name="main_text_color">#000</color>    //主字体颜色 黑
-    <color name="black">#000</color>
+    <color name="title_bg_color">#3ed368</color>    //头部颜色 绿
+    <color name="black">#000000</color>
     <color name="title_bar_color">#6AC146</color>
     <color name="shallow_text_color">#797979</color>
     <color name="red">#FF3232</color>

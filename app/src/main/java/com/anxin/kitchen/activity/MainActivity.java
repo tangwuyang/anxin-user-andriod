@@ -1,7 +1,9 @@
 package com.anxin.kitchen.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -10,6 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 
 import com.anxin.kitchen.fragment.groupfragment.GroupMainFragment;
 import com.anxin.kitchen.fragment.mealfragment.MealMainFragment;
@@ -37,6 +40,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private RadioButton myButtomBtn;
     // 定义FragmentManager对象管理器
     private FragmentManager fragmentManager;
+    //欢迎页面
+    private RelativeLayout welcome_rlt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +51,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         context = this;
         initView();//初始化界面控件
         setChioceItem(0);//初始化页面加载是显示点餐界面
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                welcome_rlt.setVisibility(View.GONE);
+            }
+        }, 2000);
     }
 
+    private Handler handler = new Handler();
+
     private void initView() {
+        welcome_rlt = (RelativeLayout) findViewById(R.id.welcome_bg);
         //初始化底部导航栏的控件
         myButtom_Lyt = (LinearLayout) findViewById(R.id.main_bottom_group);
         myButtomGroup = (RadioGroup) findViewById(R.id.bottom_radiogroup);
@@ -78,6 +92,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
 
+    }
+
+    //隐藏底部栏
+    public void hideMainBottom() {
+        myButtom_Lyt.setVisibility(View.GONE);
+    }
+
+    //显示底部栏
+    public void showMainBotton() {
+        myButtom_Lyt.setVisibility(View.VISIBLE);
     }
 
     /**

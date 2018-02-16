@@ -14,8 +14,8 @@
         android:id="@+id/main_bottom_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:layout_alignParentBottom="true"
+        android:background="@color/white"
         android:orientation="vertical">
 
         <RadioGroup
@@ -32,14 +32,14 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:button="@null"
-                android:text="点餐"
                 android:drawablePadding="5dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:textSize="9sp"
-                android:textColor="@drawable/main_meal_text_checked"
                 android:drawableTop="@drawable/main_meal_checked"
-                android:gravity="center" />
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="点餐"
+                android:textColor="@drawable/main_meal_text_checked"
+                android:textSize="9sp" />
 
             <RadioButton
                 android:id="@+id/group_radioBtn"
@@ -48,14 +48,14 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:button="@null"
-                android:text="饭团"
                 android:drawablePadding="5dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:textSize="9sp"
-                android:textColor="@drawable/main_meal_text_checked"
                 android:drawableTop="@drawable/main_group_checked"
-                android:gravity="center" />
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="饭团"
+                android:textColor="@drawable/main_meal_text_checked"
+                android:textSize="9sp" />
 
             <RadioButton
                 android:id="@+id/order_radioBtn"
@@ -64,14 +64,14 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:button="@null"
-                android:text="订单"
                 android:drawablePadding="5dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:textSize="9sp"
-                android:textColor="@drawable/main_meal_text_checked"
                 android:drawableTop="@drawable/main_order_checked"
-                android:gravity="center" />
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="订单"
+                android:textColor="@drawable/main_meal_text_checked"
+                android:textSize="9sp" />
 
             <RadioButton
                 android:id="@+id/my_radioBtn"
@@ -80,14 +80,27 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:button="@null"
-                android:text="我的"
-                android:textSize="9sp"
                 android:drawablePadding="5dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:textColor="@drawable/main_meal_text_checked"
                 android:drawableTop="@drawable/main_my_checked"
-                android:gravity="center" />
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="我的"
+                android:textColor="@drawable/main_meal_text_checked"
+                android:textSize="9sp" />
         </RadioGroup>
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/welcome_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:visibility="visible">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/logo"/>
+    </RelativeLayout>
 </RelativeLayout>
