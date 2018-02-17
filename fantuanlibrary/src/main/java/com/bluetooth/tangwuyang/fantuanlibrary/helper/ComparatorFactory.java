@@ -11,8 +11,7 @@ import static com.bluetooth.tangwuyang.fantuanlibrary.helper.ConvertHelper.INDEX
 
 /**
  * 比较器工厂
- * @author: laohu on 2016/12/21
- * @site: http://ittiger.cn
+ * @author: tangwuyang on 2018/2/12
  */
 public class ComparatorFactory {
 

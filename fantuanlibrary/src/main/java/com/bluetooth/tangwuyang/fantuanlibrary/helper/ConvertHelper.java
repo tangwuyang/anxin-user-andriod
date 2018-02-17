@@ -17,8 +17,7 @@ import java.util.TreeMap;
 /**
  * 实体类转换器
  * 将用户要显示的数据转换成{@link android.support.v7.widget.RecyclerView}中展示的实体
- * @author: laohu on 2016/12/17
- * @site: http://ittiger.cn
+ * @author: tangwuyang on 2018/2/12
  */
 public class ConvertHelper {
     /**

@@ -25,8 +25,7 @@ import java.util.Observer;
 
 /**
  * 顶部固定的索引列表
- * @author: laohu on 2016/12/17
- * @site: http://ittiger.cn
+ * @author: tangwuyang on 2018/2/12
  */
 public class IndexStickyView extends RelativeLayout implements SideBar.OnSideBarTouchListener, Observer {
     private static final int DEFAULT_SIDEBAR_WIDTH = 24;//sidebar的默认宽度24dp

@@ -6,8 +6,7 @@ import java.util.Observer;
 
 /**
  * 观察者模式实现
- * @author: laohu on 2016/12/20
- * @site: http://ittiger.cn
+ *@author: tangwuyang on 2018/2/12
  */
 public class IndexValueBus {
     private static volatile IndexValueBus sEntityBus;

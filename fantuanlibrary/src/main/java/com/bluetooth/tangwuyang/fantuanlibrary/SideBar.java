@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 类似联系人的索引bar
- * Created by ylhu on 16-12-16.
+ *@author: tangwuyang on 2018/2/12
  */
 class SideBar extends View implements View.OnTouchListener {
     private static final int DEFAULT_TEXT_COLOR = Color.parseColor("#8c8c8c");//默认文字颜色

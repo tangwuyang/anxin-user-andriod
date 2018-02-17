@@ -5,8 +5,7 @@ import com.github.promeg.pinyinhelper.Pinyin;
 import java.util.regex.Pattern;
 
 /**
- * @author: laohu on 2016/12/17
- * @site: http://ittiger.cn
+ * @author: tangwuyang on 2018/2/12
  */
 public class PinYinHelper {
     private static final String PATTERN_LETTER = "^[a-zA-Z]+$";

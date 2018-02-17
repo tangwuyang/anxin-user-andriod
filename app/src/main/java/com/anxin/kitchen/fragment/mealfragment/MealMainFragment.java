@@ -18,6 +18,7 @@ import com.anxin.kitchen.activity.LocationActivity;
 import com.anxin.kitchen.activity.MessageCenterActivity;
 import com.anxin.kitchen.activity.PreserveActivity;
 import com.anxin.kitchen.activity.RecoveryMealActivity;
+import com.anxin.kitchen.activity.SendMealLocationActivity;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
@@ -49,8 +50,9 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.meal_main_fragment, null);
+        view = inflater.inflate(R.layout.meal_main_fragment, container,false);
         mPreserverRv = view.findViewById(R.id.preserver_rv);
+        mPreserverRv.setFocusable(false);
         mMessageImg = view.findViewById(R.id.message_img);
         mRecoveryMealImg = view.findViewById(R.id.recovery_meal_img);
         mPreserverMealImg = view.findViewById(R.id.preserver_meal_img);
@@ -98,13 +100,13 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 startNewActivity(RecoveryMealActivity.class);
                 break;
             case R.id.location_tv:
-                startNewActivity(LocationActivity.class);
+                startNewActivity(SendMealLocationActivity.class);  //送餐地址活动
             default:
                 break;
         }
     }
 
-    private void startNewActivity(Class classType) {
+    protected void startNewActivity(Class classType) {
         Intent intent = new Intent(getContext(), classType);
         startActivity(intent);
     }

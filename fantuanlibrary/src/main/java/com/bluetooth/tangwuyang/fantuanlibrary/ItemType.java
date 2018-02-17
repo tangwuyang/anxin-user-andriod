@@ -1,8 +1,7 @@
 package com.bluetooth.tangwuyang.fantuanlibrary;
 
 /**
- * @author: laohu on 2016/12/17
- * @site: http://ittiger.cn
+ * @author: tangwuyang on 2018/2/12
  */
 
 public class ItemType {

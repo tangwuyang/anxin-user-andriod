@@ -20,6 +20,11 @@
     <string name="take_time_text">约35分钟到达</string>
     <string name="search">      搜索</string>
     <string name="view_kitchen">可视厨房</string>
+    <string name="this_location">当前定位地址</string>
+    <string name="re_location">重新定位</string>
+    <string name="send_location">送餐地址</string>
+    <string name="add_location">新增送餐地址</string>
+    <string name="completed">完成</string>
     <string-array name="contact_array">
         <item>$^*张狗蛋</item>
         <item>000王二</item>

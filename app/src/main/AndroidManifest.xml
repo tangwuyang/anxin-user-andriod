@@ -37,8 +37,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.anxin.kitchen.activity.LoginActivity">
-        </activity>
+        <activity android:name="com.anxin.kitchen.activity.LoginActivity" />
         <activity android:name="com.anxin.kitchen.tangwuyangs_test.TestMapActivity" />
 
         <service android:name="com.amap.api.location.APSService" />
@@ -47,7 +46,9 @@
         <activity android:name="com.anxin.kitchen.activity.RecoveryMealActivity" />
         <activity android:name="com.anxin.kitchen.activity.BaseActivity" />
         <activity android:name="com.anxin.kitchen.activity.LocationActivity" />
-        <activity android:name="com.anxin.kitchen.activity.PreserveActivity"></activity>
+        <activity android:name="com.anxin.kitchen.activity.PreserveActivity" />
+        <activity android:name="com.anxin.kitchen.activity.SendMealLocationActivity" />
+        <activity android:name="com.anxin.kitchen.activity.AddNewLocationActivity"></activity>
     </application>
 
 </manifest>

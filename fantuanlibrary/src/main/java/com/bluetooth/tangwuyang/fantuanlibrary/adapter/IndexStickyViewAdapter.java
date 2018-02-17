@@ -23,8 +23,7 @@ import java.util.Map;
 
 /**
  * {@link IndexStickyView}的数据适配器
- * @author: laohu on 2016/12/17
- * @site: http://ittiger.cn
+ *@author: tangwuyang on 2018/2/12
  */
 public abstract class IndexStickyViewAdapter<T extends BaseEntity> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /**

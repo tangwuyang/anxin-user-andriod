@@ -1,6 +1,7 @@
 package com.anxin.kitchen.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -27,5 +28,10 @@ public class BaseActivity extends Activity {
         if (isDebug){
             android.util.Log.i(getClass().getSimpleName(),msg);
         }
+    }
+
+    protected void startNewActivity(Class classType) {
+        Intent intent = new Intent(this, classType);
+        startActivity(intent);
     }
 }

@@ -13,7 +13,7 @@
             android:textColor="@color/white"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="@dimen/bar_title_text_size"
+            android:textSize="@dimen/title_text_size"
             android:text="消息中心"/>
 
         <ImageView
@@ -61,6 +61,20 @@
            android:layout_centerVertical="true"
             />
 
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/complete_tv"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:text="@string/completed"
+            android:textColor="@color/white"
+            android:layout_marginRight="@dimen/bar_left_right_padding"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
