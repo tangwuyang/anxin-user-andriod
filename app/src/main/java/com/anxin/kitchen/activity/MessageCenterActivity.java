@@ -50,6 +50,13 @@ public class MessageCenterActivity extends AppCompatActivity {
     private void initView() {
         mMessageLv = findViewById(R.id.message_lv);
         mMessageAdapter = new MessageAdapter();
+        ImageView back_img = (ImageView) findViewById(R.id.back_img);
+        back_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private class MessageAdapter extends BaseAdapter{

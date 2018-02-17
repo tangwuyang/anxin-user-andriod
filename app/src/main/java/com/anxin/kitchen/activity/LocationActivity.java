@@ -3,6 +3,8 @@ package com.anxin.kitchen.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -51,7 +53,7 @@ public class LocationActivity extends BaseActivity {
                     amapLocation.getAoiName();//获取当前定位点的AOI信息
                     lat = amapLocation.getLatitude();
                     lon = amapLocation.getLongitude();
-                    Log.v("pcw","lat : "+lat+" lon : "+lon);
+                    Log.v("pcw", "lat : " + lat + " lon : " + lon);
 
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
@@ -69,7 +71,6 @@ public class LocationActivity extends BaseActivity {
     private double lon;
 
 
-
     /**
      * * 初始化AMap对象
      */
@@ -79,7 +80,13 @@ public class LocationActivity extends BaseActivity {
         }
 
         setUpMap();
-
+        ImageView back_img = (ImageView) findViewById(R.id.back_img);
+        back_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void setUpMap() {
@@ -102,6 +109,7 @@ public class LocationActivity extends BaseActivity {
         //启动定位
         mLocationClient.startLocation();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

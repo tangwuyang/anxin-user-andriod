@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,6 +43,13 @@ public class PreserveActivity extends Activity {
         setTitle("预约点餐");
         findViewById(R.id.view_kitchen).setVisibility(View.VISIBLE);
         mAddPreserveLv = findViewById(R.id.add_preserve_lv);
+        ImageView back_img = (ImageView) findViewById(R.id.back_img);
+        back_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override

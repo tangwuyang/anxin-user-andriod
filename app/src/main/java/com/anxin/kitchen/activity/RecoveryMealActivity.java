@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -73,6 +74,13 @@ private ContentAdapter mContentAdapter;
     private void initView() {
         mMealCatalogLv = findViewById(R.id.meal_catalog_lv);
         mContentLv = findViewById(R.id.content_lv);
+        ImageView back_img = (ImageView) findViewById(R.id.back_img);
+        back_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
 
