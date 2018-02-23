@@ -48,7 +48,10 @@
         <activity android:name="com.anxin.kitchen.activity.LocationActivity" />
         <activity android:name="com.anxin.kitchen.activity.PreserveActivity" />
         <activity android:name="com.anxin.kitchen.activity.SendMealLocationActivity" />
-        <activity android:name="com.anxin.kitchen.activity.AddNewLocationActivity"></activity>
+        <activity android:name="com.anxin.kitchen.activity.AddNewLocationActivity" />
+        <activity android:name="com.anxin.kitchen.activity.PreserveListActivity" />
+        <activity android:name="com.anxin.kitchen.activity.ViewKitchenActivity" />
+        <activity android:name="com.anxin.kitchen.activity.MealIntroduceActivity"></activity>
     </application>
 
 </manifest>

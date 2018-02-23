@@ -23,6 +23,7 @@
     <string name="this_location">当前定位地址</string>
     <string name="re_location">重新定位</string>
     <string name="send_location">送餐地址</string>
+    <string name="delete">删除</string>
     <string name="add_location">新增送餐地址</string>
     <string name="completed">完成</string>
     <string-array name="contact_array">

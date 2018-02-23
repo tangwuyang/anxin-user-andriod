@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <HorizontalScrollView
+        android:id="@+id/hsv_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="57.8dp"
+        android:background="#FFF"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <RadioGroup
+                android:id="@+id/rg_items"
+                android:layout_width="wrap_content"
+                android:layout_height="57.8dp"
+                android:orientation="horizontal" >
+            </RadioGroup>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <com.anxin.kitchen.view.MyViewPager
+        android:id="@+id/vp_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

@@ -1,41 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.anxin.kitchen.view.SwipeListLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="58.7dp"
                 android:background="?attr/selectableItemBackground"
-                android:paddingBottom="8dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="8dp">
-    <ImageView
-        android:id="@+id/img_avatar"
-        android:layout_width="@dimen/profile_weight"
-        android:layout_height="@dimen/profile_height"
-        android:layout_centerVertical="true"
-        android:scaleType="centerInside"
-        android:layout_marginRight="16dp"
-        android:src="@drawable/vector_contact_focus"
-       />
 
-    <TextView
-        android:layout_centerVertical="true"
-        android:id="@+id/tv_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/img_avatar"
-        android:textColor="#373737"
-        android:textSize="@dimen/big_text_size" />
+               >
 
-    <TextView
-        android:id="@+id/tv_mobile"
-        android:gravity="right"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
-        android:layout_toRightOf="@id/tv_name"
-        android:textSize="@dimen/normal_text_size"
-        android:textColor="#969696" />
-</RelativeLayout>
+        android:layout_height="match_parent">
+        <TextView
+            android:background="@color/red"
+            android:layout_width="100dp"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:text="@string/delete"/>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_marginLeft="16dp"
+            android:id="@+id/img_avatar"
+            android:layout_width="@dimen/profile_weight"
+            android:layout_height="@dimen/profile_height"
+            android:layout_centerVertical="true"
+            android:scaleType="centerInside"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/vector_contact_focus"
+            />
+
+        <TextView
+            android:layout_centerVertical="true"
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/img_avatar"
+            android:textColor="#373737"
+            android:textSize="@dimen/big_text_size" />
+
+        <TextView
+            android:id="@+id/tv_mobile"
+            android:gravity="right"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_toRightOf="@id/tv_name"
+            android:textSize="@dimen/normal_text_size"
+            android:textColor="#969696" />
+    </RelativeLayout>
+
+</com.anxin.kitchen.view.SwipeListLayout>

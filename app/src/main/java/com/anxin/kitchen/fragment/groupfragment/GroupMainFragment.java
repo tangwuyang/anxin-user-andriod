@@ -1,12 +1,17 @@
 package com.anxin.kitchen.fragment.groupfragment;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.view.menu.MenuAdapter;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +30,7 @@ import com.bluetooth.tangwuyang.fantuanlibrary.entity.BaseEntity;
 import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemClickListener;
 import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemLongClickListener;
 
+import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +44,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     SwipeRefreshLayout mRefreshLayout;
     IndexStickyView mIndexStickyView;
     MyIndexStickyViewAdapter mAdapter;
-
+    private ImageView mMenuImg;
 
     IndexHeaderFooterAdapter<UserEntity> mFavAdapter;
     IndexHeaderFooterAdapter<MenuEntity> mMenuAdapter;
@@ -47,6 +53,9 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     IndexHeaderFooterAdapter<UserEntity> mFooterAdapter;
     IndexHeaderFooterAdapter mFooterBannerAdapter;
 
+
+    private List<String> mMenuNames = new ArrayList<>();
+    private List<Integer> mMenuImgs = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -289,8 +298,19 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     }
     private void initView() {
         ((TextView)getActivity().findViewById(R.id.title_tv)).setText("饭团");
-        getActivity().findViewById(R.id.fantuan_menu_img).setVisibility(View.VISIBLE);
+         mMenuImg = getActivity().findViewById(R.id.fantuan_menu_img);
+        mMenuImg.setVisibility(View.VISIBLE);
+        mMenuImg.setOnClickListener(this);
         getActivity().findViewById(R.id.back_img).setVisibility(View.GONE);
+        mMenuNames.add("创建饭团");
+        mMenuNames.add("新增团友");
+        mMenuNames.add("通讯录导入");
+        mMenuNames.add("邀请团友");
+
+        mMenuImgs.add(R.drawable.create_new_group_drawale);
+        mMenuImgs.add(R.drawable.new_friend_drawable);
+        mMenuImgs.add(R.drawable.contactor_imp_drawable);
+        mMenuImgs.add(R.drawable.invate_friend_drawable);
     }
 
     @Override
@@ -303,8 +323,52 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.fantuan_menu_img:
+                popMenu();
+                break;
             default:
                 break;
+        }
+    }
+
+    private void popMenu() {
+        View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.fantuan_pop_menu, null);
+        ListView menuLl = contentView.findViewById(R.id.menu_ll);
+        menuLl.setAdapter(new MenuAdapter());
+        PopupWindow popWnd = new PopupWindow (getContext());
+        popWnd.setContentView(contentView);
+
+        popWnd.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.fan_menu_bg));
+        popWnd.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        popWnd.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        popWnd.showAsDropDown(mMenuImg,550,20);
+    }
+
+    class MenuAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            return mMenuNames.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            view = LayoutInflater.from(getContext()).inflate(R.layout.fan_menu_item,viewGroup,false);
+            ImageView menuImg = view.findViewById(R.id.menu_img);
+            menuImg.setImageResource(mMenuImgs.get(i));
+            TextView menuName = view.findViewById(R.id.menu_tv);
+            menuName.setText(mMenuNames.get(i));
+            return view;
         }
     }
 

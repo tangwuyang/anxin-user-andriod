@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg_color"
+    tools:context="com.anxin.kitchen.activity.MealIntroduceActivity">
+
+    <LinearLayout
+        android:background="@color/main_bg_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/title_bar" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="213.3dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/meal_introduce_img" />
+
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:background="@color/white"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:text="营养介绍"
+            android:textColor="@color/black" />
+        <LinearLayout
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="1dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/bar_left_right_padding"
+                android:layout_marginRight="@dimen/bar_left_right_padding"
+                android:background="@color/main_bg_color"
+                android:layout_height="1dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingBottom="14dp"
+            android:background="@color/white"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:paddingTop="14dp"
+            android:text="鱼蛋白质的含量是猪肉的2倍，且属于优质蛋白，人体吸收率高。鱼中富含丰富的硫氨酸，核黄酸、尼克酸、维生素D等 和一定量的钙、磷、铁等矿物质，鱼肉中的脂肪含量虽然低，但其中的脂肪酸被证实有降糖，护心，和防癌的效果，鱼肉中的维生素D、钙、磷能有效的预防骨质疏松。"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:text="用料"
+            android:background="@color/white"
+            android:textColor="@color/black" />
+        <LinearLayout
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="1dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/bar_left_right_padding"
+                android:layout_marginRight="@dimen/bar_left_right_padding"
+                android:background="@color/main_bg_color"
+                android:layout_height="1dp" />
+        </LinearLayout>
+        <com.anxin.kitchen.view.MyGridView
+            android:background="@color/white"
+            android:id="@+id/material_gv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="2"></com.anxin.kitchen.view.MyGridView>
+
+        <TextView
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:text="烹饪方法"
+            android:textColor="@color/black" />
+        <LinearLayout
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="1dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/bar_left_right_padding"
+                android:layout_marginRight="@dimen/bar_left_right_padding"
+                android:background="@color/main_bg_color"
+                android:layout_height="1dp" />
+        </LinearLayout>
+        <com.anxin.kitchen.view.MyListView
+            android:background="@color/white"
+            android:id="@+id/step_lv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            ></com.anxin.kitchen.view.MyListView>
+        <TextView
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:text="其他"
+            android:textColor="@color/black" />
+        <LinearLayout
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="1dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/bar_left_right_padding"
+                android:layout_marginRight="@dimen/bar_left_right_padding"
+                android:background="@color/main_bg_color"
+                android:layout_height="1dp" />
+        </LinearLayout>
+        <TextView
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingBottom="14dp"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:paddingTop="14dp"
+            android:text="鱼蛋白质的含量是猪肉的2倍，且属于优质蛋白，人体吸收率高。鱼中富含丰富的硫氨酸，核黄酸、尼克酸、维生素D等 和一定量的钙、磷、铁等矿物质，鱼肉中的脂肪含量虽然低，但其中的脂肪酸被证实有降糖，护心，和防癌的效果，鱼肉中的维生素D、钙、磷能有效的预防骨质疏松。"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
+</ScrollView>

@@ -17,10 +17,10 @@ import com.anxin.kitchen.user.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PreserveActivity extends Activity {
+public class PreserveActivity extends BaseActivity implements View.OnClickListener{
     private ListView mAddPreserveLv;
     private List mDayList = new ArrayList();
-
+    private TextView viewKitchen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +50,8 @@ public class PreserveActivity extends Activity {
                 finish();
             }
         });
+        viewKitchen = findViewById(R.id.view_kitchen);
+        viewKitchen.setOnClickListener(this);
     }
 
     @Override
@@ -59,6 +61,17 @@ public class PreserveActivity extends Activity {
     }
     private void setAdapter() {
         mAddPreserveLv.setAdapter(new PreserverAdapter());
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.view_kitchen:
+                startNewActivity(ViewKitchenActivity.class);
+                break;
+            default:
+                break;
+        }
     }
 
     private class PreserverAdapter extends BaseAdapter {
@@ -84,7 +97,14 @@ public class PreserveActivity extends Activity {
             dayTv.setText((String) mDayList.get(position));
             if (position==6){
                 view.findViewById(R.id.dinner_item).setVisibility(View.GONE);
-                view.findViewById(R.id.add_img).setVisibility(View.VISIBLE);
+                ImageView addImg = view.findViewById(R.id.add_img);
+                addImg.setVisibility(View.VISIBLE);
+                addImg.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startNewActivity(PreserveListActivity.class);
+                    }
+                });
             }
             return view;
         }
