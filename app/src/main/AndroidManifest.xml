@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.anxin.kitchen.user">
+    package="com.anxin.kitchen.user"
+    android:versionCode="110"
+    android:versionName="1.1.0">
+
+    <uses-sdk android:minSdkVersion="21" />
+
+    <supports-screens android:anyDensity="true" />
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
