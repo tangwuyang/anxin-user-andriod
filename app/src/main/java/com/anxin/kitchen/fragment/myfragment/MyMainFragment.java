@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.anxin.kitchen.activity.LoginActivity;
+import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.tangwuyangs_test.TestMapActivity;
 import com.anxin.kitchen.user.R;
@@ -58,6 +60,13 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         userWalletBtn.setOnClickListener(this);
         settingBtn.setOnClickListener(this);
         userSetBtn.setOnClickListener(this);
+        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+                return false;
+            }
+        });
     }
 
     @Override
