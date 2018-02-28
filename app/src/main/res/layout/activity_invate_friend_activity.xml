@@ -47,6 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout
+                android:id="@+id/share_wechat_ll"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -65,6 +66,7 @@
                     android:text="@string/wechat_friend"/>
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/share_friend_group_ll"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -83,6 +85,7 @@
                     android:text="@string/webo_friend"/>
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/share_qq_ll"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:gravity="center"

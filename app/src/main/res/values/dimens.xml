@@ -28,4 +28,5 @@
     <dimen name="profile_weight">37.3dp</dimen>
 
     <dimen name="normal_item_height">58.7dp</dimen>
+    <dimen name="invate_big_text_size">23sp</dimen>
 </resources>

@@ -39,4 +39,7 @@ dependencies {
     implementation project(':fantuanlibrary')
     implementation files('libs/android-async-http-1.4.8.jar')
     implementation files('libs/okhttputils-1.8.1.jar')
+    compile 'com.umeng.sdk:common:latest.integration'
+    compile 'com.umeng.sdk:analytics:latest.integration'
+    implementation files('libs/umeng-common-1.4.3.jar')
 }
