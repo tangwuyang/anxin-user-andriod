@@ -3,7 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-
+    <dimen name="invate_big_text_size">32sp</dimen>
     <dimen name="title_text_size">20sp</dimen>  //标题大小
     <dimen name="super_big_text_size">24sp</dimen>
     <dimen name="bar_title_text_size">21.3sp</dimen>  //标题大小
@@ -20,4 +20,6 @@
 
     <dimen name="profile_height">37.3dp</dimen>
     <dimen name="profile_weight">37.3dp</dimen>
+
+    <dimen name="normal_item_height">58.7dp</dimen>
 </resources>

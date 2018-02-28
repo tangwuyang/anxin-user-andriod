@@ -26,6 +26,12 @@
     <string name="delete">删除</string>
     <string name="add_location">新增送餐地址</string>
     <string name="completed">完成</string>
+    <string name="name">姓  名</string>
+    <string name="tel">电  话</string>
+    <string name="invate_friend">邀请好友加入</string>
+    <string name="wechat_friend">微信好友</string>
+    <string name="qq_friend">QQ好友</string>
+    <string name="webo_friend">朋友圈</string>
     <string-array name="contact_array">
         <item>$^*张狗蛋</item>
         <item>000王二</item>

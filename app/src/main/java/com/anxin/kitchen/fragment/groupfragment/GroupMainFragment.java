@@ -1,21 +1,25 @@
 package com.anxin.kitchen.fragment.groupfragment;
 
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.view.menu.MenuAdapter;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anxin.kitchen.activity.AddNewFriendActivity;
+import com.anxin.kitchen.activity.CreateGroupActivity;
+import com.anxin.kitchen.activity.InvateFriendActivity;
 import com.anxin.kitchen.bean.ContactEntity;
 import com.anxin.kitchen.bean.MenuEntity;
 import com.anxin.kitchen.bean.UserEntity;
@@ -30,10 +34,12 @@ import com.bluetooth.tangwuyang.fantuanlibrary.entity.BaseEntity;
 import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemClickListener;
 import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemLongClickListener;
 
-import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.anxin.kitchen.utils.Constant.CREATE_GROUP_RESULT_CODE;
+import static com.anxin.kitchen.utils.Constant.GROUP_MAIN_REQEST_CODE;
 
 /**
  * 饭团主界面
@@ -298,7 +304,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     }
     private void initView() {
         ((TextView)getActivity().findViewById(R.id.title_tv)).setText("饭团");
-         mMenuImg = getActivity().findViewById(R.id.fantuan_menu_img);
+        mMenuImg = getActivity().findViewById(R.id.fantuan_menu_img);
         mMenuImg.setVisibility(View.VISIBLE);
         mMenuImg.setOnClickListener(this);
         getActivity().findViewById(R.id.back_img).setVisibility(View.GONE);
@@ -341,6 +347,8 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         popWnd.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.fan_menu_bg));
         popWnd.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         popWnd.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        popWnd.setOutsideTouchable(true);
+        //popWnd.setBackgroundDrawable(new BitmapDrawable());
         popWnd.showAsDropDown(mMenuImg,550,20);
     }
 
@@ -362,13 +370,58 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
+        public View getView(final int i, View view, ViewGroup viewGroup) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.fan_menu_item,viewGroup,false);
             ImageView menuImg = view.findViewById(R.id.menu_img);
+            LinearLayout menuLl = view.findViewById(R.id.menu_ll);
             menuImg.setImageResource(mMenuImgs.get(i));
             TextView menuName = view.findViewById(R.id.menu_tv);
             menuName.setText(mMenuNames.get(i));
+            menuLl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    menuChose(i);
+                }
+            });
             return view;
+        }
+
+        private void menuChose(int i) {
+            switch (i){
+                case 0:
+                    //创建饭团
+                    Intent intent = new Intent(getContext(), CreateGroupActivity.class);
+                    startActivityForResult(intent,GROUP_MAIN_REQEST_CODE);
+                    break;
+                case 1:
+                    //新增团友
+                    Intent intent1 = new Intent(getContext(), AddNewFriendActivity.class);
+                    startActivityForResult(intent1,GROUP_MAIN_REQEST_CODE);
+                    break;
+                case 2:
+                    //通讯录导入
+                    break;
+                case 3:
+                    //邀请团友
+                    Intent intent3 = new Intent(getContext(), InvateFriendActivity.class);
+                    startActivityForResult(intent3,GROUP_MAIN_REQEST_CODE);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GROUP_MAIN_REQEST_CODE) {
+            switch (resultCode) {
+                case CREATE_GROUP_RESULT_CODE:
+                    break;
+            }
+
         }
     }
 
@@ -417,7 +470,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
             ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
             contentViewHolder.mMobile.setText(itemData.getMobile());
             contentViewHolder.mName.setText(itemData.getName());
-           // contentViewHolder.mAvatar.setBackgroundResource(getResources().getDrawable(R.drawable.));
+            // contentViewHolder.mAvatar.setBackgroundResource(getResources().getDrawable(R.drawable.));
         }
     }
 
