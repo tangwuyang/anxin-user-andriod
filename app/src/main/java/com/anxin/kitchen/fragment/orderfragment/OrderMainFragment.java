@@ -1,10 +1,13 @@
 package com.anxin.kitchen.fragment.orderfragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.anxin.kitchen.activity.AllOrderActivity;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
@@ -16,6 +19,7 @@ import com.anxin.kitchen.utils.Log;
 public class OrderMainFragment extends HomeBaseFragment implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private View view;
+    private TextView mAllOrderBtn, mAllOrderBtn2;//全部订单
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,7 +38,14 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
         return view;
     }
 
+    /**
+     * 初始化控件，点击事件
+     */
     private void initView() {
+        mAllOrderBtn = (TextView) view.findViewById(R.id.allOrder_btn);
+        mAllOrderBtn2 = (TextView) view.findViewById(R.id.allOrder_btn2);
+        mAllOrderBtn.setOnClickListener(this);
+        mAllOrderBtn2.setOnClickListener(this);
     }
 
     @Override
@@ -43,13 +54,26 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
         super.onResume();
     }
 
+    /**
+     * 点击事件
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.allOrder_btn://查看所有订单
+            case R.id.allOrder_btn2:
+                startActivity(new Intent(getActivity(), AllOrderActivity.class));
+                break;
             default:
                 break;
         }
     }
 
+    /**
+     * 初始化列表数据，正常由服务器返回的Json数据
+     */
+    private void initJsonData() {
 
+
+    }
 }
