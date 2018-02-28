@@ -17,6 +17,7 @@
 
     <color name="divider_color">#c9c9c9</color>
     <color name="main__tran_bg_color">#00F8F8F8</color>
+    <color name="item_divider">#F0F0F0</color>
 
 
 </resources>

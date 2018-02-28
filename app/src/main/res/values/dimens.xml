@@ -4,15 +4,22 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="title_text_size">20sp</dimen>  //标题大小
+    <dimen name="title_text_size">20sp</dimen>
+    //标题大小
     <dimen name="super_big_text_size">24sp</dimen>
-    <dimen name="bar_title_text_size">21.3sp</dimen>  //标题大小
-    <dimen name="big_text_size">16sp</dimen>    //大字号
-    <dimen name="mid_text_size">14.7sp</dimen>    // 中等字号
-    <dimen name="normal_text_size">13.3sp</dimen>  //普通字号
-    <dimen name="small_text_size">12sp</dimen>   //小字号
+    <dimen name="bar_title_text_size">21.3sp</dimen>
+    //标题大小
+    <dimen name="big_text_size">16sp</dimen>
+    //大字号
+    <dimen name="mid_text_size">14.7sp</dimen>
+    // 中等字号
+    <dimen name="normal_text_size">13.3sp</dimen>
+    //普通字号
+    <dimen name="small_text_size">12sp</dimen>
+    //小字号
     <dimen name="super_small_text_size">9.3dp</dimen>
-    <dimen name="bar_left_right_padding">13.3dp</dimen>  //标题栏左右内边距
+    <dimen name="bar_left_right_padding">13.3dp</dimen>
+    //标题栏左右内边距
 
     <dimen name="global_divider_size">1px</dimen>
     <dimen name="contact_item_left_margin">10dp</dimen>

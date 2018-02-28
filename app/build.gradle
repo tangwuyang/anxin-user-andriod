@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    useLibrary 'org.apache.http.legacy'
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.anxin.kitchen.user"
@@ -25,6 +26,7 @@ android {
 }
 
 dependencies {
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
