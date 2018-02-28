@@ -1,13 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    useLibrary 'org.apache.http.legacy'
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.anxin.kitchen.user"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 110
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -16,10 +17,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "anxin-kitchen-${variant.versionName}.apk"
+        }
+    }
     buildToolsVersion '26.0.2'
 }
 
 dependencies {
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -30,4 +37,6 @@ dependencies {
     implementation files('libs/eventbus-2.4.0.jar')
     implementation files('libs/AMap2DMap_5.2.0_AMapSearch_5.7.0_AMapLocation_3.8.0_20180201.jar')
     implementation project(':fantuanlibrary')
+    implementation files('libs/android-async-http-1.4.8.jar')
+    implementation files('libs/okhttputils-1.8.1.jar')
 }

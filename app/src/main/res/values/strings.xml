@@ -219,4 +219,5 @@
         <item>13907767890</item>
         <item>13978786823</item>
     </string-array>
+    <string name="title_activity_wxentry">WXEntryActivity</string>
 </resources>
