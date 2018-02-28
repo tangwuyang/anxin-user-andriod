@@ -47,6 +47,7 @@
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="5a940df18f4a9d7d7b000197" >
+            <meta-data android:value="unknown" android:name="UMENG_CHANNEL"/>
         </meta-data>
 
         <activity android:name="com.anxin.kitchen.activity.MainActivity">
@@ -71,6 +72,7 @@
         <activity android:name="com.anxin.kitchen.activity.PreserveListActivity" />
         <activity android:name="com.anxin.kitchen.activity.ViewKitchenActivity" />
         <activity android:name="com.anxin.kitchen.activity.MealIntroduceActivity" />
+        <activity android:name="com.anxin.kitchen.activity.InvateFriendActivity"/>
         <!--注册微信回调 WXEntryActivity -->
         <activity
             android:name=".wxapi.WXEntryActivity"
@@ -99,6 +101,8 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="orientation|keyboardHidden|screenSize"/>
+
+
     </application>
 
 </manifest>

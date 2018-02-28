@@ -10,13 +10,30 @@ android {
         versionCode 110
         versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+            proguardFiles 'proguard-rules.pro'
+        }
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+            proguardFiles 'proguard-rules.pro'
         }
     }
+
+    signingConfigs {
+        debug {
+            storeFile file('anxin.jks')
+            storePassword "tawuya123"
+            keyAlias "key0"
+            keyPassword "tangwuyang"
+        }
+    }
+
     android.applicationVariants.all { variant ->
         variant.outputs.all {
             outputFileName = "anxin-kitchen-${variant.versionName}.apk"
@@ -25,8 +42,9 @@ android {
     buildToolsVersion '26.0.2'
 }
 
+
 dependencies {
-    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+    compile 'com.android.support:multidex:1.0.1'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -39,7 +57,18 @@ dependencies {
     implementation project(':fantuanlibrary')
     implementation files('libs/android-async-http-1.4.8.jar')
     implementation files('libs/okhttputils-1.8.1.jar')
-    compile 'com.umeng.sdk:common:latest.integration'
-    compile 'com.umeng.sdk:analytics:latest.integration'
     implementation files('libs/umeng-common-1.4.3.jar')
+    implementation files('libs/umeng-analytics-7.4.1.jar')
+    implementation files('libs/android-async-http-1.4.8.jar')
+    implementation files('libs/umeng_social_api.jar')
+    implementation files('libs/umeng_social_net.jar')
+    implementation files('libs/umeng_social_tool.jar')
+    implementation files('libs/open_sdk_r5923_lite.jar')
+    implementation files('libs/SocialSDK_QQ_Full.jar')
+    implementation files('libs/SocialSDK_Sina_Full.jar')
+    implementation files('libs/SocialSDK_WeiXin_Full.jar')
+    implementation files('libs/wechat-sdk-android-with-mta-1.1.6.jar')
+    implementation files('libs/weiboSDKCore.jar')
+    implementation files('libs/umeng_social_shareboard.jar')
+    implementation files('libs/umeng_shareboard_widget.jar')
 }
