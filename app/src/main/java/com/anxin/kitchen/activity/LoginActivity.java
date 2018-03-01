@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.user.R;
@@ -19,7 +20,8 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView WXloginBtn;//微信登陆按钮
-    private IWXAPI mApi;
+    private IWXAPI mApi;//微信登陆API
+    private TextView sendPhoneCodeBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +33,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void initView() {
         ImageView back_btn = (ImageView) findViewById(R.id.back_btn);//返回按钮
         back_btn.setOnClickListener(this);
-        WXloginBtn = (ImageView) findViewById(R.id.wx_login);
+        WXloginBtn = (ImageView) findViewById(R.id.wx_login);//微信登陆按钮
         WXloginBtn.setOnClickListener(this);
+        sendPhoneCodeBtn = (TextView) findViewById(R.id.sendPhoneCode);//发送验证码到手机
+        sendPhoneCodeBtn.setOnClickListener(this);
     }
 
     @Override
@@ -43,6 +47,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.wx_login:
                 loginToWeiXin();
+                break;
+            case R.id.sendPhoneCode:
                 break;
         }
     }
