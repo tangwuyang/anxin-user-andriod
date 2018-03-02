@@ -29,4 +29,5 @@
 
     <dimen name="normal_item_height">58.7dp</dimen>
     <dimen name="invate_big_text_size">23sp</dimen>
+    <dimen name="offset_title_left">5dp</dimen>
 </resources>

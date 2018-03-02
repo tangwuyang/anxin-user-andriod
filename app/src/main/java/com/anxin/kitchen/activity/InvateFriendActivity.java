@@ -171,11 +171,17 @@ public class InvateFriendActivity extends BaseActivity implements View.OnClickLi
     //分享到微信好友
     private void shareWechatFriend() {
         UMImage image = new UMImage(InvateFriendActivity.this, R.drawable.search_bg);//资源文件
-        new ShareAction(InvateFriendActivity.this)
+       /* new ShareAction(InvateFriendActivity.this)
                 .setPlatform(SHARE_MEDIA.WEIXIN)//传入平台
                 .withText("hello")//分享内容
                 .withMedia(image)
                 .setCallback(shareListener)//回调监听器
+                .share();*/
+
+        new ShareAction(InvateFriendActivity.this)
+                .setPlatform(SHARE_MEDIA.WEIXIN)
+                .withText("hello").withMedia(image)
+                .setCallback(shareListener)
                 .share();
     }
 

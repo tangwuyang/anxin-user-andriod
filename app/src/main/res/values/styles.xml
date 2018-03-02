@@ -29,4 +29,24 @@
     <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <style name="commonDialog" parent="@android:style/Theme.Dialog">
+
+        <!-- Dialog的windowFrame框为无 -->
+        <item name="android:windowFrame">@null</item>
+        <!-- 没有标题 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 透明背景颜色 -->
+        <!-- <item name="android:windowIsTranslucent">false</item>:是否半透明 -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!-- 是否浮动内容在activity之上 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsFloating">false</item>
+        <!-- 是否允许全屏 -->
+        <item name="android:windowFullscreen">false</item>
+        <!-- 是否允许背景灰暗 -->
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
 </resources>

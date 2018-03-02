@@ -32,6 +32,10 @@
     <string name="wechat_friend">微信好友</string>
     <string name="qq_friend">QQ好友</string>
     <string name="webo_friend">朋友圈</string>
+    <string name="cancel">取消</string>
+    <string name="open_right">立即开启</string>
+    <string name="request_location">位置服务未开启</string>
+    <string name="location_setting">请进入系统[设置]-[应用程序]-[安心央厨]-[权限]-位置信息开关，并允许安心央厨使用定位服务</string>
     <string-array name="contact_array">
         <item>$^*张狗蛋</item>
         <item>000王二</item>

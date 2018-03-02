@@ -1,9 +1,12 @@
 package com.anxin.kitchen.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -13,17 +16,21 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.anxin.kitchen.fragment.groupfragment.GroupMainFragment;
 import com.anxin.kitchen.fragment.mealfragment.MealMainFragment;
 import com.anxin.kitchen.fragment.myfragment.MyMainFragment;
 import com.anxin.kitchen.fragment.orderfragment.OrderMainFragment;
+import com.anxin.kitchen.interface_.OnGivedPermissionListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.view.RequestLocationPermissionDialog;
 
 /**
  * 主界面
  */
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
+    private static final int BAIDU_READ_PHONE_STATE = 100;
     public static Context context;
 
     // 定义4个Fragment对象
@@ -49,6 +56,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
         context = this;
+        requestLocationPermission();
         initView();//初始化界面控件
         setChioceItem(0);//初始化页面加载是显示点餐界面
         handler.postDelayed(new Runnable() {
@@ -59,6 +67,43 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }, 2000);
     }
 
+    private void requestLocationPermission() {
+        boolean hasLocationPermission = getLocationPermission();
+        if (!hasLocationPermission){
+            popRequestWindow();
+        }
+    }
+
+    //弹出请求权限框
+    private void popRequestWindow() {
+        RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
+            @Override
+            public void onGivedPermssion() {
+                ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, BAIDU_READ_PHONE_STATE);
+            }
+        });
+        dialog.show();
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            // requestCode即所声明的权限获取码，在checkSelfPermission时传入
+            case BAIDU_READ_PHONE_STATE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // 获取到权限，作相应处理（调用定位SDK应当确保相关权限均被授权，否则可能引起定位失败）
+
+                } else {
+                    // 没有获取到权限，做特殊处理
+                    Toast.makeText(getApplicationContext(), "获取位置权限失败，请手动开启", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
     private Handler handler = new Handler();
 
     private void initView() {
@@ -171,4 +216,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
+
+    //是否有位置权限
+    public boolean getLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED
+                ){
+            return false;
+        }else return true;
+    }
 }

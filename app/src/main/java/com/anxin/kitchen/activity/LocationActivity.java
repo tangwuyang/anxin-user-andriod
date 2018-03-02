@@ -1,32 +1,63 @@
 package com.anxin.kitchen.activity;
 
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.UiSettings;
+import com.amap.api.maps2d.model.BitmapDescriptor;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.MarkerOptions;
+import com.amap.api.services.core.AMapException;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.geocoder.RegeocodeResult;
+import com.amap.api.services.help.Inputtips;
+import com.amap.api.services.help.InputtipsQuery;
+import com.amap.api.services.help.Tip;
 import com.anxin.kitchen.user.R;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
-public class LocationActivity extends BaseActivity {
-
+public class LocationActivity extends BaseActivity implements AMap.OnCameraChangeListener,AMap.OnMapClickListener,GeocodeSearch.OnGeocodeSearchListener ,TextWatcher,Inputtips.InputtipsListener{
+    private String city = "北京";
+    private static final String TAG = "LocationActivity";
     private AMap aMap;
     private MapView mapView;
-
-
+    private LinearLayout mChoseLocationLl;
+    private UiSettings mUiSettings;
+    private ListView mRelativePositionLv;
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
-
-
+    private boolean firstLocation = true;
+    private GeocodeSearch geocoderSearch ;
+    private AutoCompleteTextView mInputLocationTv;
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
         @Override
@@ -44,7 +75,7 @@ public class LocationActivity extends BaseActivity {
                     amapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
                     amapLocation.getCountry();//国家信息
                     amapLocation.getProvince();//省信息
-                    amapLocation.getCity();//城市信息
+                    city = amapLocation.getCity();//城市信息
                     amapLocation.getDistrict();//城区信息
                     amapLocation.getStreet();//街道信息
                     amapLocation.getStreetNum();//街道门牌号信息
@@ -54,6 +85,18 @@ public class LocationActivity extends BaseActivity {
                     lat = amapLocation.getLatitude();
                     lon = amapLocation.getLongitude();
                     Log.v("pcw", "lat : " + lat + " lon : " + lon);
+                    Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
+
+                    // 设置当前地图显示为当前位置
+                    moveToLocation();
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(new LatLng(lat, lon));
+                    markerOptions.title("当前位置");
+                    markerOptions.visible(true);
+                    BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.add_normal));
+                    markerOptions.icon(bitmapDescriptor);
+                    aMap.addMarker(markerOptions);
+
 
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
@@ -64,6 +107,15 @@ public class LocationActivity extends BaseActivity {
             }
         }
     };
+
+
+
+    private void moveToLocation() {
+        if (firstLocation) {
+            aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 19));
+            firstLocation = false;
+        }
+    }
 
     //声明mLocationOption对象
     public AMapLocationClientOption mLocationOption = null;
@@ -77,8 +129,12 @@ public class LocationActivity extends BaseActivity {
     private void init() {
         if (aMap == null) {
             aMap = mapView.getMap();
+            mUiSettings = aMap.getUiSettings();
+            mUiSettings.setZoomGesturesEnabled(true);
+            mUiSettings.setScrollGesturesEnabled(true);
         }
-
+        geocoderSearch = new GeocodeSearch(this);
+        geocoderSearch.setOnGeocodeSearchListener(this);
         setUpMap();
         ImageView back_img = (ImageView) findViewById(R.id.back_img);
         back_img.setOnClickListener(new View.OnClickListener() {
@@ -97,17 +153,21 @@ public class LocationActivity extends BaseActivity {
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
         //设置是否只定位一次,默认为false
-        mLocationOption.setOnceLocation(false);
+        mLocationOption.setOnceLocation(true);
         //设置是否强制刷新WIFI，默认为强制刷新
         mLocationOption.setWifiActiveScan(true);
         //设置是否允许模拟位置,默认为false，不允许模拟位置
-        mLocationOption.setMockEnable(false);
+        mLocationOption.setMockEnable(true);
         //设置定位间隔,单位毫秒,默认为2000ms
         mLocationOption.setInterval(2000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
         mLocationClient.startLocation();
+        aMap.setOnCameraChangeListener(this);// 对amap添加移动地图事件监听器
+        aMap.setOnMapClickListener(this);// 对amap添加单击地图事件监听器
+
+
     }
 
     @Override
@@ -116,13 +176,17 @@ public class LocationActivity extends BaseActivity {
         setContentView(R.layout.activity_location);
         setTitle("选择您的地址");
         mapView = (MapView) findViewById(R.id.map_view);
+        mCameraTextView = findViewById(R.id.test_location_tv);
+        mRelativePositionLv = findViewById(R.id.relative_position_lv);
+        mInputLocationTv = findViewById(R.id.input_edittext);
+        mChoseLocationLl = findViewById(R.id.chose_location_ll);
         //必须要写
         mapView.onCreate(savedInstanceState);
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
         //设置定位回调监听
         mLocationClient.setLocationListener(mLocationListener);
-
+        mInputLocationTv.addTextChangedListener(this);
         init();
     }
 
@@ -163,4 +227,97 @@ public class LocationActivity extends BaseActivity {
         mapView.onDestroy();
     }
 
+    private TextView mCameraTextView;
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+
+    }
+
+    @Override
+    public void onCameraChangeFinish(CameraPosition cameraPosition) {
+        Log.i("change","----------------->"+cameraPosition.toString());
+        // 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
+        String latloginfo = cameraPosition.target.toString();
+        String latlog = latloginfo.substring(latloginfo.indexOf("(")+1,latloginfo.indexOf(")"));
+        String[] lat_log_s = latlog.split(",");
+        double[] lat_log = new double[2];
+        lat_log[0] = Double.valueOf(lat_log_s[0]);
+        lat_log[1] = Double.valueOf(lat_log_s[1]);
+       LatLonPoint point = new LatLonPoint(lat_log[0],lat_log[1]);
+        mCameraTextView.setText("onCameraChangeFinish:"
+                + cameraPosition.toString() + "   " + lat_log[0] + "   " + lat_log[1]);
+        RegeocodeQuery query = new RegeocodeQuery(point, 200,GeocodeSearch.AMAP);
+
+        geocoderSearch.getFromLocationAsyn(query);
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        Toast.makeText(this, latLng+"", Toast.LENGTH_SHORT).show();
+        mCameraTextView.setText("long pressed, point=" + latLng);
+    }
+
+    @Override
+    public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
+        Log.i(TAG, "onRegeocodeSearched: ---------------"+ regeocodeResult);
+        mRelativePositionLv.setVisibility(View.GONE);
+        mCameraTextView.setVisibility(View.VISIBLE);
+        mChoseLocationLl.setVisibility(View.VISIBLE);
+        String addressName = regeocodeResult.getRegeocodeAddress().getFormatAddress()
+                + "附近"
+        ;
+         mCameraTextView.setText("   " + addressName);
+    }
+
+    @Override
+    public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
+        Log.i(TAG, "onGeocodeSearched: ---------------"+ geocodeResult);
+        mRelativePositionLv.setVisibility(View.GONE);
+        mCameraTextView.setText(View.VISIBLE);
+        mCameraTextView.setText("long pressed, point=" + geocodeResult.getGeocodeAddressList());
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        mRelativePositionLv.setVisibility(View.VISIBLE);
+        mCameraTextView.setVisibility(View.GONE);
+        mChoseLocationLl.setVisibility(View.GONE);
+        String newText = charSequence.toString().trim();
+        InputtipsQuery inputquery = new InputtipsQuery(newText, city);
+        inputquery.setCityLimit(true);
+        Inputtips inputTips = new Inputtips(LocationActivity.this, inputquery);
+        inputTips.setInputtipsListener(this);
+        inputTips.requestInputtipsAsyn();
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+
+    }
+
+    @Override
+    public void onGetInputtips(List<Tip> tipList, int rCode) {
+        if (rCode == AMapException.CODE_AMAP_SUCCESS) {
+            List<HashMap<String, String>> listString = new ArrayList<HashMap<String, String>>();
+            for (int i = 0; i < tipList.size(); i++) {
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("name", tipList.get(i).getName());
+                map.put("address", tipList.get(i).getDistrict());
+                listString.add(map);
+            }
+            SimpleAdapter aAdapter = new SimpleAdapter(getApplicationContext(), listString, R.layout.location_item_layout,
+                    new String[] {"name","address"}, new int[] {R.id.poi_field_id, R.id.poi_value_id});
+
+            mRelativePositionLv.setAdapter(aAdapter);
+            aAdapter.notifyDataSetChanged();
+
+        } else {
+
+        }
+    }
 }
