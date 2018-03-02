@@ -1,27 +1,46 @@
 package com.anxin.kitchen.activity;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.user.wxapi.WXEntryActivity;
+import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.utils.ToastUtil;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
  * 登陆界面
  */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-
+    private Log LOG = Log.getLog();
     private ImageView WXloginBtn;//微信登陆按钮
     private IWXAPI mApi;//微信登陆API
-    private TextView sendPhoneCodeBtn;
+    private TextView sendPhoneCodeBtn;//发送验证码
+    private EditText userPhoneEdit, phoneCodeEdit;//手机号码和验证码输入
+    private int number = 60;
+    private MyCountDownTimer mc;//验证码倒计时
+    private Button loginBtn;//登陆按钮
+    private String loginData = null;//用户是否注册判断
+    private String userPhone;//用户号码
+    private String phoneCode;//验证码
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,29 +49,158 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initView();
     }
 
+    /**
+     * 初始化绑定控件
+     */
     private void initView() {
         ImageView back_btn = (ImageView) findViewById(R.id.back_btn);//返回按钮
         back_btn.setOnClickListener(this);
         WXloginBtn = (ImageView) findViewById(R.id.wx_login);//微信登陆按钮
         WXloginBtn.setOnClickListener(this);
-        sendPhoneCodeBtn = (TextView) findViewById(R.id.sendPhoneCode);//发送验证码到手机
+        sendPhoneCodeBtn = (TextView) findViewById(R.id.sendPhoneCode);//获取验证码按钮
         sendPhoneCodeBtn.setOnClickListener(this);
+        loginBtn = (Button) findViewById(R.id.loginBtn);
+        loginBtn.setOnClickListener(this);
+        userPhoneEdit = (EditText) findViewById(R.id.userPhone_edit);//手机号码输入框
+        phoneCodeEdit = (EditText) findViewById(R.id.phoneCode_edit);//验证码输入框
+        mc = new MyCountDownTimer(1000 * 60, 1000);//验证码倒计时
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.back_btn:
+            case R.id.back_btn://返回
                 finish();
                 break;
-            case R.id.wx_login:
+            case R.id.wx_login://微信登陆
                 loginToWeiXin();
                 break;
-            case R.id.sendPhoneCode:
+            case R.id.sendPhoneCode://发送手机验证码
+                userPhone = userPhoneEdit.getText().toString();
+                if (userPhone == null || userPhone.length() <= 0) {
+                    ToastUtil.showToast("请输入手机号码");
+                    return;
+                }
+                if (!SystemUtility.isMobileNO(userPhone)) {
+                    ToastUtil.showToast("请输入正确的手机号码");
+                    return;
+                }
+                sendPhoneCode(userPhone, "1");//发送验证码
+                mc.start();//开启倒计时
+                break;
+            case R.id.loginBtn:
+                phoneCode = phoneCodeEdit.getText().toString();
+                if (phoneCode == null || phoneCode.length() <= 0) {
+                    ToastUtil.showToast("请输入验证码");
+                    return;
+                }
+                if (loginData != null) {
+                    if (loginData.equals("1"))
+                        sendPhoneLogin(userPhone, phoneCode);
+                    else
+                        sendPhoneRegister(userPhone, phoneCode);
+                }
                 break;
         }
     }
 
+    /**
+     * 发送验证码
+     *
+     * @param userPhone
+     * @param type
+     */
+    private void sendPhoneCode(final String userPhone, final String type) {
+        String urlPath = SystemUtility.sendUserPhoneCode(userPhone, type);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(urlPath, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String result = "";
+                if (responseBody != null)
+                    result = new String(responseBody);
+                /**
+                 * 解析验证码返回
+                 */
+//                LOG.e("--------sendPhoneCode--onSuccess--" + result);
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    String code = jsonObject.getString("code");
+                    String data = jsonObject.getString("data");
+                    if (code != null && code.equals("1")) {
+                        if (data != null && !data.equals("null"))
+                            loginData = data;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+            }
+        });
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param userPhone
+     * @param code
+     */
+    private void sendPhoneRegister(final String userPhone, final String code) {
+        String urlPath = SystemUtility.sendUserPhoneregister(userPhone, code);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(urlPath, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String result = "";
+                if (responseBody != null)
+                    result = new String(responseBody);
+                LOG.e("--------sendPhoneRegister--onSuccess--" + result);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String result = "";
+                if (responseBody != null)
+                    result = new String(responseBody);
+                LOG.e("--------sendPhoneRegister--onFailure--" + result);
+            }
+        });
+    }
+
+    /**
+     * 用户登录
+     *
+     * @param userPhone
+     * @param code
+     */
+    private void sendPhoneLogin(final String userPhone, final String code) {
+        String urlPath = SystemUtility.sendUserPhoneLogin(userPhone, code);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(urlPath, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String result = "";
+                if (responseBody != null)
+                    result = new String(responseBody);
+                LOG.e("--------sendPhoneLogin--onSuccess--" + result);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String result = "";
+                if (responseBody != null)
+                    result = new String(responseBody);
+                LOG.e("--------sendPhoneLogin--onFailure--" + result);
+            }
+        });
+    }
+
+    /**
+     * 微信登陆
+     */
     private void loginToWeiXin() {
         mApi = WXAPIFactory.createWXAPI(this, WXEntryActivity.WEIXIN_APP_ID, true);
         mApi.registerApp(WXEntryActivity.WEIXIN_APP_ID);
@@ -71,6 +219,47 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         } else
             Toast.makeText(this, "请安装微信", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 继承 CountDownTimer 防范
+     * <p>
+     * 重写 父类的方法 onTick() 、 onFinish()
+     */
+
+    class MyCountDownTimer extends CountDownTimer {
+        /**
+         * @param millisInFuture    表示以毫秒为单位 倒计时的总数
+         *                          <p>
+         *                          例如 millisInFuture=1000 表示1秒
+         * @param countDownInterval 表示 间隔 多少微秒 调用一次 onTick 方法
+         *                          <p>
+         *                          例如: countDownInterval =1000 ; 表示每1000毫秒调用一次onTick()
+         */
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onFinish() {
+            number = 60;
+            sendPhoneCodeBtn.setText("获取验证码");
+            sendPhoneCodeBtn.setTextColor(getColor(R.color.login_code_send));
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            number--;
+            sendPhoneCodeBtn.setText(number + "s后重新发送");
+            sendPhoneCodeBtn.setTextColor(getColor(R.color.login_code_count_down));
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mc != null)
+            mc.cancel();
     }
 }
 

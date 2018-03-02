@@ -4,20 +4,26 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="main_bg_color">#F8F8F8</color>   //主体背景颜色
-    <color name="main_text_color">#000</color>    //主字体颜色 黑
-    <color name="title_bg_color">#3ed368</color>    //头部颜色 绿
+    <color name="main_bg_color">#F8F8F8</color>
+    //主体背景颜色
+    <color name="main_text_color">#000</color>
+    //主字体颜色 黑
+    <color name="title_bg_color">#3ed368</color>
+    //头部颜色 绿
     <color name="black">#000000</color>
     <color name="title_bar_color">#6AC146</color>
     <color name="shallow_text_color">#797979</color>
     <color name="red">#FF3232</color>
     <color name="invate_color">#914420</color>
     <color name="transparent">#00FFFFFF</color>
-    <color name="shallow_black">#969696</color> //浅黑色
+    <color name="shallow_black">#969696</color>
+    //浅黑色
 
     <color name="divider_color">#c9c9c9</color>
     <color name="main__tran_bg_color">#00F8F8F8</color>
     <color name="item_divider">#F0F0F0</color>
     <color name="open_color">#2395ff</color>
+    <color name="login_code_send">#ff3d54</color>
+    <color name="login_code_count_down">#888888</color>
 
 </resources>
