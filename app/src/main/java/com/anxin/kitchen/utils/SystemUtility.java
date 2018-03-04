@@ -80,6 +80,7 @@ public class SystemUtility {
                     userAccount.setUserSex(resultValue);
                 } else if (resultKey.equals("phone")) {
                     userAccount.setUserPhone(resultValue);
+                    MyApplication.getInstance().getCache().setUsername(resultValue);
                 } else if (resultKey.equals("password")) {
                     userAccount.setUserPassword(resultValue);
                 } else if (resultKey.equals("initials")) {

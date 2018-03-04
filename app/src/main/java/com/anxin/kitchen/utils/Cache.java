@@ -14,7 +14,7 @@ public class Cache {
     private static final String PREFS_FILE = "CACHE";
 
     /**
-     * Preferences ID for username.
+     * Preferences ID for username(Phone).
      **/
     private static final String SAVED_USERNAME = "SAVED_USER";
     /**
@@ -27,6 +27,9 @@ public class Cache {
      **/
     private static final String SAVED_ACCOUNTIMAGEURI = "SAVED_ACCOUNTIMAGEURI";
 
+    /**
+     * ToKen
+     */
     private static final String SAVED_AMTOKEN = "SAVED_AMTOKEN";
 
     private final Context mContext;

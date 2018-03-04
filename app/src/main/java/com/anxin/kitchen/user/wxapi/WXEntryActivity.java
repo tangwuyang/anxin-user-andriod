@@ -122,7 +122,7 @@ public class WXEntryActivity extends WXCallbackActivity implements IWXAPIEventHa
                 String result = "";
                 if (responseBody != null)
                     result = new String(responseBody);
-//                LOG.e("-------getAccess_token_result:" + result);
+                LOG.e("-------getAccess_token_result:" + result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);

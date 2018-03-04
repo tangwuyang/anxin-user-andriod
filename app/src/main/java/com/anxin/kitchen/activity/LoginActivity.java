@@ -212,7 +212,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             mApi.sendReq(req);
 
         } else
-            Toast.makeText(this, "请安装微信", Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast("请安装微信");
     }
 
     /**

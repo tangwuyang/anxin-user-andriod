@@ -60,7 +60,7 @@
                     android:id="@+id/user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="张三"
+                    android:text="暂无"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
 
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/user_name"
-                    android:text="124325434543"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="12sp" />
 
