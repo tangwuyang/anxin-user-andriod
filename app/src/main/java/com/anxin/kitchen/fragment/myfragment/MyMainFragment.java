@@ -92,11 +92,15 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                 ft.commit();
                 break;
             case R.id.user_set://用户个性化设置
-                UserSettingsFragment userSettingsFragment = new UserSettingsFragment();
-                ft.replace(R.id.content_frame, userSettingsFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
+                if (mApp.getAccount() == null) {
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                } else {
+                    UserSettingsFragment userSettingsFragment = new UserSettingsFragment();
+                    ft.replace(R.id.content_frame, userSettingsFragment);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.addToBackStack(null);
+                    ft.commit();
+                }
                 break;
             case R.id.wallet_rlt://用户钱包
                 UserWalletSetFragment userWalletSetFragment = new UserWalletSetFragment();

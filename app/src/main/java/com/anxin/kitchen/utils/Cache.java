@@ -27,6 +27,8 @@ public class Cache {
      **/
     private static final String SAVED_ACCOUNTIMAGEURI = "SAVED_ACCOUNTIMAGEURI";
 
+    private static final String SAVED_AMTOKEN = "SAVED_AMTOKEN";
+
     private final Context mContext;
 
     public Cache(final Context context) {
@@ -52,6 +54,23 @@ public class Cache {
         setValue(mContext, SAVED_USERNAME, value);
     }
 
+    /**
+     * 保存ToKen
+     *
+     * @param token
+     */
+    public void setAMToken(String token) {
+        setValue(mContext, SAVED_AMTOKEN, token);
+    }
+
+    /**
+     * 从本地获取ToKen
+     *
+     * @return
+     */
+    public final String getAMToken() {
+        return getValue(mContext, SAVED_AMTOKEN, null);
+    }
 
     /***
      * Get the saved password of camera

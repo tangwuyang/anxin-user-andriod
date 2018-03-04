@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.user.wxapi.WXEntryActivity;
 import com.anxin.kitchen.utils.Log;
@@ -25,11 +28,13 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
 
 /**
  * 登陆界面
  */
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends Activity implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private ImageView WXloginBtn;//微信登陆按钮
     private IWXAPI mApi;//微信登陆API
@@ -41,11 +46,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String loginData = null;//用户是否注册判断
     private String userPhone;//用户号码
     private String phoneCode;//验证码
+    private MyApplication mApp;//
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        if (mApp == null) {
+            mApp = (MyApplication) getApplication();
+        }
         initView();
     }
 
@@ -95,10 +104,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     return;
                 }
                 if (loginData != null) {
-                    if (loginData.equals("1"))
-                        sendPhoneLogin(userPhone, phoneCode);
-                    else
-                        sendPhoneRegister(userPhone, phoneCode);
+                    sendPhoneLogin(userPhone, phoneCode, loginData);
                 }
                 break;
         }
@@ -142,14 +148,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
+
     /**
-     * 用户注册
+     * 用户登录,注册
      *
      * @param userPhone
      * @param code
      */
-    private void sendPhoneRegister(final String userPhone, final String code) {
-        String urlPath = SystemUtility.sendUserPhoneregister(userPhone, code);
+    private void sendPhoneLogin(final String userPhone, final String code, String loginData) {
+        String urlPath = "";
+        if (loginData.equals("1")) {
+            urlPath = SystemUtility.sendUserPhoneLogin(userPhone, code);
+        } else if (loginData.equals("0"))
+            urlPath = SystemUtility.sendUserPhoneregister(userPhone, code);
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(urlPath, new AsyncHttpResponseHandler() {
             @Override
@@ -157,46 +168,29 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 String result = "";
                 if (responseBody != null)
                     result = new String(responseBody);
-                LOG.e("--------sendPhoneRegister--onSuccess--" + result);
+                LOG.d("--------sendPhoneLogin--onSuccess--" + result);
+                Account account = SystemUtility.loginAnalysisJason(result);
+                LOG.d("--------sendPhoneLogin--Account--" + account.toString());
+                LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
+                ToastUtil.showToast("登陆成功");
+                finish();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                String result = "";
-                if (responseBody != null)
-                    result = new String(responseBody);
-                LOG.e("--------sendPhoneRegister--onFailure--" + result);
+//                String result = "";
+//                if (responseBody != null)
+//                    result = new String(responseBody);
+//                LOG.e("--------sendPhoneLogin--onFailure--" + result);
             }
         });
     }
 
     /**
-     * 用户登录
+     * 解析用户信息
      *
-     * @param userPhone
-     * @param code
+     * @param jason
      */
-    private void sendPhoneLogin(final String userPhone, final String code) {
-        String urlPath = SystemUtility.sendUserPhoneLogin(userPhone, code);
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(urlPath, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                String result = "";
-                if (responseBody != null)
-                    result = new String(responseBody);
-                LOG.e("--------sendPhoneLogin--onSuccess--" + result);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                String result = "";
-                if (responseBody != null)
-                    result = new String(responseBody);
-                LOG.e("--------sendPhoneLogin--onFailure--" + result);
-            }
-        });
-    }
 
     /**
      * 微信登陆

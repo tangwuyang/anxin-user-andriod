@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.utils.Log;
 
@@ -16,6 +17,7 @@ public class HomeBaseFragment extends Fragment implements OnClickListener {
     private static final Log LOG = Log.getLog();
     public Context mContext;
     private MainActivity main;
+    public MyApplication mApp;//
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,9 @@ public class HomeBaseFragment extends Fragment implements OnClickListener {
             mContext = MainActivity.context;
         }
         main = (MainActivity) MainActivity.context;
+        if (mApp == null) {
+            mApp = (MyApplication) main.getApplication();
+        }
     }
 
     @Override

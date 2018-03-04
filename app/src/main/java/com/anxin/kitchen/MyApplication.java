@@ -3,6 +3,7 @@ package com.anxin.kitchen;
 import android.support.multidex.MultiDexApplication;
 
 
+import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Log;
 import com.umeng.analytics.MobclickAgent;
@@ -21,6 +22,7 @@ public class MyApplication extends MultiDexApplication {
     private static final Log LOG = Log.getLog();
     public static MyApplication mApp;
     private Cache mCache;
+    private Account mAccount = null;//用户信息
 
     {
         Config.DEBUG = true;
@@ -33,7 +35,7 @@ public class MyApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         Config.DEBUG = true;
-        UMConfigure.init(this,UMConfigure.DEVICE_TYPE_PHONE,"5a940df18f4a9d7d7b000197");
+        UMConfigure.init(this, UMConfigure.DEVICE_TYPE_PHONE, "5a940df18f4a9d7d7b000197");
        /* UMConfigure.init(this,UMConfigure.DEVICE_TYPE_PHONE,"5a940df18f4a9d7d7b000197");
         UMConfigure.setLogEnabled(true);
         PlatformConfig.setWeixin("wx634128d6db8c15cd", "75bf85878994d867fd4bcec28ccca5aa");
@@ -52,6 +54,19 @@ public class MyApplication extends MultiDexApplication {
             mCache = new Cache(this);
         }
         return mCache;
+    }
+
+    /**
+     * 缓存用户信息
+     *
+     * @param account
+     */
+    public final synchronized void setAccount(Account account) {
+        this.mAccount = account;
+    }
+
+    public final synchronized Account getAccount() {
+        return mAccount;
     }
 
     @Override
