@@ -26,6 +26,7 @@
                 android:src="@drawable/back_drawable" />
 
             <TextView
+                android:id="@+id/title_center_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -177,6 +178,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/third_party_login_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

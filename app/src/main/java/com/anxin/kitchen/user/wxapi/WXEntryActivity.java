@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.loopj.android.http.AsyncHttpClient;
@@ -122,7 +123,7 @@ public class WXEntryActivity extends WXCallbackActivity implements IWXAPIEventHa
                 String result = "";
                 if (responseBody != null)
                     result = new String(responseBody);
-                LOG.e("-------getAccess_token_result:" + result);
+//                LOG.e("-------getAccess_token_result:" + result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
@@ -167,18 +168,20 @@ public class WXEntryActivity extends WXCallbackActivity implements IWXAPIEventHa
                 String result = "";
                 if (responseBody != null)
                     result = new String(responseBody);
-                LOG.e("--------getUserMesg_result用户基本信息:" + result);
+//                LOG.e("--------getUserMesg_result用户基本信息:" + result);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
                     String nickname = jsonObject.getString("nickname");
-                    int sex = Integer.parseInt(jsonObject.get("sex").toString());
                     String headimgurl = jsonObject.getString("headimgurl");
+                    String wxID = jsonObject.getString("openid");
 //
 //                    LOG.e("用户基本信息:");
 //                    LOG.e("nickname:" + nickname);
-//                    LOG.e("sex:" + sex);
 //                    LOG.e("headimgurl:" + headimgurl);
+                    LoginActivity.openID = wxID;
+                    LoginActivity.userNickName = nickname;
+                    LoginActivity.userLogoPath = headimgurl;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -192,5 +195,6 @@ public class WXEntryActivity extends WXCallbackActivity implements IWXAPIEventHa
             }
         });
     }
+
 
 }

@@ -1,6 +1,7 @@
 package com.anxin.kitchen.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +40,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private ImageView WXloginBtn;//微信登陆按钮
     private IWXAPI mApi;//微信登陆API
+    public static String openID;//第三方登陆ID
+    public static String userNickName;//第三方登陆名称
+    public static String userLogoPath;//第三方登陆用户头像URL
     private TextView sendPhoneCodeBtn;//发送验证码
     private EditText userPhoneEdit, phoneCodeEdit;//手机号码和验证码输入
     private int number = 60;
@@ -47,6 +52,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private String userPhone;//用户号码
     private String phoneCode;//验证码
     private MyApplication mApp;//
+    private String platId = "0";//第三方登录标志：1微信，2QQ
+    private LinearLayout thirdPartyLogin_lyt;//第三方登陆模块
+    private TextView titleCenterName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +81,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         userPhoneEdit = (EditText) findViewById(R.id.userPhone_edit);//手机号码输入框
         phoneCodeEdit = (EditText) findViewById(R.id.phoneCode_edit);//验证码输入框
         mc = new MyCountDownTimer(1000 * 60, 1000);//验证码倒计时
+        thirdPartyLogin_lyt = (LinearLayout) findViewById(R.id.third_party_login_bottom);//第三方登录按钮模块
+        titleCenterName = (TextView) findViewById(R.id.title_center_name);//标题名称
     }
 
     @Override
@@ -82,6 +92,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 finish();
                 break;
             case R.id.wx_login://微信登陆
+                platId = "1";
                 loginToWeiXin();
                 break;
             case R.id.sendPhoneCode://发送手机验证码
@@ -108,6 +119,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onResume() {
+//        LOG.e("----------onResume-----------");
+        if (platId.equals("1")) {
+//            LOG.e("----------wxID----------" + openID);
+//            LOG.e("----------nickName----------" + userNickName);
+//            LOG.e("----------userLogo----------" + userLogoPath);
+            sendLogin3(platId, openID);
+        }
+        super.onResume();
     }
 
     /**
@@ -148,9 +171,51 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         });
     }
 
+    /**
+     * 第三方登录,注册
+     *
+     * @param platId     平台ID 1微信 2QQ
+     * @param sourceCode 第三方id
+     */
+    private void sendLogin3(final String platId, final String sourceCode) {
+        String urlPath = SystemUtility.sendUserLogin3(platId, sourceCode);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(urlPath, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String result = "";
+                if (responseBody != null)
+                    result = new String(responseBody);
+                LOG.e("--------sendLogin3--onSuccess--" + result);
+                /**
+                 * 解析第三方登录
+                 */
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    String code = jsonObject.getString("code");
+                    String data = jsonObject.getString("data");
+                    if (code != null && code.equals("305")) {
+                        if (data != null && !data.equals("null")) {
+                            thirdPartyLogin_lyt.setVisibility(View.GONE);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String result = "";
+                if (responseBody != null)
+                    result = new String(responseBody);
+                LOG.e("--------sendLogin3--onFailure--" + result);
+            }
+        });
+    }
 
     /**
-     * 用户登录,注册
+     * 用户验证码登录,注册
      *
      * @param userPhone
      * @param code
@@ -199,7 +264,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         mApi = WXAPIFactory.createWXAPI(this, WXEntryActivity.WEIXIN_APP_ID, true);
         mApi.registerApp(WXEntryActivity.WEIXIN_APP_ID);
         if (mApi != null && mApi.isWXAppInstalled()) {
-
             // 发送授权登录信息，来获取code
             SendAuth.Req req = new SendAuth.Req();
             // 应用的作用域，获取个人信息
@@ -210,9 +274,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
              */
             req.state = "wechat_sdk_demo_test";
             mApi.sendReq(req);
-
-        } else
+        } else {
+            platId = "0";
             ToastUtil.showToast("请安装微信");
+        }
     }
 
     /**
