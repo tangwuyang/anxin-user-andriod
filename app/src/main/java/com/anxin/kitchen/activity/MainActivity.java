@@ -19,6 +19,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.anxin.kitchen.bean.NearKitchenBean;
 import com.anxin.kitchen.fragment.groupfragment.GroupMainFragment;
 import com.anxin.kitchen.fragment.mealfragment.MealMainFragment;
 import com.anxin.kitchen.fragment.myfragment.MyMainFragment;
@@ -26,7 +27,9 @@ import com.anxin.kitchen.fragment.orderfragment.OrderMainFragment;
 import com.anxin.kitchen.interface_.OnGivedPermissionListener;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.view.RequestLocationPermissionDialog;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Map;
@@ -63,7 +66,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     //欢迎页面
     private RelativeLayout welcome_rlt;
 
-    public static final String GET_KITCHEN_ID = "1";
+    public static final String GET_KITCHEN_ID = "GET_KITCHEN_ID";
     public String requesNetTag = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -245,8 +248,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
 
     @Override
     public void requestSuccess(String responseBody, String requestCode) {
-        if (requesNetTag!=null && requesNetTag.equals(GET_KITCHEN_ID)){
-            myLog("----------->"+responseBody);
+
+        if (requestCode!=null && requestCode.equals(GET_KITCHEN_ID)){
+            String status = StringUtils.parserMessage(responseBody,"message");
+            myLog("----------->"+responseBody + status);
+            if (null!=status && status.equals("\"请求成功\"")){
+                Gson gson = new Gson();
+                NearKitchenBean bean = gson.fromJson(responseBody,NearKitchenBean.class);
+                myLog("--------"+bean.getData().getKitchenname());
+            }
         }
     }
 

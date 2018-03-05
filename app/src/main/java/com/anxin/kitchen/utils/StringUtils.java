@@ -4,6 +4,10 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -41,6 +45,22 @@ public class StringUtils {
         }
         return res;
     }
+
+
+    /**
+     * 解析json字符串中某一个元素
+     * info为整体的json串
+     * para为要提取的参数
+     * */
+    public static String parserMessage(String info,String para){
+        JsonElement jsonElement = new JsonParser().parse(info);
+        String parserString = jsonElement.getAsJsonObject().get(para).toString();
+        if (null != parserString){
+            return parserString;
+        }
+        return null;
+    }
+
 
     public static String setToString(Set<String> set) {
         StringBuilder sb = new StringBuilder();

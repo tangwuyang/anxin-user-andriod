@@ -187,8 +187,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             dataMap.put("longitude",lon);
             dataMap.put("latitude",lat);
             activity.myLog("------------->开始请求" + lon + "  " +lat);
-            activity.requestNet(SystemUtility.getNearKitchenId(),dataMap);
-            activity.requesNetTag = MainActivity.GET_KITCHEN_ID;
+            activity.requestNet(SystemUtility.getNearKitchenId(),dataMap,activity.GET_KITCHEN_ID);
         }
     }
 
