@@ -9,8 +9,13 @@ import android.widget.ListView;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.Account;
+import com.anxin.kitchen.event.AsyncHttpRequestMessage;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
+import com.loopj.android.http.RequestParams;
 
+import org.apache.http.Header;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,11 +29,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class SystemUtility {
 
     public static String AMUAC_IP = "http://tapi.anxinyc.com";//服务器请求，IP地址
     public static String AMToken;//网络请求ToKen
+    public static String RequestSuccess = "onSuccess";//http方法成功返回标志
+    public static String RequestFailure = "onFailure";//http方法失败返回标志
 
     //发送手机验证码
     public static String sendUserPhoneCode(String phone, String type) {
@@ -52,6 +61,52 @@ public class SystemUtility {
     //第三方登陆，注册
     public static String sendUserLogin3(String platId, String sourceCode) {
         return AMUAC_IP + "/v1.0/user/login3?platId=" + platId + "&sourceCode=" + sourceCode + "&formData={}";
+    }
+//请求网络异步方法
+
+    /**
+     * post公共方法
+     * urlPath 请求地址
+     * dataMap 请求参数map
+     * requestCode 请求标识
+     */
+    public static void requestNet(String urlPath, Map<String, Object> dataMap, final String requestCode) {
+        if (null != urlPath && urlPath.length() > 0) {
+
+            AsyncHttpClient client = new AsyncHttpClient();
+            RequestParams params = new RequestParams();
+            if (null != dataMap) {
+                Set<String> paraNames = dataMap.keySet();
+                for (String para :
+                        paraNames) {
+                    params.put(para, dataMap.get(para));
+                }
+            }
+            client.post(urlPath, params, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                        EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
+                    }
+                }
+
+                @Override
+                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                    {
+                        String result = "";
+                        if (bytes != null) {
+                            result = new String(bytes);
+                            EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
+                        }
+
+                    }
+                }
+            });
+
+
+        }
     }
 
     /**

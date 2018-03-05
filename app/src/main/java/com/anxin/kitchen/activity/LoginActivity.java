@@ -15,8 +15,10 @@ import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.Account;
+import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.user.wxapi.WXEntryActivity;
+import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
@@ -30,13 +32,14 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 
 /**
  * 登陆界面
  */
-public class LoginActivity extends Activity implements View.OnClickListener {
+public class LoginActivity extends BaseActivity implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private ImageView WXloginBtn;//微信登陆按钮
     private IWXAPI mApi;//微信登陆API
@@ -59,6 +62,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //EventBusFactory注册
+        EventBusFactory.getInstance().register(this);
         setContentView(R.layout.activity_login);
         if (mApp == null) {
             mApp = (MyApplication) getApplication();
@@ -134,6 +139,19 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     /**
+     * 监听网络请求返回
+     * @param asyncHttpRequestMessage
+     */
+    public void onEventMainThread(AsyncHttpRequestMessage asyncHttpRequestMessage) {
+        String requestCode = asyncHttpRequestMessage.getRequestCode();
+        String responseMsg = asyncHttpRequestMessage.getResponseMsg();
+        String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+        LOG.e("----------requestCode------" + requestCode);
+        LOG.e("----------responseMsg------" + responseMsg);
+        LOG.e("----------requestStatus------" + requestStatus);
+    }
+
+    /**
      * 发送验证码
      *
      * @param userPhone
@@ -141,34 +159,35 @@ public class LoginActivity extends Activity implements View.OnClickListener {
      */
     private void sendPhoneCode(final String userPhone, final String type) {
         String urlPath = SystemUtility.sendUserPhoneCode(userPhone, type);
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(urlPath, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                String result = "";
-                if (responseBody != null)
-                    result = new String(responseBody);
-                /**
-                 * 解析验证码返回
-                 */
-//                LOG.e("--------sendPhoneCode--onSuccess--" + result);
-                try {
-                    JSONObject jsonObject = new JSONObject(result);
-                    String code = jsonObject.getString("code");
-                    String data = jsonObject.getString("data");
-                    if (code != null && code.equals("1")) {
-                        if (data != null && !data.equals("null"))
-                            loginData = data;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-            }
-        });
+        SystemUtility.requestNet(urlPath, null, "sendUserPhoneCode");
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        client.get(urlPath, new AsyncHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+//                String result = "";
+//                if (responseBody != null)
+//                    result = new String(responseBody);
+//                /**
+//                 * 解析验证码返回
+//                 */
+////                LOG.e("--------sendPhoneCode--onSuccess--" + result);
+//                try {
+//                    JSONObject jsonObject = new JSONObject(result);
+//                    String code = jsonObject.getString("code");
+//                    String data = jsonObject.getString("data");
+//                    if (code != null && code.equals("1")) {
+//                        if (data != null && !data.equals("null"))
+//                            loginData = data;
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+//            }
+//        });
     }
 
     /**
@@ -319,6 +338,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         super.onDestroy();
         if (mc != null)
             mc.cancel();
+        //EventBusFactory销毁
+        EventBusFactory.getInstance().unregister(this);
     }
 }
 
