@@ -56,7 +56,6 @@ dependencies {
     implementation files('libs/AMap2DMap_5.2.0_AMapSearch_5.7.0_AMapLocation_3.8.0_20180201.jar')
     implementation project(':fantuanlibrary')
     implementation files('libs/android-async-http-1.4.8.jar')
-    implementation files('libs/okhttputils-1.8.1.jar')
     implementation files('libs/umeng-common-1.4.3.jar')
     implementation files('libs/umeng-analytics-7.4.1.jar')
     implementation files('libs/android-async-http-1.4.8.jar')
@@ -71,4 +70,6 @@ dependencies {
     implementation files('libs/weiboSDKCore.jar')
     implementation files('libs/umeng_social_shareboard.jar')
     implementation files('libs/umeng_shareboard_widget.jar')
+    implementation files('libs/okhttp-3.2.0.jar')
+    implementation 'com.google.code.gson:gson:2.2.4'
 }

@@ -25,6 +25,7 @@ import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.anxin.kitchen.activity.LocationActivity;
+import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.activity.MessageCenterActivity;
 import com.anxin.kitchen.activity.PreserveActivity;
 import com.anxin.kitchen.activity.RecoveryMealActivity;
@@ -32,10 +33,27 @@ import com.anxin.kitchen.activity.SendMealLocationActivity;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.CustomGridView;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
+import org.apache.http.Header;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static android.content.ContentValues.TAG;
 import static com.umeng.analytics.AnalyticsConfig.getLocation;
@@ -59,9 +77,11 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     private double lon;
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
+    private MainActivity activity;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activity = (MainActivity) getActivity();
     }
 
 
@@ -95,7 +115,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                     android.util.Log.v("pcw", "lat : " + lat + " lon : " + lon);
                     android.util.Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
                     mLocationTv.setText(amapLocation.getCity()+amapLocation.getDistrict()+amapLocation.getStreet()+amapLocation.getStreetNum());
-
+                    //获取到位置信息 再去获取kitchenId
+                    getKitchenId();
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
                     android.util.Log.e("AmapError", "location Error, ErrCode:"
@@ -105,6 +126,72 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             }
         }
     };
+
+
+    public void requestNet(String urlPath, Map<String, Object> dataMap) {
+        {
+            if (null != urlPath && urlPath.length()>0){
+
+                AsyncHttpClient client = new AsyncHttpClient();
+                RequestParams params = new RequestParams();
+                if (null != dataMap){
+                    Set<String> names = dataMap.keySet();
+                    for (String name:
+                         names) {
+                        activity.myLog("---------->"+name + "  " + dataMap.get(name));
+                        params.put(name,dataMap.get(name));
+                    }
+                    Set<String> nameSet = dataMap.keySet();
+                    //params.put("longitude",lon);
+                    //params.put("latitude",lat);
+                }
+
+                String url = urlPath+"?longitude=114.242245&latitude=22.725593";
+                activity.myLog("----------------->"+url);
+                client.post(urlPath,params, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                        {
+                            String result = "";
+                            activity.myLog("----------->请求成功" );
+
+                            if (bytes != null){
+                                result = new String(bytes);
+                                activity.myLog("----------->请求成功" + result);
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                        {
+                            String result = "";
+                            activity.myLog("--------->请求失败" );
+                            if (bytes != null) {
+                                result = new String(bytes);
+                                activity.myLog("--------->请求失败" +result);
+                            }
+
+                        }
+                    }
+                });
+
+
+            }
+        }
+    }
+    private void getKitchenId() {
+        if (null != activity){
+            Map<String,Object> dataMap = new HashMap();
+            dataMap.put("longitude",lon);
+            dataMap.put("latitude",lat);
+            activity.myLog("------------->开始请求" + lon + "  " +lat);
+            activity.requestNet(SystemUtility.getNearKitchenId(),dataMap);
+            activity.requesNetTag = MainActivity.GET_KITCHEN_ID;
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.meal_main_fragment, container,false);
@@ -133,7 +220,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
         //设置是否只定位一次,默认为false
-        mLocationOption.setOnceLocation(false);
+        mLocationOption.setOnceLocation(true);
         //设置是否强制刷新WIFI，默认为强制刷新
         mLocationOption.setWifiActiveScan(true);
         //设置是否允许模拟位置,默认为false，不允许模拟位置
@@ -212,7 +299,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         @Override
         public void onBindViewHolder(ViewHolderw holder, int position) {
             GridLayoutManager layoutManage = new GridLayoutManager(getContext(), 2);
-           // holder.mPreserverDayRv.setLayoutManager(layoutManage);
+            // holder.mPreserverDayRv.setLayoutManager(layoutManage);
             holder.mPreserverDayRv.setAdapter(new PreserverGridAdapter());
         }
 

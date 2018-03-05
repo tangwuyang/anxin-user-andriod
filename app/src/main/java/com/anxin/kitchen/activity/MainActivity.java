@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -23,14 +24,26 @@ import com.anxin.kitchen.fragment.mealfragment.MealMainFragment;
 import com.anxin.kitchen.fragment.myfragment.MyMainFragment;
 import com.anxin.kitchen.fragment.orderfragment.OrderMainFragment;
 import com.anxin.kitchen.interface_.OnGivedPermissionListener;
+import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.view.RequestLocationPermissionDialog;
+
+import java.io.IOException;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 主界面
  */
-public class MainActivity extends FragmentActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener,RequestNetListener {
     private static final int BAIDU_READ_PHONE_STATE = 100;
+    private static final String TAG = "MainActivity";
     public static Context context;
 
     // 定义4个Fragment对象
@@ -50,6 +63,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     //欢迎页面
     private RelativeLayout welcome_rlt;
 
+    public static final String GET_KITCHEN_ID = "1";
+    public String requesNetTag = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,4 +240,19 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             return false;
         }else return true;
     }
+
+
+
+    @Override
+    public void requestSuccess(String responseBody, String requestCode) {
+        if (requesNetTag!=null && requesNetTag.equals(GET_KITCHEN_ID)){
+            myLog("----------->"+responseBody);
+        }
+    }
+
+    @Override
+    public void requestFailure(String responseFailureBody,String requestCode) {
+
+    }
+
 }

@@ -7,4 +7,5 @@ package com.anxin.kitchen.utils;
 public class Constant {
     public static final int GROUP_MAIN_REQEST_CODE = 101;
     public static final int CREATE_GROUP_RESULT_CODE = 201;
+    public static final String PREFERENCE_NAME = "ANXIN_ANDROID";
 }

@@ -45,6 +45,10 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
     }
 
+    public static String getNearKitchenId(){
+        return AMUAC_IP+"/v1.0/kitchen/near";
+    }
+
     /**
      * 解析用户信息
      *
