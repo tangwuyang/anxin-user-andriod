@@ -54,10 +54,20 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
     }
 
+
+    /**
+     * 获取定位最近的厨房信息
+     * */
     public static String getNearKitchenId() {
         return AMUAC_IP + "/v1.0/kitchen/near";
     }
 
+    /**
+     * 获取广告列表
+     * */
+    public static String getBannerListUrl() {
+        return AMUAC_IP + "/v1.0/system/banner_list";
+    }
     //第三方登陆，注册
     public static String sendUserLogin3(String platId, String sourceCode) {
         return AMUAC_IP + "/v1.0/user/login3?platId=" + platId + "&sourceCode=" + sourceCode + "&formData={}";

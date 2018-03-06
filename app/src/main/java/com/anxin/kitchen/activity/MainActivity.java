@@ -27,11 +27,15 @@ import com.anxin.kitchen.fragment.orderfragment.OrderMainFragment;
 import com.anxin.kitchen.interface_.OnGivedPermissionListener;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
+import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RequestLocationPermissionDialog;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -67,6 +71,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     private RelativeLayout welcome_rlt;
 
     public static final String GET_KITCHEN_ID = "GET_KITCHEN_ID";
+    public static final String GET_BANNER_LIST = "GET_BANNER_LIST";
     public String requesNetTag = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -255,7 +260,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
             if (null!=status && status.equals("\"请求成功\"")){
                 Gson gson = new Gson();
                 NearKitchenBean bean = gson.fromJson(responseBody,NearKitchenBean.class);
+                int kichtchenId = bean.getData().getKitchenid();
                 myLog("--------"+bean.getData().getKitchenname());
+                PrefrenceUtil prefrenceUtil = new PrefrenceUtil(MainActivity.this);
+                prefrenceUtil.putKitchenId(kichtchenId);
+                Map<String,Object> dataMap = new HashMap<>();
+                dataMap.put(Constant.KITCHEN_ID,kichtchenId);
+                requestNet(SystemUtility.getBannerListUrl(),dataMap,GET_BANNER_LIST);
+                //再去获取广告列表
+                if (null != mealMainFragment){
+                    mealMainFragment.setBanner();
+                }
+
+                return;
+            }
+        }
+        myLog("---------------");
+        if (requestCode!= null && requestCode.equals(GET_BANNER_LIST)){
+            String status = StringUtils.parserMessage(responseBody,"message");
+            if (null!=status && status.equals("\"请求成功\"")){
+                myLog("--------"+responseBody);
             }
         }
     }

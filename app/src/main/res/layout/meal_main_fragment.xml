@@ -69,15 +69,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
+            <com.youth.banner.Banner
                 android:id="@+id/broadcast_banner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="10dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/banner" />
+                android:layout_height="173dp"
+
+                 />
 
             <LinearLayout
                 android:id="@+id/chose_food_ll"
@@ -117,7 +114,6 @@
                     android:id="@+id/preserver_rv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
                     android:background="@color/main_bg_color"
                     android:paddingTop="10dp"></android.support.v7.widget.RecyclerView>
             </LinearLayout>

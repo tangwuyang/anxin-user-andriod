@@ -67,7 +67,7 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
      * */
     public void requestNet(String urlPath, Map<String,Object> dataMap, final String requestCode){
         if (null != urlPath && urlPath.length()>0){
-
+            myLog("------------------>"+urlPath);
             AsyncHttpClient client = new AsyncHttpClient();
             RequestParams params = new RequestParams();
             if (null != dataMap){
@@ -84,7 +84,7 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
                         String result = "";
                         if (bytes != null){
                             result = new String(bytes);
-                            myLog("----------->请求成功" + result);
+                            myLog(requestCode+"----------->请求成功" + result);
                             requestSuccess(result,requestCode);
                         }
                 }

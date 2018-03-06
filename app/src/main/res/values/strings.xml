@@ -35,6 +35,8 @@
     <string name="cancel">取消</string>
     <string name="open_right">立即开启</string>
     <string name="request_location">位置服务未开启</string>
+    <string name="ordering_rule">预约点餐规则</string>
+    <string name="ordering_rule_info">1.每餐起订量为10份\n2.预约时间为隔天预约</string>
     <string name="location_setting">请进入系统[设置]-[应用程序]-[安心央厨]-[权限]-位置信息开关，并允许安心央厨使用定位服务</string>
     <string-array name="contact_array">
         <item>$^*张狗蛋</item>

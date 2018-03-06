@@ -90,6 +90,7 @@
     />
 
     <LinearLayout
+        android:id="@+id/set_count_ll"
         android:background="@color/main_bg_color"
         android:layout_width="match_parent"
         android:orientation="horizontal"

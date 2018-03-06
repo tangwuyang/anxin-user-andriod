@@ -8,11 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.view.ChoseGroupDialog;
+import com.anxin.kitchen.view.OrderingRuleDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +28,15 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preserve);
+        tellRule();
         initView();
         initData();
+    }
+
+    //告知订餐规则
+    private void tellRule() {
+        OrderingRuleDialog dialog = new OrderingRuleDialog(this);
+        dialog.show();
     }
 
     private void initData() {
@@ -106,6 +116,15 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                     }
                 });
             }
+
+            LinearLayout setCountLl = view.findViewById(R.id.set_count_ll);
+            setCountLl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ChoseGroupDialog dialog = new ChoseGroupDialog(PreserveActivity.this);
+                    dialog.show();
+                }
+            });
             return view;
         }
     }
