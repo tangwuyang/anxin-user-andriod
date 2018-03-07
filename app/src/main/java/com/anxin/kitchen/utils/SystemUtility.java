@@ -105,6 +105,7 @@ public class SystemUtility {
                     params.put(para, dataMap.get(para));
                 }
             }
+            Log.e("", "------requestNetPost----------" + params.toString());
             client.post(urlPath, params, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int i, Header[] headers, byte[] bytes) {
