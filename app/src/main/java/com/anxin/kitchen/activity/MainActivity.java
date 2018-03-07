@@ -258,7 +258,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         if (requestCode!=null && requestCode.equals(GET_KITCHEN_ID)){
             String status = StringUtils.parserMessage(responseBody,"message");
             myLog("----------->"+responseBody + status);
-            if (null!=status && status.equals("\"请求成功\"")){
+            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 Gson gson = new Gson();
                 NearKitchenBean bean = gson.fromJson(responseBody,NearKitchenBean.class);
                 int kichtchenId = bean.getData().getKitchenid();
@@ -281,14 +281,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         //请求轮播广告返回
         if (requestCode!= null && requestCode.equals(GET_BANNER_LIST)){
             String status = StringUtils.parserMessage(responseBody,"message");
-            if (null!=status && status.equals("\"请求成功\"")){
+            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("--------"+responseBody);
             }
         }
 
         if (requestCode!=null && requestCode.equals(GET_MENU_MEAL)){
             String status = StringUtils.parserMessage(responseBody,"message");
-            if (null!=status && status.equals("\"请求成功\"")){
+            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("--------"+responseBody);
             }
         }

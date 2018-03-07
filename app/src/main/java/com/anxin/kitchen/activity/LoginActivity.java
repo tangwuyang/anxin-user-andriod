@@ -20,6 +20,7 @@ import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.user.wxapi.WXEntryActivity;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.loopj.android.http.AsyncHttpClient;
@@ -34,6 +35,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 
 /**
@@ -58,6 +60,18 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private String platId = "0";//第三方登录标志：1微信，2QQ
     private LinearLayout thirdPartyLogin_lyt;//第三方登陆模块
     private TextView titleCenterName;
+    private boolean isLoginMain = true;//是否在登录主界面
+
+    /**
+     * http请求标志
+     *
+     *
+     */
+    private static final String sendUserPhoneCode_http = "sendUserPhoneCode";
+    private static final String sendUserLogin3_http = "sendUserLogin3";
+    private static final String sendUserPhoneRegister_http = "sendUserPhoneRegister";
+    private static final String sendUserPhoneLogin_http = "sendUserPhoneLogin";
+    private static final String sendUserPhoneLocking_http = "sendUserPhoneLocking";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,13 +108,24 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back_btn://返回
-                finish();
+                if (isLoginMain)
+                    finish();
+                else {
+                    isLoginMain = true;
+                    thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
+                    titleCenterName.setText("登录注册");
+                    loginBtn.setText("登录");
+                    userPhoneEdit.setText("");
+                    phoneCodeEdit.setText("");
+                }
                 break;
             case R.id.wx_login://微信登陆
                 platId = "1";
                 loginToWeiXin();
                 break;
             case R.id.sendPhoneCode://发送手机验证码
+                if (number != 60)
+                    return;
                 userPhone = userPhoneEdit.getText().toString();
                 if (userPhone == null || userPhone.length() <= 0) {
                     ToastUtil.showToast("请输入手机号码");
@@ -119,8 +144,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     ToastUtil.showToast("请输入验证码");
                     return;
                 }
-                if (loginData != null) {
-                    sendPhoneLogin(userPhone, phoneCode, loginData);
+                if (isLoginMain) {
+                    if (loginData != null) {
+                        sendPhoneLogin(userPhone, phoneCode, loginData);
+                    }
+                } else {
+                    sendUserPhoneLocking(userPhone, phoneCode);
                 }
                 break;
         }
@@ -128,11 +157,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     protected void onResume() {
-//        LOG.e("----------onResume-----------");
+        if (isLoginMain) {
+            thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
+            titleCenterName.setText("登录注册");
+            loginBtn.setText("登录");
+        } else {
+            thirdPartyLogin_lyt.setVisibility(View.GONE);
+            titleCenterName.setText("绑定手机号码");
+            loginBtn.setText("绑定");
+        }
         if (platId.equals("1")) {
-//            LOG.e("----------wxID----------" + openID);
-//            LOG.e("----------nickName----------" + userNickName);
-//            LOG.e("----------userLogo----------" + userLogoPath);
             sendLogin3(platId, openID);
         }
         super.onResume();
@@ -140,6 +174,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     /**
      * 监听网络请求返回
+     *
      * @param asyncHttpRequestMessage
      */
     public void onEventMainThread(AsyncHttpRequestMessage asyncHttpRequestMessage) {
@@ -149,6 +184,48 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         LOG.e("----------requestCode------" + requestCode);
         LOG.e("----------responseMsg------" + responseMsg);
         LOG.e("----------requestStatus------" + requestStatus);
+        switch (requestCode) {
+            //验证码发送
+            case sendUserPhoneCode_http:
+                //网络请求返回成功
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    //解析验证码返回
+                    String code = StringUtils.parserMessage(responseMsg, "code");
+                    String data = StringUtils.parserMessage(responseMsg, "data");
+                    if (code != null && code.equals("1")) {
+                        if (data != null && !data.equals("null"))
+                            loginData = data;
+                    }
+                }
+                break;
+            //验证码登陆
+            case sendUserPhoneLogin_http:
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    //解析验证码返回
+                    Account account = SystemUtility.loginAnalysisJason(responseMsg);
+                    LOG.d("--------sendPhoneLogin--Account--" + account.toString());
+                    LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
+                    ToastUtil.showToast("登陆成功");
+                    finish();
+                }
+                break;
+            //验证码注册
+            case sendUserPhoneRegister_http:
+                break;
+            //第三方登陆
+            case sendUserLogin3_http:
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    //解析验证码返回
+                    String code = StringUtils.parserMessage(responseMsg, "code");
+                    if (code != null && code.equals("305")) {
+                        isLoginMain = false;
+                        thirdPartyLogin_lyt.setVisibility(View.GONE);
+                        titleCenterName.setText("绑定手机号码");
+                        loginBtn.setText("绑定");
+                    }
+                }
+                break;
+        }
     }
 
     /**
@@ -159,35 +236,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      */
     private void sendPhoneCode(final String userPhone, final String type) {
         String urlPath = SystemUtility.sendUserPhoneCode(userPhone, type);
-        SystemUtility.requestNet(urlPath, null, "sendUserPhoneCode");
-//        AsyncHttpClient client = new AsyncHttpClient();
-//        client.get(urlPath, new AsyncHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-//                String result = "";
-//                if (responseBody != null)
-//                    result = new String(responseBody);
-//                /**
-//                 * 解析验证码返回
-//                 */
-////                LOG.e("--------sendPhoneCode--onSuccess--" + result);
-//                try {
-//                    JSONObject jsonObject = new JSONObject(result);
-//                    String code = jsonObject.getString("code");
-//                    String data = jsonObject.getString("data");
-//                    if (code != null && code.equals("1")) {
-//                        if (data != null && !data.equals("null"))
-//                            loginData = data;
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-//            }
-//        });
+        SystemUtility.requestNetGet(urlPath, sendUserPhoneCode_http);
     }
 
     /**
@@ -198,39 +247,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      */
     private void sendLogin3(final String platId, final String sourceCode) {
         String urlPath = SystemUtility.sendUserLogin3(platId, sourceCode);
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(urlPath, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                String result = "";
-                if (responseBody != null)
-                    result = new String(responseBody);
-                LOG.e("--------sendLogin3--onSuccess--" + result);
-                /**
-                 * 解析第三方登录
-                 */
-                try {
-                    JSONObject jsonObject = new JSONObject(result);
-                    String code = jsonObject.getString("code");
-                    String data = jsonObject.getString("data");
-                    if (code != null && code.equals("305")) {
-                        if (data != null && !data.equals("null")) {
-                            thirdPartyLogin_lyt.setVisibility(View.GONE);
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                String result = "";
-                if (responseBody != null)
-                    result = new String(responseBody);
-                LOG.e("--------sendLogin3--onFailure--" + result);
-            }
-        });
+        SystemUtility.requestNetGet(urlPath, sendUserLogin3_http);
     }
 
     /**
@@ -243,31 +260,35 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         String urlPath = "";
         if (loginData.equals("1")) {
             urlPath = SystemUtility.sendUserPhoneLogin(userPhone, code);
-        } else if (loginData.equals("0"))
+            SystemUtility.requestNetGet(urlPath, sendUserPhoneLogin_http);
+        } else if (loginData.equals("0")) {
             urlPath = SystemUtility.sendUserPhoneregister(userPhone, code);
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(urlPath, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                String result = "";
-                if (responseBody != null)
-                    result = new String(responseBody);
-                LOG.d("--------sendPhoneLogin--onSuccess--" + result);
-                Account account = SystemUtility.loginAnalysisJason(result);
-                LOG.d("--------sendPhoneLogin--Account--" + account.toString());
-                LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
-                ToastUtil.showToast("登陆成功");
-                finish();
-            }
+            SystemUtility.requestNetGet(urlPath, sendUserPhoneRegister_http);
+        }
+    }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-//                String result = "";
-//                if (responseBody != null)
-//                    result = new String(responseBody);
-//                LOG.e("--------sendPhoneLogin--onFailure--" + result);
-            }
-        });
+    /**
+     * 用户验证码登录,注册
+     *
+     * @param userPhone
+     * @param code
+     */
+    private void sendUserPhoneLocking(final String userPhone, final String code) {
+        LOG.e("------------sendUserPhoneLocking------------");
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("phone", userPhone);
+            jsonObject.put("userLogo", userLogoPath);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String urlPath = SystemUtility.sendUserPhoneLocking();
+        Map<String, Object> dataMap = new HashMap();
+        dataMap.put("code", code);
+        dataMap.put("platId", platId);
+        dataMap.put("sourceCode", openID);
+        dataMap.put("formData", jsonObject.toString());
+        SystemUtility.requestNetPost(urlPath, dataMap, sendUserPhoneLocking_http);
     }
 
     /**

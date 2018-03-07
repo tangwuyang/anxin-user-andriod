@@ -50,6 +50,11 @@ public class SystemUtility {
     }
 
     //注册用户
+    public static String sendUserPhoneLocking() {
+        return AMUAC_IP + "/v1.0/user/auto_register_login";
+    }
+
+    //注册用户
     public static String sendUserPhoneLogin(String phone, String code) {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
     }
@@ -64,7 +69,7 @@ public class SystemUtility {
 
     /**
      * 获取广告列表
-     * */
+     */
     public static String getBannerListUrl() {
         return AMUAC_IP + "/v1.0/system/banner_list";
     }
@@ -88,7 +93,7 @@ public class SystemUtility {
      * dataMap 请求参数map
      * requestCode 请求标识
      */
-    public static void requestNet(String urlPath, Map<String, Object> dataMap, final String requestCode) {
+    public static void requestNetPost(String urlPath, Map<String, Object> dataMap, final String requestCode) {
         if (null != urlPath && urlPath.length() > 0) {
 
             AsyncHttpClient client = new AsyncHttpClient();
@@ -101,6 +106,43 @@ public class SystemUtility {
                 }
             }
             client.post(urlPath, params, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                        EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
+                    }
+                }
+
+                @Override
+                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                    {
+                        String result = "";
+                        if (bytes != null) {
+                            result = new String(bytes);
+                            EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
+                        }
+
+                    }
+                }
+            });
+
+
+        }
+    }
+
+    /**
+     * Get公共方法
+     * urlPath 请求地址
+     * dataMap 请求参数map
+     * requestCode 请求标识
+     */
+    public static void requestNetGet(String urlPath, final String requestCode) {
+        if (null != urlPath && urlPath.length() > 0) {
+
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.get(urlPath, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int i, Header[] headers, byte[] bytes) {
                     String result = "";

@@ -9,4 +9,6 @@ public class Constant {
     public static final int CREATE_GROUP_RESULT_CODE = 201;
     public static final String PREFERENCE_NAME = "ANXIN_ANDROID";
     public static final String KITCHEN_ID = "kitchenId";
+    public static final String REQUEST_SUCCESS = "请求成功";
+    public static final String REQUEST_EXCEPTION = "请求异常";
 }
