@@ -9,11 +9,12 @@
     tools:context="com.anxin.kitchen.activity.CreateGroupActivity">
     <include layout="@layout/title_bar"/>
     <EditText
-        android:id="@+id/new_group_name_tv"
+        android:id="@+id/new_group_name_et"
         android:layout_width="match_parent"
         android:layout_height="@dimen/normal_item_height"
         android:background="@color/white"
         android:hint="请输入饭团名称"
+        android:textColor="@color/black"
         android:textColorHint="@color/shallow_black"
         android:paddingLeft="10dp"
         android:textSize="@dimen/big_text_size"

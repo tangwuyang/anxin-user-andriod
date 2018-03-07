@@ -3,14 +3,26 @@ package com.anxin.kitchen.activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Cache;
+import com.anxin.kitchen.utils.StringUtils;
+import com.anxin.kitchen.utils.SystemUtility;
 
-public class CreateGroupActivity extends BaseActivity implements View.OnClickListener {
+import java.util.HashMap;
+import java.util.Map;
+
+public class CreateGroupActivity extends BaseActivity implements View.OnClickListener,RequestNetListener{
     private ImageView mBackImg;
     private TextView mSureBt;
+    private String mGroupName;
+    private EditText mGroupNameEt;
+    private static final String CREATE_GROUP = "CREATE_GROUP";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +47,7 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
         mSureBt.setVisibility(View.VISIBLE);
         mSureBt.setText("创建");
         mBackImg = findViewById(R.id.back_img);
+        mGroupNameEt = findViewById(R.id.new_group_name_et);
     }
 
     @Override
@@ -44,9 +57,40 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
                 onBackPressed();
                 break;
             case R.id.complete_tv:
-                startNewActivity(null);
+                CreateGroup();
                 break;
         }
     }
 
+    //创建饭团
+    private void CreateGroup() {
+        mGroupName = mGroupNameEt.getText().toString();
+        if (!(null!=mGroupName&&mGroupName.length()>0)){
+            Toast.makeText(this, "请输入饭团名", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String token = new Cache(this).getAMToken();
+        if (token==null){
+            startNewActivity(LoginActivity.class);
+        }else {
+            Map<String,Object> dataMap= new HashMap<>();
+            dataMap.put("groupName",mGroupName);
+            dataMap.put("token",token);
+            requestNet(SystemUtility.getMenuMealUrl(),dataMap,CREATE_GROUP);
+        }
+    }
+
+    @Override
+    public void requestFailure(String responseFailure, String requestCode) {
+        super.requestFailure(responseFailure, requestCode);
+
+    }
+
+    @Override
+    public void requestSuccess(String responseString, String requestCode) {
+        super.requestSuccess(responseString, requestCode);
+        if (requestCode==CREATE_GROUP){
+            String status = StringUtils.parserMessage(responseString,"message");
+        }
+    }
 }

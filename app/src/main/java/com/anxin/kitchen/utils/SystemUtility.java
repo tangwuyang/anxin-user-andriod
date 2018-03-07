@@ -68,6 +68,14 @@ public class SystemUtility {
     public static String getBannerListUrl() {
         return AMUAC_IP + "/v1.0/system/banner_list";
     }
+
+
+    /**
+     * 首页套餐url
+     * */
+    public static String getMenuMealUrl(){
+        return AMUAC_IP + "/v1.0/kitchen/menu";
+    }
     //第三方登陆，注册
     public static String sendUserLogin3(String platId, String sourceCode) {
         return AMUAC_IP + "/v1.0/user/login3?platId=" + platId + "&sourceCode=" + sourceCode + "&formData={}";

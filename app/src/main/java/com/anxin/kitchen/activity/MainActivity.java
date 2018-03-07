@@ -52,9 +52,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     private static final int BAIDU_READ_PHONE_STATE = 100;
     private static final String TAG = "MainActivity";
     public static Context context;
-
     // 定义4个Fragment对象
     private MealMainFragment mealMainFragment;
+
     private GroupMainFragment groupMainFragment;
     private OrderMainFragment orderMainFragment;
     private MyMainFragment myMainFragment;
@@ -69,9 +69,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     private FragmentManager fragmentManager;
     //欢迎页面
     private RelativeLayout welcome_rlt;
-
     public static final String GET_KITCHEN_ID = "GET_KITCHEN_ID";
+
     public static final String GET_BANNER_LIST = "GET_BANNER_LIST";
+    private static final String GET_MENU_MEAL = "GET_MENU_MEAL";
     public String requesNetTag = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -267,6 +268,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
                 Map<String,Object> dataMap = new HashMap<>();
                 dataMap.put(Constant.KITCHEN_ID,kichtchenId);
                 requestNet(SystemUtility.getBannerListUrl(),dataMap,GET_BANNER_LIST);
+                requestNet(SystemUtility.getMenuMealUrl(),dataMap,GET_MENU_MEAL);
                 //再去获取广告列表
                 if (null != mealMainFragment){
                     mealMainFragment.setBanner();
@@ -275,8 +277,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
                 return;
             }
         }
-        myLog("---------------");
+
+        //请求轮播广告返回
         if (requestCode!= null && requestCode.equals(GET_BANNER_LIST)){
+            String status = StringUtils.parserMessage(responseBody,"message");
+            if (null!=status && status.equals("\"请求成功\"")){
+                myLog("--------"+responseBody);
+            }
+        }
+
+        if (requestCode!=null && requestCode.equals(GET_MENU_MEAL)){
             String status = StringUtils.parserMessage(responseBody,"message");
             if (null!=status && status.equals("\"请求成功\"")){
                 myLog("--------"+responseBody);

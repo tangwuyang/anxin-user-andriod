@@ -33,6 +33,7 @@ import com.anxin.kitchen.activity.RecoveryMealActivity;
 import com.anxin.kitchen.activity.SendMealLocationActivity;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.CustomGridView;
@@ -97,6 +98,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         super.onCreate(savedInstanceState);
         activity = (MainActivity) getActivity();
     }
+
 
 
 
@@ -183,59 +185,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             }
         });
     }
-    public void requestNet(String urlPath, Map<String, Object> dataMap) {
-        {
-            if (null != urlPath && urlPath.length()>0){
 
-                AsyncHttpClient client = new AsyncHttpClient();
-                RequestParams params = new RequestParams();
-                if (null != dataMap){
-                    Set<String> names = dataMap.keySet();
-                    for (String name:
-                         names) {
-                        activity.myLog("---------->"+name + "  " + dataMap.get(name));
-                        params.put(name,dataMap.get(name));
-                    }
-                    Set<String> nameSet = dataMap.keySet();
-                    //params.put("longitude",lon);
-                    //params.put("latitude",lat);
-                }
-
-                String url = urlPath+"?longitude=114.242245&latitude=22.725593";
-                activity.myLog("----------------->"+url);
-                client.post(urlPath,params, new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int i, Header[] headers, byte[] bytes) {
-                        {
-                            String result = "";
-                            activity.myLog("----------->请求成功" );
-
-                            if (bytes != null){
-                                result = new String(bytes);
-                                activity.myLog("----------->请求成功" + result);
-                            }
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                        {
-                            String result = "";
-                            activity.myLog("--------->请求失败" );
-                            if (bytes != null) {
-                                result = new String(bytes);
-                                activity.myLog("--------->请求失败" +result);
-                            }
-
-                        }
-                    }
-                });
-
-
-            }
-        }
-    }
     private void getKitchenId() {
         if (null != activity){
             Map<String,Object> dataMap = new HashMap();
