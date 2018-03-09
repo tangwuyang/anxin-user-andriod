@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+    <include layout="@layout/indexsticky_item_index"/>
+    <com.anxin.kitchen.view.MyListView
+        android:id="@+id/group_lv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></com.anxin.kitchen.view.MyListView>
+</LinearLayout>

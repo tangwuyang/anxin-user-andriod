@@ -52,7 +52,7 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
         }
     }
 
-    protected void startNewActivity(Class classType) {
+    public void startNewActivity(Class classType) {
         Intent intent = new Intent(this, classType);
         startActivity(intent);
     }
@@ -82,6 +82,7 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
                 @Override
                 public void onSuccess(int i, Header[] headers, byte[] bytes) {
                         String result = "";
+                        String head = "";
                         if (bytes != null){
                             result = new String(bytes);
                             myLog(requestCode+"----------->请求成功" + result);

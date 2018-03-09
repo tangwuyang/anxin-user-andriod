@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,13 +21,21 @@ import android.widget.Toast;
 import com.anxin.kitchen.activity.AddNewFriendActivity;
 import com.anxin.kitchen.activity.CreateGroupActivity;
 import com.anxin.kitchen.activity.InvateFriendActivity;
+import com.anxin.kitchen.activity.LoginActivity;
+import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.bean.ContactEntity;
+import com.anxin.kitchen.bean.FriendsBean;
 import com.anxin.kitchen.bean.MenuEntity;
+import com.anxin.kitchen.bean.SearchGroupBean;
 import com.anxin.kitchen.bean.UserEntity;
 import com.anxin.kitchen.decoration.IndexStickyViewDecoration;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Cache;
+import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.view.MyListView;
 import com.bluetooth.tangwuyang.fantuanlibrary.IndexStickyView;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexHeaderFooterAdapter;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexStickyViewAdapter;
@@ -36,7 +45,9 @@ import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemLongClickListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.anxin.kitchen.utils.Constant.CREATE_GROUP_RESULT_CODE;
 import static com.anxin.kitchen.utils.Constant.GROUP_MAIN_REQEST_CODE;
@@ -45,13 +56,14 @@ import static com.anxin.kitchen.utils.Constant.GROUP_MAIN_REQEST_CODE;
  * 饭团主界面
  */
 public class GroupMainFragment extends HomeBaseFragment implements View.OnClickListener ,OnItemClickListener,OnItemLongClickListener{
+    private static final String TAG = "GroupMainFragment";
     private Log LOG = Log.getLog();
     private View view;
     SwipeRefreshLayout mRefreshLayout;
     IndexStickyView mIndexStickyView;
     MyIndexStickyViewAdapter mAdapter;
     private ImageView mMenuImg;
-
+    private GroupAdapter groupAdapter = null;
     IndexHeaderFooterAdapter<UserEntity> mFavAdapter;
     IndexHeaderFooterAdapter<MenuEntity> mMenuAdapter;
     IndexHeaderFooterAdapter<UserEntity> mNormalAdapter;
@@ -59,10 +71,11 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     IndexHeaderFooterAdapter<UserEntity> mFooterAdapter;
     IndexHeaderFooterAdapter mFooterBannerAdapter;
 
-
+    private List<ContactEntity> Friendslist;
     private List<String> mMenuNames = new ArrayList<>();
     private List<Integer> mMenuImgs = new ArrayList<>();
-
+    String token ;
+    MainActivity activity;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,23 +92,57 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         //initView();//初始化界面控制
         //initEditData();
 
+        activity = (MainActivity) getActivity();
+        requestInternetGetData();
         mRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         mIndexStickyView = view.findViewById(R.id.indexStickyView);
         return view;
+    }
+
+    /**
+     * 请求网咯获取好友列表
+     * 以及定参团列表
+     * */
+    private void requestInternetGetData() {
+        getAllGroups();
+        getAllFriends();
+    }
+
+    private void getAllGroups() {
+        if (null == token){
+            token = new Cache(activity).getAMToken();
+        }
+        if (token==null){
+            activity.startNewActivity(LoginActivity.class);
+        }else {
+            String url = SystemUtility.searchGroupUrl();
+            Map<String,Object> dataMap = new HashMap<>();
+            dataMap.put(Constant.TOKEN,token);
+            activity.requestNet(url,dataMap,activity.SEARCH_GROUP);
+        }
+
+    }
+
+    private void getAllFriends() {
+        if (null == token){
+            token = new Cache(activity).getAMToken();
+        }
+        if (token==null){
+            activity.startNewActivity(LoginActivity.class);
+        }else {
+            String url = SystemUtility.getFriendsUrl();
+            Map<String,Object> dataMap = new HashMap<>();
+            dataMap.put(Constant.TOKEN,token);
+            activity.requestNet(url,dataMap,activity.GET_FRIEND);
+        }
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
         setRefresh();
-        mAdapter = new MyIndexStickyViewAdapter(initDatas());
-        mIndexStickyView.setAdapter(mAdapter);
-        mIndexStickyView.addItemDecoration(new IndexStickyViewDecoration(getContext()));
-        //添加饭团组
-        addFanGroup();
-        setSearch();
-        mAdapter.setOnItemClickListener(this);
-        mAdapter.setOnItemLongClickListener(this);
+
     }
 
     //下拉刷新
@@ -148,12 +195,45 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         };
         mIndexStickyView.addIndexHeaderAdapter(mBannerAdapter);
     }
-
-    private void addFanGroup() {
-        mMenuAdapter = new IndexHeaderFooterAdapter<MenuEntity>("↑", "饭团", initMenuDatas()) {
+    private void setFristGroup() {
+        //头部搜索
+        mBannerAdapter = new IndexHeaderFooterAdapter() {
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
 
+                View view = LayoutInflater.from(mContext).inflate(R.layout.group_layout, parent, false);
+                ImageViewVH vh = new ImageViewVH(view);
+                vh.groupLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    }
+                });
+                return vh;
+            }
+
+            @Override
+            public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, BaseEntity itemData) {
+                ((ImageViewVH)holder).groupLv.setAdapter(groupAdapter);
+                ((ImageViewVH)holder).groupTV.setText("饭团");
+            }
+
+            class ImageViewVH extends RecyclerView.ViewHolder {
+                MyListView groupLv;
+                TextView groupTV;
+                public ImageViewVH(View itemView) {
+                    super(itemView);
+                    groupLv = (MyListView) itemView.findViewById(R.id.group_lv);
+                    groupTV = itemView.findViewById(R.id.tv_index);
+                }
+            }
+        };
+        mIndexStickyView.addIndexHeaderAdapter(mBannerAdapter);
+    }
+    private void addFanGroup() {
+        mMenuAdapter = new IndexHeaderFooterAdapter<MenuEntity>("↑", "饭团", getGroup()) {
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
                 View view = LayoutInflater.from(mContext).inflate(R.layout.indexsticky_item_contact, parent, false);
                 return new ContentViewHolder(view);
             }
@@ -174,6 +254,61 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
             }
         });
         mIndexStickyView.addIndexHeaderAdapter(mMenuAdapter);
+    }
+
+    public void setFriend(FriendsBean bean) {
+       List<FriendsBean.Data> friendList =  bean.getData();
+       activity.myLog("---------------"+friendList.size());
+        Friendslist.clear();
+        if(null != Friendslist){
+           for (int i = 0;i<friendList.size();i++){
+               ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),friendList.get(i).getPhone());
+               Friendslist.add(contactEntity);
+           }
+       }
+        mAdapter = new MyIndexStickyViewAdapter(Friendslist);
+        mIndexStickyView.setAdapter(mAdapter);
+       // mAdapter.notifyDataSetChanged();
+        mIndexStickyView.addItemDecoration(new IndexStickyViewDecoration(getContext()));
+        //添加饭团组
+        // addFanGroup();
+        groupAdapter = new GroupAdapter(this.grouplist);
+        setFristGroup();
+        setSearch();
+        mAdapter.setOnItemClickListener(this);
+        mAdapter.setOnItemLongClickListener(this);
+    }
+
+    class GroupAdapter extends BaseAdapter {
+        List<MenuEntity> dataList;
+
+        public GroupAdapter(List<MenuEntity> dataList) {
+            this.dataList = dataList;
+        }
+
+        @Override
+        public int getCount() {
+            return dataList.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            view = LayoutInflater.from(activity).inflate(R.layout.indexsticky_item_contact,viewGroup,false);
+            TextView nameTv = view.findViewById(R.id.tv_name);
+            nameTv.setText(dataList.get(i).getMenuTitle());
+
+            return view;
+        }
     }
 
     /**
@@ -282,25 +417,25 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         list.add(new UserEntity("李四", "13298449923"));
         return list;
     }
-
-    private List<MenuEntity> initMenuDatas() {
-        List<MenuEntity> list = new ArrayList<>();
-        list.add(new MenuEntity("星期一午饭团（12人）", R.drawable.vector_contact_focus));
-        list.add(new MenuEntity("星期一晚饭团（12人）", R.drawable.vector_contact_focus));
-        return list;
+    List<MenuEntity> grouplist;
+    private List<MenuEntity> getGroup() {
+        grouplist = new ArrayList<>();
+        grouplist.add(new MenuEntity("星期一午饭团（12人）", R.drawable.vector_contact_focus));
+        grouplist.add(new MenuEntity("星期一晚饭团（12人）", R.drawable.vector_contact_focus));
+        return grouplist;
     }
 
     private List<ContactEntity> initDatas() {
 
-        List<ContactEntity> list = new ArrayList<>();
+        Friendslist = new ArrayList<>();
         // 初始化数据
         List<String> contactStrings = Arrays.asList(getResources().getStringArray(R.array.contact_array));
         List<String> mobileStrings = Arrays.asList(getResources().getStringArray(R.array.mobile_array));
         for (int i = 0; i < contactStrings.size(); i++) {
             ContactEntity contactEntity = new ContactEntity(contactStrings.get(i), mobileStrings.get(i));
-            list.add(contactEntity);
+            Friendslist.add(contactEntity);
         }
-        return list;
+        return Friendslist;
     }
     private void initView() {
         ((TextView)getActivity().findViewById(R.id.title_tv)).setText("饭团");
@@ -350,6 +485,24 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         popWnd.setOutsideTouchable(true);
         //popWnd.setBackgroundDrawable(new BitmapDrawable());
         popWnd.showAsDropDown(mMenuImg,550,20);
+    }
+    /*
+    * 设置群
+    * */
+    public void setGroup(SearchGroupBean bean) {
+        List<SearchGroupBean.Data> groupList = bean.getData();
+        if (null == this.grouplist){
+            this.grouplist = new ArrayList<>();
+        }
+        this.grouplist.clear();
+        activity.myLog("----------------"+groupList.size());
+        for (int i=0;i<4;i++){
+            activity.myLog("----------------"+groupList.get(i).getGroupDesc());
+            this.grouplist.add(new MenuEntity(groupList.get(i).getGroupDesc(),R.drawable.vector_contact_focus));
+        }
+        mAdapter = new MyIndexStickyViewAdapter(initDatas());
+        mIndexStickyView.setAdapter(mAdapter);
+
     }
 
     class MenuAdapter extends BaseAdapter{
@@ -493,7 +646,6 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         TextView mTextView;
 
         public IndexViewHolder(View itemView) {
-
             super(itemView);
             mTextView = (TextView) itemView.findViewById(R.id.tv_index);
         }

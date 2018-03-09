@@ -2,6 +2,7 @@ package com.anxin.kitchen.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Cache;
+import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateGroupActivity extends BaseActivity implements View.OnClickListener,RequestNetListener{
+    private static final String TAG = "CreateGroupActivity";
     private ImageView mBackImg;
     private TextView mSureBt;
     private String mGroupName;
@@ -73,10 +76,13 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
         if (token==null){
             startNewActivity(LoginActivity.class);
         }else {
-            Map<String,Object> dataMap= new HashMap<>();
+          /*  Map<String,Object> dataMap= new HashMap<>();
             dataMap.put("groupName",mGroupName);
-            dataMap.put("token",token);
-            requestNet(SystemUtility.getMenuMealUrl(),dataMap,CREATE_GROUP);
+            dataMap.put("token",token);*/
+
+            String url = SystemUtility.CreateGroup()+"?groupName="+mGroupName+"&token="+token;
+            Log.i(TAG, "CreateGroup: --------->"+url);
+            requestNet(url,null,CREATE_GROUP);
         }
     }
 
@@ -91,6 +97,9 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
         super.requestSuccess(responseString, requestCode);
         if (requestCode==CREATE_GROUP){
             String status = StringUtils.parserMessage(responseString,"message");
+            if (status.equals(Constant.LOGIN_FIRST)){
+                startNewActivity(LoginActivity.class);
+            }
         }
     }
 }

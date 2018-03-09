@@ -11,4 +11,6 @@ public class Constant {
     public static final String KITCHEN_ID = "kitchenId";
     public static final String REQUEST_SUCCESS = "请求成功";
     public static final String REQUEST_EXCEPTION = "请求异常";
+    public static final String LOGIN_FIRST = "请先登录";
+    public static final String TOKEN = "token";
 }

@@ -81,6 +81,29 @@ public class SystemUtility {
     public static String getMenuMealUrl(){
         return AMUAC_IP + "/v1.0/kitchen/menu";
     }
+
+
+    /**
+     * 创建新的定参团url
+     * */
+    public static String CreateGroup(){
+        return AMUAC_IP + "/v1.0/group/create";
+    }
+    /**
+     * 查询所有团或者指定名字的团url
+     * */
+    public static String searchGroupUrl(){
+        return AMUAC_IP + "/v1.0/group/list";
+    }
+
+
+    /**
+     * 查询团友信息url
+     * */
+    public static String getFriendsUrl(){
+        return AMUAC_IP + "/v1.0/group/user_list";
+    }
+
     //第三方登陆，注册
     public static String sendUserLogin3(String platId, String sourceCode) {
         return AMUAC_IP + "/v1.0/user/login3?platId=" + platId + "&sourceCode=" + sourceCode + "&formData={}";
