@@ -222,6 +222,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         thirdPartyLogin_lyt.setVisibility(View.GONE);
                         titleCenterName.setText("绑定手机号码");
                         loginBtn.setText("绑定");
+                    }else if (code != null && code.equals("305")){
+                        //解析验证码返回
+                        Account account = SystemUtility.loginAnalysisJason(responseMsg);
+                        ToastUtil.showToast("登陆成功");
+                        finish();
                     }
                 }
                 break;
