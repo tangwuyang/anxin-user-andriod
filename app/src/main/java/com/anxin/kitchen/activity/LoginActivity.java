@@ -198,9 +198,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         String requestCode = asyncHttpRequestMessage.getRequestCode();
         String responseMsg = asyncHttpRequestMessage.getResponseMsg();
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
-        LOG.e("----------requestCode------" + requestCode);
-        LOG.e("----------responseMsg------" + responseMsg);
-        LOG.e("----------requestStatus------" + requestStatus);
+        LOG.d("----------requestCode------" + requestCode);
+        LOG.d("----------responseMsg------" + responseMsg);
+        LOG.d("----------requestStatus------" + requestStatus);
         switch (requestCode) {
             //验证码发送
             case sendUserPhoneCode_http:

@@ -2,6 +2,18 @@ package com.anxin.kitchen.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+
+import com.anxin.kitchen.bean.Account;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
+
+import static android.provider.Telephony.Mms.Part.FILENAME;
 
 /***
  * Store application state information either permanently (in a properties
@@ -21,6 +33,10 @@ public class Cache {
      * Preferences ID password.
      **/
     private static final String SAVED_PASSWORD = "SAVED_PASS";
+    /**
+     * Preferences ID Account.
+     **/
+    private static final String SAVED_ACCOUNT = "SAVED_ACCOUNT";
 
     /**
      * Preferences ID NickName.
@@ -60,6 +76,25 @@ public class Cache {
      */
     public final void setUserPhone(final String value) {
         setValue(mContext, SAVED_USERNAME, value);
+    }
+
+    /***
+     * @return user Account.
+     */
+    public final Account getAcount(Context context) {
+        Account account = (Account) readObject(context, SAVED_ACCOUNT);
+//        Log.e("--------------", "-------getAcount---------" + account);
+        if (null == account)
+            return null;
+        return account;
+    }
+
+    /***
+     * @param acount
+     *            Acount
+     */
+    public final void setAcount(Context context, final Account acount) {
+        saveObject(context, SAVED_ACCOUNT, acount);
     }
 
     /***
@@ -237,5 +272,116 @@ public class Cache {
     public void setAccountImageURI(String userName, String path) {
         setValue(mContext, userName + SAVED_ACCOUNTIMAGEURI, path);
 
+    }
+
+    /**
+     * desc:保存对象
+     *
+     * @param context
+     * @param key
+     * @param obj     要保存的对象，只能保存实现了serializable的对象
+     *                modified:
+     */
+    public static void saveObject(Context context, String key, Object obj) {
+        try {
+            // 保存对象
+            SharedPreferences.Editor sharedata = context.getSharedPreferences(FILENAME, 0).edit();
+            //先将序列化结果写到byte缓存中，其实就分配一个内存空间
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream os = new ObjectOutputStream(bos);
+            //将对象序列化写入byte缓存
+            os.writeObject(obj);
+            //将序列化的数据转为16进制保存
+            String bytesToHexString = bytesToHexString(bos.toByteArray());
+            //保存该16进制数组
+            sharedata.putString(key, bytesToHexString);
+            sharedata.commit();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("", "保存obj失败");
+        }
+    }
+
+    /**
+     * desc:将数组转为16进制
+     *
+     * @param bArray
+     * @return modified:
+     */
+    public static String bytesToHexString(byte[] bArray) {
+        if (bArray == null) {
+            return null;
+        }
+        if (bArray.length == 0) {
+            return "";
+        }
+        StringBuffer sb = new StringBuffer(bArray.length);
+        String sTemp;
+        for (int i = 0; i < bArray.length; i++) {
+            sTemp = Integer.toHexString(0xFF & bArray[i]);
+            if (sTemp.length() < 2)
+                sb.append(0);
+            sb.append(sTemp.toUpperCase());
+        }
+        return sb.toString();
+    }
+
+    /**
+     * desc:获取保存的Object对象
+     *
+     * @param context
+     * @param key
+     * @return modified:
+     */
+    public Object readObject(Context context, String key) {
+        try {
+            SharedPreferences sharedata = context.getSharedPreferences(FILENAME, 0);
+            if (sharedata.contains(key)) {
+                String string = sharedata.getString(key, "");
+                if (TextUtils.isEmpty(string)) {
+                    return null;
+                } else {
+                    //将16进制的数据转为数组，准备反序列化
+                    byte[] stringToBytes = toBytes(string);
+                    ByteArrayInputStream bis = new ByteArrayInputStream(stringToBytes);
+                    ObjectInputStream is = new ObjectInputStream(bis);
+                    //返回反序列化得到的对象
+                    Object readObject = is.readObject();
+                    return readObject;
+                }
+            }
+        } catch (StreamCorruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //所有异常返回null
+        return null;
+
+    }
+
+    /**
+     * 将16进制字符串转换为byte[]
+     *
+     * @param str
+     * @return
+     */
+    public static byte[] toBytes(String str) {
+        if (str == null || str.trim().equals("")) {
+            return new byte[0];
+        }
+
+        byte[] bytes = new byte[str.length() / 2];
+        for (int i = 0; i < str.length() / 2; i++) {
+            String subStr = str.substring(i * 2, i * 2 + 2);
+            bytes[i] = (byte) Integer.parseInt(subStr, 16);
+        }
+
+        return bytes;
     }
 }

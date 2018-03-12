@@ -129,7 +129,7 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                 ft.commit();
                 break;
             case R.id.user_set://用户个性化设置
-                if (mApp.getCache().getUserPhone() == null) {
+                if (mApp.getAccount() == null) {
                     startActivity(new Intent(getActivity(), LoginActivity.class));
                 } else {
                     UserSettingsFragment userSettingsFragment = new UserSettingsFragment();
