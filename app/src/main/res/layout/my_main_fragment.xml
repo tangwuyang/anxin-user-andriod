@@ -65,10 +65,10 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/user_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/user_name"
-                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="12sp" />
 

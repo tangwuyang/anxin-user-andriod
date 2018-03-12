@@ -1,6 +1,7 @@
 package com.anxin.kitchen.fragment.myfragment;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -9,13 +10,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.activity.MainActivity;
+import com.anxin.kitchen.event.OnUserAcountEvent;
+import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.tangwuyangs_test.TestMapActivity;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.view.RoundedImageView;
+
+import java.io.File;
 
 /**
  * 用户主界面
@@ -30,9 +38,14 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
     private RelativeLayout userInvitationBtn;//邀请好友
     private RelativeLayout userContactBtn;//联系我们
 
+    private RoundedImageView userIcon;//用户头像
+    private TextView userName;//用户名称
+    private TextView userPhone;//用户手机
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBusFactory.getInstance().register(this);
     }
 
     @Override
@@ -67,6 +80,30 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                 return false;
             }
         });
+
+        userIcon = (RoundedImageView) view.findViewById(R.id.user_icon);
+        userName = (TextView) view.findViewById(R.id.user_name);
+        userPhone = (TextView) view.findViewById(R.id.user_phone);
+        updateUserAcount();
+    }
+
+    private void updateUserAcount() {
+        //获取本地用户名称
+        String name = mApp.getCache().getNickName();
+        if (name != null && name.length() != 0) {
+            userName.setText(name);
+        }
+        //获取本地缓存头像
+        String mImageURI = mApp.getCache().getAccountImageURI(mApp.getCache().getUserPhone());
+        if (mImageURI != null && !mImageURI.isEmpty()) {
+            Uri mSaveUri = Uri.fromFile(new File(mImageURI));
+            userIcon.setImageURI(mSaveUri);
+        }
+        //获取本地用户号码
+        String phone = mApp.getCache().getUserPhone();
+        if (phone != null && phone.length() != 0) {
+            userPhone.setText(phone);
+        }
     }
 
     @Override
@@ -92,7 +129,7 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                 ft.commit();
                 break;
             case R.id.user_set://用户个性化设置
-                if (mApp.getAccount() == null) {
+                if (mApp.getCache().getUserPhone() == null) {
                     startActivity(new Intent(getActivity(), LoginActivity.class));
                 } else {
                     UserSettingsFragment userSettingsFragment = new UserSettingsFragment();
@@ -120,5 +157,17 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         }
     }
 
+    public void onEventMainThread(ViewUpdateHeadIconEvent event) {//头像修改监听
+        updateUserAcount();
+    }
 
+    public void onEventMainThread(OnUserAcountEvent event) {//用户信息修改监听
+        updateUserAcount();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBusFactory.getInstance().unregister(this);
+    }
 }

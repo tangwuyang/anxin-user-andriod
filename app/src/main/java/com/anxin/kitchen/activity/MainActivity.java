@@ -30,6 +30,7 @@ import com.anxin.kitchen.interface_.OnGivedPermissionListener;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
@@ -84,6 +85,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
         context = this;
+        //启动服务
+        Intent agentService = new Intent(MainActivity.this, MyService.class);
+        // bindService(agentService, conn, Service.BIND_AUTO_CREATE);
+        startService(agentService);
         requestLocationPermission();
         initView();//初始化界面控件
         setChioceItem(0);//初始化页面加载是显示点餐界面

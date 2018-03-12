@@ -23,6 +23,11 @@ public class Cache {
     private static final String SAVED_PASSWORD = "SAVED_PASS";
 
     /**
+     * Preferences ID NickName.
+     **/
+    private static final String SAVED_NICKNAME = "SAVED_NICKNAME";
+
+    /**
      * Preferences ID for remember password.
      **/
     private static final String SAVED_ACCOUNTIMAGEURI = "SAVED_ACCOUNTIMAGEURI";
@@ -41,9 +46,9 @@ public class Cache {
     /***
      * Get the saved username of camera
      *
-     * @return username value.
+     * @return user value.
      */
-    public final String getUsername() {
+    public final String getUserPhone() {
         return getValue(mContext, SAVED_USERNAME, null);
     }
 
@@ -51,10 +56,29 @@ public class Cache {
      * Set the username of camera
      *
      * @param value
-     *            username
+     *            user
      */
-    public final void setUsername(final String value) {
+    public final void setUserPhone(final String value) {
         setValue(mContext, SAVED_USERNAME, value);
+    }
+
+    /***
+     * Get the saved username of camera
+     *
+     * @return nickname value.
+     */
+    public final String getNickName() {
+        return getValue(mContext, SAVED_NICKNAME, null);
+    }
+
+    /***
+     * Set the username of camera
+     *
+     * @param value
+     *            nickname
+     */
+    public final void setNickName(final String value) {
+        setValue(mContext, SAVED_NICKNAME, value);
     }
 
     /**

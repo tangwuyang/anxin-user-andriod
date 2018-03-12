@@ -10,6 +10,9 @@ import android.widget.ListView;
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
+import com.anxin.kitchen.event.OnSaveBitmapEvent;
+import com.anxin.kitchen.event.OnUserAcountEvent;
+import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
@@ -33,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class SystemUtility {
-
+    private static final Log LOG = Log.getLog();
     public static String AMUAC_IP = "http://tapi.anxinyc.com";//服务器请求，IP地址
     public static String AMToken;//网络请求ToKen
     public static String RequestSuccess = "onSuccess";//http方法成功返回标志
@@ -62,7 +65,7 @@ public class SystemUtility {
 
     /**
      * 获取定位最近的厨房信息
-     * */
+     */
     public static String getNearKitchenId() {
         return AMUAC_IP + "/v1.0/kitchen/near";
     }
@@ -77,11 +80,10 @@ public class SystemUtility {
 
     /**
      * 首页套餐url
-     * */
-    public static String getMenuMealUrl(){
+     */
+    public static String getMenuMealUrl() {
         return AMUAC_IP + "/v1.0/kitchen/menu";
     }
-
 
     /**
      * 创建新的定参团url
@@ -128,7 +130,7 @@ public class SystemUtility {
                     params.put(para, dataMap.get(para));
                 }
             }
-            Log.e("", "------requestNetPost----------" + params.toString());
+//            Log.e("", "------requestNetPost----------" + params.toString());
             client.post(urlPath, params, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int i, Header[] headers, byte[] bytes) {
@@ -199,7 +201,7 @@ public class SystemUtility {
      * @param jason
      */
     public static Account loginAnalysisJason(String jason) {
-        Account userAccount = new Account();
+        final Account userAccount = new Account();
         try {
             JSONObject jsonObject = new JSONObject(jason);
             String data = jsonObject.getString("data");
@@ -228,13 +230,14 @@ public class SystemUtility {
                     userAccount.setUserSex(resultValue);
                 } else if (resultKey.equals("phone")) {
                     userAccount.setUserPhone(resultValue);
-                    MyApplication.getInstance().getCache().setUsername(resultValue);
+                    MyApplication.getInstance().getCache().setUserPhone(resultValue);
                 } else if (resultKey.equals("password")) {
                     userAccount.setUserPassword(resultValue);
                 } else if (resultKey.equals("initials")) {
                     userAccount.setUserInitials(resultValue);
                 } else if (resultKey.equals("nickName")) {
                     userAccount.setUserNickName(resultValue);
+                    MyApplication.getInstance().getCache().setNickName(resultValue);
                 } else if (resultKey.equals("trueName")) {
                     userAccount.setUserTrueName(resultValue);
                 } else if (resultKey.equals("weixin")) {
@@ -251,6 +254,9 @@ public class SystemUtility {
                     userAccount.setUserBirthdayTime(resultValue);
                 } else if (resultKey.equals("userLogo")) {
                     userAccount.setUserLogoPathURL(resultValue);
+                    if (resultValue != null && resultValue.length() != 0) {
+                        EventBusFactory.getInstance().post(new OnSaveBitmapEvent(resultValue, userAccount.getUserPhone()));
+                    }
                 } else if (resultKey.equals("addressNum")) {
                     userAccount.setUserAddressNum(Integer.valueOf(resultValue));
                 } else if (resultKey.equals("groupUserNum")) {
@@ -274,6 +280,7 @@ public class SystemUtility {
             e.printStackTrace();
         }
         MyApplication.getInstance().setAccount(userAccount);
+        EventBusFactory.postEvent(new OnUserAcountEvent());
         return userAccount;
     }
 

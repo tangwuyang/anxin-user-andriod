@@ -1,9 +1,13 @@
 package com.anxin.kitchen.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +20,10 @@ import android.widget.Toast;
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
+import com.anxin.kitchen.event.OnSaveBitmapEvent;
+import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
+import com.anxin.kitchen.fragment.loginfragment.AddUserDataFragment;
+import com.anxin.kitchen.fragment.myfragment.UserWalletSetFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.user.wxapi.WXEntryActivity;
 import com.anxin.kitchen.utils.EventBusFactory;
@@ -33,9 +41,19 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 /**
@@ -64,8 +82,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     /**
      * http请求标志
-     *
-     *
      */
     private static final String sendUserPhoneCode_http = "sendUserPhoneCode";
     private static final String sendUserLogin3_http = "sendUserLogin3";
@@ -172,6 +188,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         super.onResume();
     }
 
+
     /**
      * 监听网络请求返回
      *
@@ -201,16 +218,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             //验证码登陆
             case sendUserPhoneLogin_http:
                 if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
-                    //解析验证码返回
-                    Account account = SystemUtility.loginAnalysisJason(responseMsg);
-                    LOG.d("--------sendPhoneLogin--Account--" + account.toString());
-                    LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
-                    ToastUtil.showToast("登陆成功");
-                    finish();
+                    LoginMessageAnalysis(responseMsg);
                 }
                 break;
             //验证码注册
             case sendUserPhoneRegister_http:
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    LoginMessageAnalysis(responseMsg);
+                }
                 break;
             //第三方登陆
             case sendUserLogin3_http:
@@ -222,14 +237,43 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         thirdPartyLogin_lyt.setVisibility(View.GONE);
                         titleCenterName.setText("绑定手机号码");
                         loginBtn.setText("绑定");
-                    }else if (code != null && code.equals("305")){
-                        //解析验证码返回
-                        Account account = SystemUtility.loginAnalysisJason(responseMsg);
-                        ToastUtil.showToast("登陆成功");
-                        finish();
+                    } else if (code != null && code.equals("1")) {
+                        LoginMessageAnalysis(responseMsg);
                     }
                 }
                 break;
+            case sendUserPhoneLocking_http:
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    LoginMessageAnalysis(responseMsg);
+                }
+                break;
+        }
+    }
+
+    //解析登陆
+    private void LoginMessageAnalysis(String Msg) {
+        String code = StringUtils.parserMessage(Msg, "code");
+        if (code != null && code.equals("1")) {
+            //解析验证码返回
+            Account account = SystemUtility.loginAnalysisJason(Msg);
+            LOG.d("--------sendPhoneLogin--Account--" + account.toString());
+//            LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
+            if (account != null) {
+                String trueName = account.getUserTrueName();
+                if (null != trueName && !trueName.equals("暂无") && !trueName.equals("null")) {//登陆成功且用户信息不为空
+                    ToastUtil.showToast("登陆成功");
+                    finish();
+                } else {//登陆成功需要填写用户信息
+                    platId = "0";
+                    isLoginMain = true;
+                    AddUserDataFragment addUserDataFragment = new AddUserDataFragment();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.content_frame, addUserDataFragment);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.addToBackStack(null);
+                    ft.commit();
+                }
+            }
         }
     }
 
