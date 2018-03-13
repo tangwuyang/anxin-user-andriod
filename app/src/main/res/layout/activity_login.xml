@@ -271,4 +271,9 @@
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/main_bottom_group"></FrameLayout>
 </RelativeLayout>

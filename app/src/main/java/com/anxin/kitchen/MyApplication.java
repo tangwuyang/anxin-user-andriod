@@ -43,6 +43,7 @@ public class MyApplication extends MultiDexApplication {
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);*/
         UMShareAPI.get(this);
         mApp = this;
+        mAccount = getCache().getAcount(this);
     }
 
     public static MyApplication getInstance() {
@@ -63,6 +64,7 @@ public class MyApplication extends MultiDexApplication {
      */
     public final synchronized void setAccount(Account account) {
         this.mAccount = account;
+        mCache.setAcount(this, account);
     }
 
     public final synchronized Account getAccount() {

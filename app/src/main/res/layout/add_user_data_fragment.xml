@@ -24,18 +24,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="个人信息"
+                    android:text="完善资料"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
 
-                <ImageView
-                    android:id="@+id/back_btn"
+                <TextView
+                    android:id="@+id/store_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/back_drawable" />
+                    android:layout_marginRight="15dp"
+                    android:text="跳过"
+                    android:textColor="@color/white"
+                    android:textSize="15.7sp" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -63,6 +65,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
                 android:src="@drawable/enter_message_normal" />
+
             <com.anxin.kitchen.view.RoundedImageView
                 android:id="@+id/user_icon"
                 android:layout_width="35dp"
@@ -71,7 +74,7 @@
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/back_iv"
                 android:src="@drawable/icon"
-                app:riv_oval="true"/>
+                app:riv_oval="true" />
         </RelativeLayout>
 
         <View
@@ -113,12 +116,13 @@
                 android:textColor="#333333"
                 android:textSize="14sp" />
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp" />
 
         <RelativeLayout
-            android:id="@+id/user_phone_rlt"
+            android:id="@+id/user_address_rlt"
             android:layout_width="match_parent"
             android:layout_height="58dp"
             android:background="@color/white">
@@ -128,42 +132,12 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="15dp"
-                android:text="手机"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/user_phone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"
-                android:text="1242345235"
-                android:textColor="#333333"
-                android:textSize="14sp" />
-        </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp" />
-
-        <RelativeLayout
-            android:id="@+id/user_gender_rlt"
-            android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:background="@color/white">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="15dp"
-                android:text="性别"
+                android:text="地址"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
             <ImageView
-                android:id="@+id/Gender_next"
+                android:id="@+id/address_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -172,54 +146,60 @@
                 android:src="@drawable/enter_message_normal" />
 
             <TextView
-                android:id="@+id/user_gender"
+                android:id="@+id/user_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
-                android:layout_toLeftOf="@+id/Gender_next"
-                android:text="男"
-                android:textColor="#333333"
-                android:textSize="14sp" />
+                android:layout_toLeftOf="@+id/address_next"
+                android:text="选择送餐地址"
+                android:textColor="#cccccc"
+                android:textSize="16sp" />
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp" />
 
         <RelativeLayout
-            android:id="@+id/user_birthday_rlt"
             android:layout_width="match_parent"
             android:layout_height="58dp"
             android:background="@color/white">
 
             <TextView
+                android:id="@+id/address_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="15dp"
-                android:text="生日"
+                android:text="详细地址"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
-            <ImageView
-                android:id="@+id/birthday_next"
+            <EditText
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/address_tv"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
-                android:src="@drawable/enter_message_normal" />
-
-            <TextView
-                android:id="@+id/user_birthday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="8dp"
-                android:layout_toLeftOf="@+id/birthday_next"
-                android:text="1990-05-28"
-                android:textColor="#333333"
-                android:textSize="14sp" />
+                android:gravity="center_vertical|right"
+                android:hint="例5号楼1001"
+                android:textColorHint="#cccccc"
+                android:textSize="16sp"
+                />
         </RelativeLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/completeBtn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#3ed368"
+        android:text="完成"
+        android:textColor="@color/white" />
 </RelativeLayout>

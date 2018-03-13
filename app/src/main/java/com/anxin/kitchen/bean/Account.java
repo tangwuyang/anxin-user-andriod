@@ -1,11 +1,13 @@
 package com.anxin.kitchen.bean;
 
 
+import java.io.Serializable;
+
 /**
  * 用户信息
  */
 
-public class Account {
+public class Account implements Serializable {
     private String UserID;//用户ID
     private String UserSize;//份量,1:成人餐,2:儿童餐
     private String UserStatus;//用户状态,1:正常，0：禁用
