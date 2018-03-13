@@ -17,20 +17,20 @@ public class HomeBaseFragment extends Fragment implements OnClickListener {
     private static final Log LOG = Log.getLog();
     public Context mContext;
     private MainActivity main;
-    public MyApplication mApp;//
+    public MyApplication mApp;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        if (mApp == null) {
+            mApp = (MyApplication) getActivity().getApplication();
+        }
         mContext = getActivity();
         if (mContext == null) {
             mContext = MainActivity.context;
         }
         main = (MainActivity) MainActivity.context;
-        if (mApp == null) {
-            mApp = (MyApplication) main.getApplication();
-        }
     }
 
     @Override

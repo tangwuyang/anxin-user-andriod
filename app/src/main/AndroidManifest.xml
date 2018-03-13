@@ -69,7 +69,6 @@
             android:stopWithTask="true"
             tools:ignore="WrongManifestParent"/>
         <service android:name="com.amap.api.location.APSService" />
-
         <activity android:name="com.anxin.kitchen.activity.MessageCenterActivity" />
         <activity android:name="com.anxin.kitchen.activity.RecoveryMealActivity" />
         <activity android:name="com.anxin.kitchen.activity.BaseActivity" />

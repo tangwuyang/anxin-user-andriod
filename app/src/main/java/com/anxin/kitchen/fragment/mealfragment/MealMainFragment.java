@@ -1,8 +1,6 @@
 package com.anxin.kitchen.fragment.mealfragment;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,12 +17,6 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.model.BitmapDescriptor;
-import com.amap.api.maps2d.model.BitmapDescriptorFactory;
-import com.amap.api.maps2d.model.LatLng;
-import com.amap.api.maps2d.model.MarkerOptions;
-import com.anxin.kitchen.activity.LocationActivity;
 import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.activity.MessageCenterActivity;
 import com.anxin.kitchen.activity.PreserveActivity;
@@ -33,34 +24,16 @@ import com.anxin.kitchen.activity.RecoveryMealActivity;
 import com.anxin.kitchen.activity.SendMealLocationActivity;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
-import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.CustomGridView;
 import com.bumptech.glide.Glide;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.youth.banner.Banner;
 
-import org.apache.http.Header;
-
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-import static android.content.ContentValues.TAG;
-import static com.umeng.analytics.AnalyticsConfig.getLocation;
 
 /**
  * 点餐主界面
@@ -96,7 +69,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = (MainActivity) getActivity();
+        activity = (MainActivity) MainActivity.context;
     }
 
 
