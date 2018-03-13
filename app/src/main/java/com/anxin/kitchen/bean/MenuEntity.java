@@ -10,11 +10,17 @@ public class MenuEntity implements BaseEntity {
     private long menuId;
     private String menuTitle;
     private int menuIconRes;
-
+    private int groupId;
     public MenuEntity(String title, int iconRes) {
 
         this.menuTitle = title;
         this.menuIconRes = iconRes;
+    }
+
+    public MenuEntity(String menuTitle, int menuIconRes, int groupId) {
+        this.menuTitle = menuTitle;
+        this.menuIconRes = menuIconRes;
+        this.groupId = groupId;
     }
 
     public long getMenuId() {
@@ -51,5 +57,13 @@ public class MenuEntity implements BaseEntity {
     public String getIndexField() {
 
         return menuTitle;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 }

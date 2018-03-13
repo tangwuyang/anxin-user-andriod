@@ -24,11 +24,36 @@ public class PrefrenceUtil {
     public void putKitchenId(int kitchenId){
         SharedPreferences.Editor editor = getPreference().edit();
         editor.putInt(Constant.KITCHEN_ID,kitchenId);
+        editor.commit();
     }
 
     public int getKitchenId(){
         SharedPreferences preferences =  getPreference();
         int kitchentId = preferences.getInt(Constant.KITCHEN_ID,0);
         return kitchentId;
+    }
+
+    public void putFrinends(String friendsString){
+        SharedPreferences.Editor editor = getPreference().edit();
+        editor.putString(Constant.FRIENDSSTRING,friendsString);
+        editor.commit();
+    }
+
+    public String getFriends(){
+        SharedPreferences preferences =  getPreference();
+        String frindsSt = preferences.getString(Constant.FRIENDSSTRING,"null");
+        return frindsSt;
+    }
+
+    public void putGroups(String friendsString){
+        SharedPreferences.Editor editor = getPreference().edit();
+        editor.putString(Constant.GROUPSSTRING,friendsString);
+        editor.commit();
+    }
+
+    public String getGroups(){
+        SharedPreferences preferences =  getPreference();
+        String groupSt = preferences.getString(Constant.GROUPSSTRING,"null");
+        return groupSt;
     }
 }

@@ -3,7 +3,7 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="58.7dp"
-                android:background="?attr/selectableItemBackground"
+                android:background="@color/white"
 
                >
 
@@ -11,9 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
         <TextView
+            android:id="@+id/delete_tv"
             android:background="@color/red"
             android:layout_width="100dp"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:gravity="center"
             android:layout_height="match_parent"
             android:text="@string/delete"/>
@@ -22,6 +23,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ImageView
+            android:visibility="gone"
+            android:layout_marginLeft="@dimen/bar_left_right_padding"
+            android:id="@+id/select_img"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/unselected_drawable"
+            />
+        <ImageView
+            android:layout_toRightOf="@id/select_img"
             android:layout_marginLeft="16dp"
             android:id="@+id/img_avatar"
             android:layout_width="@dimen/profile_weight"

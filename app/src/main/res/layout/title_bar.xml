@@ -23,6 +23,17 @@
             android:paddingLeft="@dimen/bar_left_right_padding"
             android:scaleType="fitCenter"
             android:src="@drawable/back_drawable"/>
+        <TextView
+            android:id="@+id/cancel_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:text="@string/cancel"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            android:textColor="@color/white"
+          />
+
 
         <ImageView
             android:id="@+id/search_img"

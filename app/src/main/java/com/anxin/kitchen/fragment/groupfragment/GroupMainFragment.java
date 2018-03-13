@@ -147,7 +147,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
     //下拉刷新
     private void setRefresh() {
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+      /*  mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mRefreshLayout.setRefreshing(true);
@@ -159,7 +159,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
                     }
                 }, 3000);
             }
-        });
+        });*/
     }
 
     private void setSearch() {
@@ -170,18 +170,20 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
                 View view = LayoutInflater.from(mContext).inflate(R.layout.indexsticky_header_contact_banner, parent, false);
                 ImageViewVH vh = new ImageViewVH(view);
-                vh.search_rl.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext, "搜索", Toast.LENGTH_SHORT).show();
-                    }
-                });
+
                 return vh;
             }
 
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, BaseEntity itemData) {
-
+                ImageViewVH imageViewVH = (ImageViewVH) holder;
+                ((ImageViewVH) holder).search_rl.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        activity.myLog("----------------开始搜索");
+                        Toast.makeText(activity, "search", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             class ImageViewVH extends RecyclerView.ViewHolder {
@@ -190,6 +192,12 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
                 public ImageViewVH(View itemView) {
                     super(itemView);
                     search_rl = (RelativeLayout) itemView.findViewById(R.id.search_rl);
+                    search_rl.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(activity, "search", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         };
@@ -259,7 +267,11 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     public void setFriend(FriendsBean bean) {
        List<FriendsBean.Data> friendList =  bean.getData();
        activity.myLog("---------------"+friendList.size());
-        Friendslist.clear();
+       if (null!=Friendslist) {
+           Friendslist.clear();
+       }else {
+           Friendslist = new ArrayList<>();
+       }
         if(null != Friendslist){
            for (int i = 0;i<friendList.size();i++){
                ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),friendList.get(i).getPhone());
@@ -277,6 +289,9 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         setSearch();
         mAdapter.setOnItemClickListener(this);
         mAdapter.setOnItemLongClickListener(this);
+    }
+
+    public void updataGroup() {
     }
 
     class GroupAdapter extends BaseAdapter {
@@ -304,9 +319,19 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = LayoutInflater.from(activity).inflate(R.layout.indexsticky_item_contact,viewGroup,false);
+            final MenuEntity entity = dataList.get(i);
             TextView nameTv = view.findViewById(R.id.tv_name);
-            nameTv.setText(dataList.get(i).getMenuTitle());
-
+            nameTv.setText(entity.getMenuTitle());
+            TextView deleteTv = view.findViewById(R.id.delete_tv);
+            deleteTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Map<String,Object> dataMap = new HashMap<>();
+                    dataMap.put("groupId",entity.getGroupId());
+                    dataMap.put("token",token);
+                    activity.requestNet(SystemUtility.deleteGroupUrl(),dataMap,activity.DELETE_GROUP);
+                }
+            });
             return view;
         }
     }
@@ -496,12 +521,12 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         }
         this.grouplist.clear();
         activity.myLog("----------------"+groupList.size());
-        for (int i=0;i<4;i++){
+        for (int i=0;i<7;i++){
             activity.myLog("----------------"+groupList.get(i).getGroupDesc());
-            this.grouplist.add(new MenuEntity(groupList.get(i).getGroupDesc(),R.drawable.vector_contact_focus));
+            this.grouplist.add(new MenuEntity(groupList.get(i).getGroupDesc(),R.drawable.vector_contact_focus,groupList.get(i).getId()));
         }
-        mAdapter = new MyIndexStickyViewAdapter(initDatas());
-        mIndexStickyView.setAdapter(mAdapter);
+   /*     mAdapter = new MyIndexStickyViewAdapter(initDatas());
+        mIndexStickyView.setAdapter(mAdapter);*/
 
     }
 

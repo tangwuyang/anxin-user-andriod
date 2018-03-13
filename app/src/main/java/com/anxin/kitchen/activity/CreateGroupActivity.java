@@ -99,6 +99,8 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
             String status = StringUtils.parserMessage(responseString,"message");
             if (status.equals(Constant.LOGIN_FIRST)){
                 startNewActivity(LoginActivity.class);
+            }else if (status.equals(Constant.REQUEST_SUCCESS)){
+                startNewActivity(GroupAndFriendsListActivitiy.class);
             }
         }
     }

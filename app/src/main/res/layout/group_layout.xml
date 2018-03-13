@@ -7,5 +7,7 @@
     <com.anxin.kitchen.view.MyListView
         android:id="@+id/group_lv"
         android:layout_width="match_parent"
+        android:divider="@color/main_bg_color"
+        android:dividerHeight="1dp"
         android:layout_height="wrap_content"></com.anxin.kitchen.view.MyListView>
 </LinearLayout>

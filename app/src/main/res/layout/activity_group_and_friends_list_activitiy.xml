@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg_color"
+    tools:context="com.anxin.kitchen.activity.GroupAndFriendsListActivitiy">
+    <include layout="@layout/title_bar"
+        android:id="@+id/title_bar"
+        />
+    <com.bluetooth.tangwuyang.fantuanlibrary.IndexStickyView
+        android:layout_below="@+id/title_bar"
+        android:id="@+id/indexStickyView"
+        android:layout_width="match_parent"
+        android:layout_above="@+id/select_info_ll"
+        android:layout_height="wrap_content">
+    </com.bluetooth.tangwuyang.fantuanlibrary.IndexStickyView>
+    <LinearLayout
+        android:id="@+id/select_info_ll"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="65.3dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已选择："
+            android:textColor="@color/shallow_black"
+            android:layout_marginLeft="@dimen/bar_left_right_padding"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0人"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:layout_marginLeft="@dimen/bar_left_right_padding"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="确定"
+            android:layout_weight="1"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:textSize="@dimen/title_text_size"
+            android:background="@color/red"
+            android:layout_marginLeft="@dimen/bar_left_right_padding"
+
+            />
+    </LinearLayout>
+</RelativeLayout>
