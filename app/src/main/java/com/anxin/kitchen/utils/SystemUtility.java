@@ -37,6 +37,7 @@ import java.util.Set;
 
 public class SystemUtility {
     private static final Log LOG = Log.getLog();
+    public static final String PHOTO_FILE_NAME = "anxinicon.png";//用户头像名称
     public static String AMUAC_IP = "http://tapi.anxinyc.com";//服务器请求，IP地址
     public static String AMToken;//网络请求ToKen
     public static String RequestSuccess = "onSuccess";//http方法成功返回标志

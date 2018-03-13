@@ -7,17 +7,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.anxin.kitchen.activity.LoginActivity;
-import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.event.OnUserAcountEvent;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
-import com.anxin.kitchen.tangwuyangs_test.TestMapActivity;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;

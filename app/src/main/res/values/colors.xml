@@ -25,5 +25,6 @@
     <color name="open_color">#2395ff</color>
     <color name="login_code_send">#ff3d54</color>
     <color name="login_code_count_down">#888888</color>
+    <color name="dialog_background">#80141519</color>
 
 </resources>
