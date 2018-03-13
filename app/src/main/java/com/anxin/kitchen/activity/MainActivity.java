@@ -55,6 +55,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     private static final String TAG = "MainActivity";
     public static final String SEARCH_GROUP = "SEARCH_GROUP";
     public static final String GET_FRIEND = "GET_FRIEND";
+    public static final String DELETE_GROUP = "DELETE_GROUP" ;
+    private static final String RE_GET_GROUP = "再次请求团";
+    private PrefrenceUtil prefrenceUtil;
     public static Context context;
     // 定义4个Fragment对象
     private MealMainFragment mealMainFragment;
@@ -83,6 +86,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
+        prefrenceUtil = new PrefrenceUtil(this);
         context = this;
         requestLocationPermission();
         initView();//初始化界面控件
@@ -306,12 +310,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
                 Gson gson = new Gson();
                 SearchGroupBean bean = gson.fromJson(gsonSt, SearchGroupBean.class);
                 myLog(bean.getData().size()+"--------"+gsonSt);
+                prefrenceUtil.putGroups(gsonSt);
                 groupMainFragment.setGroup(bean);
             }else if (null!=status && status.equals(Constant.LOGIN_FIRST)){
                 startNewActivity(LoginActivity.class);
             }
         }
-
         //查询团友
         if (requestCode!=null && requestCode.equals(GET_FRIEND)){
             String status = StringUtils.parserMessage(responseBody,"message");
@@ -319,8 +323,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
                 Gson gson = new Gson();
                 myLog("--------"+responseBody);
                 FriendsBean bean = gson.fromJson(responseBody,FriendsBean.class);
+                prefrenceUtil.putFrinends(responseBody);
                 groupMainFragment.setFriend(bean);
             }else if (null!=status && status.equals(Constant.LOGIN_FIRST)){
+                startNewActivity(LoginActivity.class);
+            }
+        }
+
+        if (requestCode!=null && requestCode.equals(DELETE_GROUP)){
+            String status = StringUtils.parserMessage(responseBody,"message");
+            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
+                myLog("-------------delte"+responseBody);
+                //重新请求团信息
+                requestNet(SystemUtility.searchGroupUrl(),null,RE_GET_GROUP);
+                groupMainFragment.updataGroup();
+
+            }else if (null!=status && status.equals(Constant.HAS_NO_PREMISSION)){
+                Toast.makeText(context, "您暂时无权限删除此团", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (requestCode!=null && requestCode.equals(RE_GET_GROUP)){
+            String status = StringUtils.parserMessage(responseBody,"message");
+            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
+                myLog("-------------re"+responseBody);
+            }else if (null != status && status.equals(Constant.LOGIN_FIRST)){
                 startNewActivity(LoginActivity.class);
             }
         }
