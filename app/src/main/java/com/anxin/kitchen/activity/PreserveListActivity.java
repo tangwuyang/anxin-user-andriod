@@ -11,23 +11,50 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.PrefrenceUtil;
+import com.anxin.kitchen.utils.StringUtils;
+import com.anxin.kitchen.utils.SystemUtility;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class PreserveListActivity extends BaseActivity {
+public class PreserveListActivity extends BaseActivity implements RequestNetListener{
+    private static final String REQUEST_MENU = "REQUEST_MENU";
     private ListView mMealCatalogLv;
     private List<String> mCatalogList = new ArrayList<>();
     private CatalogAdapter mCatalogAdapter;
     private ListView mContentLv;
     private ContentAdapter mContentAdapter;
+    private PrefrenceUtil prefrenceUtil;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preserve_list);
         setTitleBar();
         initView();
+        getData();
+    }
+
+    private void getData() {
+        getMenu();
+        getAllMeal();
+    }
+
+
+    //第一次进入不按品类加载
+    private void getAllMeal() {
+    }
+
+    private void getMenu() {
+        long kitchenId = prefrenceUtil.getKitchenId();
+        Map<String ,Object> dataMap = new HashMap<>();
+        dataMap.put("kitchenId",kitchenId);
+        requestNet(SystemUtility.getKitchenMenuUrl(),dataMap,REQUEST_MENU);
     }
 
     @Override
@@ -78,6 +105,7 @@ public class PreserveListActivity extends BaseActivity {
                 finish();
             }
         });
+        prefrenceUtil = new PrefrenceUtil(this);
     }
 
     private class CatalogAdapter extends BaseAdapter {
@@ -134,6 +162,20 @@ public class PreserveListActivity extends BaseActivity {
                 }
             });
             return view;
+        }
+    }
+
+    @Override
+    public void requestFailure(String responseFailure, String requestCode) {
+        super.requestFailure(responseFailure, requestCode);
+    }
+
+    @Override
+    public void requestSuccess(String responseString, String requestCode) {
+        super.requestSuccess(responseString, requestCode);
+        String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
+        if (requestCode==REQUEST_MENU && status.equals(Constant.REQUEST_SUCCESS)){
+            myLog("---------->menu" + responseString);
         }
     }
 }

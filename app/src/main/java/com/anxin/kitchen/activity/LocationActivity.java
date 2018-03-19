@@ -266,6 +266,14 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         String addressName = regeocodeResult.getRegeocodeAddress().getFormatAddress()
                 + "附近";
          mCameraTextView.setText("   " + addressName);
+         AMapLocation location = new AMapLocation(regeocodeResult.getRegeocodeAddress().getFormatAddress());
+         //区域编码
+         String distictCode = location.getAdCode();
+         //省份编码
+        String proviceCode = location.getProvince();
+        //城市编码
+        String cityCode = location.getCityCode();
+        Log.i(TAG, "onRegeocodeSearched: ---------->" + proviceCode + "---"+cityCode+"---"+distictCode);
     }
 
     @Override

@@ -96,7 +96,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         view = inflater.inflate(R.layout.group_main_fragment, null);
         //initView();//初始化界面控制
         //initEditData();
-
+        grouplist = new ArrayList<>();
         activity = (MainActivity) getActivity();
         requestInternetGetData();
         mRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
@@ -479,7 +479,6 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     }
 
     private List<ContactEntity> initDatas() {
-
         Friendslist = new ArrayList<>();
         // 初始化数据
         List<String> contactStrings = Arrays.asList(getResources().getStringArray(R.array.contact_array));
