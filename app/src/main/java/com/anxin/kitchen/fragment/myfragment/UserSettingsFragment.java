@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.anxin.kitchen.activity.ClipHeaderActivity;
+import com.anxin.kitchen.activity.UserNameActivity;
 import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
@@ -40,10 +41,11 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private RoundedImageView userIcon;//用户头像
     private TextView userName;//用户名称
     private TextView userPhone;//用户电话
-    private SelectPicPopupWindow menuWindowSelectPic;
+    private SelectPicPopupWindow menuWindowSelectPic;//选择头像图片弹窗
     private static final int RESULT_CAPTURE = 122;
     private static final int RESULT_PICK = 133;
     private static final int CROP_PHOTO = 111;
+    private static final int USER_NAME = 112;//相册编辑标志
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,12 +115,10 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 showChooseDialog();
                 break;
             case R.id.user_name_rlt://修改用户名
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                UserNameSetFragment userNameSetFragment = new UserNameSetFragment();
-                ft.replace(R.id.content_frame, userNameSetFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), UserNameActivity.class);
+                intent.putExtra("userName", "");
+                getActivity().startActivityForResult(intent, USER_NAME);
                 break;
             case R.id.user_gender_rlt://修改用户性别
                 break;
@@ -192,6 +192,13 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 if (resultCode == getActivity().RESULT_OK) {
                     if (data != null) {
                         setPicToView(data);
+                    }
+                }
+                break;
+            case USER_NAME:
+                if (resultCode == getActivity().RESULT_OK) {
+                    if (data != null) {
+                        String name = data.getStringExtra("userName");
                     }
                 }
                 break;

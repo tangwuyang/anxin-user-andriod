@@ -71,6 +71,7 @@
         </activity>
         <activity android:name="com.anxin.kitchen.activity.LoginActivity" />
         <activity android:name="com.anxin.kitchen.tangwuyangs_test.TestMapActivity" />
+        <activity android:name="com.anxin.kitchen.activity.UserNameActivity" />
 
         <service
             android:name="com.anxin.kitchen.utils.MyService"
