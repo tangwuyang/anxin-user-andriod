@@ -86,10 +86,10 @@ public class MyService extends Service {
     /*
     *Android保存图片到系统
     */
-    private void onSaveBitmap(Bitmap mBitmap, final Context context, String userPhone) {
+    public static void onSaveBitmap(Bitmap mBitmap, final Context context, String userPhone) {
         // 第一步：首先保存图片
         //将Bitmap保存图片到指定的路径/sdcard/Boohee/下，文件名以当前系统时间命名,但是这种方法保存的图片没有加入到系统图库中
-        String fileName = getExternalCacheDir().getPath()+"anxin/" + userPhone + "logo.png";
+        String fileName = context.getExternalCacheDir().getPath()+"anxin/" + userPhone + "logo.png";
         File file = new File(fileName);
         if (!file.exists()) {
             //先得到文件的上级目录，并创建上级目录，在创建文件
