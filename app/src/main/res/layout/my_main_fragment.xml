@@ -60,7 +60,7 @@
                     android:id="@+id/user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="暂无"
+                    android:text="立即登录"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
 
@@ -70,6 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/user_name"
                     android:textColor="@color/white"
+                    android:text="登录后可享受更多特权"
                     android:textSize="12sp" />
 
                 <ImageView

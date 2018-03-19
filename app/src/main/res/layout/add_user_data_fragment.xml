@@ -112,7 +112,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/contact_next"
-                android:text="张三"
+                android:text="暂无"
                 android:textColor="#333333"
                 android:textSize="14sp" />
         </RelativeLayout>
@@ -177,17 +177,20 @@
                 android:textSize="18sp" />
 
             <EditText
+                android:id="@+id/user_address_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_toRightOf="@+id/address_tv"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/address_tv"
                 android:gravity="center_vertical|right"
                 android:hint="例5号楼1001"
+                android:textColor="@color/black"
                 android:textColorHint="#cccccc"
-                android:textSize="16sp"
-                />
+                android:maxLines="1"
+                android:textSize="16sp" />
         </RelativeLayout>
     </LinearLayout>
 

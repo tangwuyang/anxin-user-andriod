@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -13,24 +12,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.ClipHeaderActivity;
+import com.anxin.kitchen.activity.UserNameActivity;
 import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
-import com.anxin.kitchen.fragment.myfragment.UserNameSetFragment;
 import com.anxin.kitchen.user.R;
-import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.MyService;
-import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RoundedImageView;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * 完善用户资料界面
@@ -40,14 +36,17 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
     private View view;
     private RelativeLayout userIconBtn;//用户头像按钮
     private RelativeLayout userNameBtn;//用户名称按钮
+    private RelativeLayout userAddressBtn;//用户地址
     private RoundedImageView userIcon;//用户头像
     private TextView userName;//用户名称
+    private EditText userAddressEdit;//用户详细地址
     private TextView skipBtn;//跳过，下一步按钮
     private Button completeBtn;//完成按钮
     private SelectPicPopupWindow menuWindowSelectPic;
-    private static final int RESULT_CAPTURE = 10000;
-    private static final int RESULT_PICK = 101000;
-    private static final int CROP_PHOTO = 102000;
+    private static final int RESULT_CAPTURE = 100;//相机标志
+    private static final int RESULT_PICK = 101;//相册标志
+    private static final int CROP_PHOTO = 102;//相册编辑标志
+    private static final int USER_NAME = 112;//相册编辑标志
     private MyApplication mApp = null;
 
     @Override
@@ -70,8 +69,11 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
     }
 
     private void initView() {
-        userIconBtn = (RelativeLayout) view.findViewById(R.id.user_icon_rlt);
-        userNameBtn = (RelativeLayout) view.findViewById(R.id.user_name_rlt);
+        userIconBtn = (RelativeLayout) view.findViewById(R.id.user_icon_rlt);//用户头像栏
+        userNameBtn = (RelativeLayout) view.findViewById(R.id.user_name_rlt);//用户名称栏
+        userAddressBtn = (RelativeLayout) view.findViewById(R.id.user_address_rlt);//用户地址
+        userAddressEdit = (EditText) view.findViewById(R.id.user_address_edit);
+        userAddressBtn.setOnClickListener(this);
         userNameBtn.setOnClickListener(this);
         userIconBtn.setOnClickListener(this);
 
@@ -103,12 +105,10 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
                 showChooseDialog();
                 break;
             case R.id.user_name_rlt://修改用户名
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                UserNameSetFragment userNameSetFragment = new UserNameSetFragment();
-                ft.replace(R.id.content_frame, userNameSetFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), UserNameActivity.class);
+                intent.putExtra("userName", "");
+                getActivity().startActivityForResult(intent, USER_NAME);
                 break;
             default:
                 break;
@@ -159,7 +159,7 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
                     Bundle bundle = data.getExtras(); // 从data中取出传递回来缩略图的信息，图片质量差，适合传递小图片
                     Bitmap bitmap = (Bitmap) bundle.get("data"); // 将data中的信息流解析为Bitmap类型
                     userIcon.setImageBitmap(bitmap);// 显示图片
-                    MyService.onSaveBitmap(bitmap,getActivity(),mApp.getAccount().getUserPhone());
+                    MyService.onSaveBitmap(bitmap, getActivity(), mApp.getAccount().getUserPhone());
                     LOG.e("------------RESULT_CAPTURE--------");
 //                    Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), bitmap, null,null));
 //                    starCropPhoto(uri);
@@ -176,6 +176,13 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
                 if (resultCode == getActivity().RESULT_OK) {
                     if (data != null) {
                         setPicToView(data);
+                    }
+                }
+                break;
+            case USER_NAME:
+                if (resultCode == getActivity().RESULT_OK) {
+                    if (data != null) {
+                        String name = data.getStringExtra("userName");
                     }
                 }
                 break;

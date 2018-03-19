@@ -40,12 +40,14 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
                 android:text="保存"
+                android:alpha="0.5"
                 android:textColor="@color/white"
                 android:textSize="15.7sp" />
         </RelativeLayout>
     </LinearLayout>
 
     <EditText
+        android:id="@+id/userName_edit"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/white"

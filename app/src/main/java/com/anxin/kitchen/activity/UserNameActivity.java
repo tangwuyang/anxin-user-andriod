@@ -1,8 +1,11 @@
 package com.anxin.kitchen.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,12 +42,15 @@ public class UserNameActivity extends BaseActivity implements View.OnClickListen
     private Log LOG = Log.getLog();
     private ImageView backBtn;//返回
     private TextView storeBtn;//保存
+    private String userName;//用户名
+    private EditText userNameEdit;//用户名称输入框
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_name_set_fragment);
+        userName = getIntent().getStringExtra("userName");
         initView();
     }
 
@@ -56,6 +62,29 @@ public class UserNameActivity extends BaseActivity implements View.OnClickListen
         storeBtn = (TextView) findViewById(R.id.store_btn);//保存按钮
         storeBtn.setOnClickListener(this);
         backBtn.setOnClickListener(this);
+        userNameEdit = (EditText) findViewById(R.id.userName_edit);
+        if (userName != null && !userName.equals("暂无"))
+            userNameEdit.setText(userName);
+        userNameEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (userNameEdit.getText().toString().length() != 0) {
+                    storeBtn.setAlpha(1f);
+                } else {
+                    storeBtn.setAlpha(0.5f);
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
@@ -65,6 +94,12 @@ public class UserNameActivity extends BaseActivity implements View.OnClickListen
                 finish();
                 break;
             case R.id.store_btn://保存
+                String name = userNameEdit.getText().toString();
+                if (null != name && name.length() != 0) {
+                    Intent intent = new Intent();
+                    intent.putExtra("userName", name);
+                    setResult(this.RESULT_OK, intent);
+                }
                 finish();
                 break;
         }
