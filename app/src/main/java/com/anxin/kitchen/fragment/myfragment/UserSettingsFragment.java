@@ -20,6 +20,7 @@ import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RoundedImageView;
 
@@ -149,7 +150,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
 //                    } else {
 //                    }
                     Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);// 启动系统相机
-//                    intent1.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                    intent1.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                     startActivityForResult(intent1, RESULT_CAPTURE);
                     break;
                 case R.id.btn_pick_photo://打开系统相册
@@ -173,10 +174,11 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
 //                    File temp = new File(Environment.getExternalStorageDirectory() + "/" + SystemUtility.PHOTO_FILE_NAME);
                     Bundle bundle = data.getExtras(); // 从data中取出传递回来缩略图的信息，图片质量差，适合传递小图片
                     Bitmap bitmap = (Bitmap) bundle.get("data"); // 将data中的信息流解析为Bitmap类型
-//                    userIcon.setImageBitmap(bitmap);// 显示图片
+                    userIcon.setImageBitmap(bitmap);// 显示图片
+                    MyService.onSaveBitmap(bitmap,getActivity(),mApp.getAccount().getUserPhone());
                     LOG.e("------------RESULT_CAPTURE--------");
-                    Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), bitmap, null, null));
-                    starCropPhoto(uri);
+//                    Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), bitmap, null, null));
+//                    starCropPhoto(uri);
                 }
 
                 break;

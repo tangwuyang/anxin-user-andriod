@@ -24,6 +24,7 @@ import com.anxin.kitchen.fragment.myfragment.UserNameSetFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RoundedImageView;
 
@@ -138,7 +139,7 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
                     break;
                 case R.id.btn_pick_photo://打开系统相册
                     Intent intent = new Intent(Intent.ACTION_PICK, null);
-//                    intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                    intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                     getActivity().startActivityForResult(intent, RESULT_PICK);
                     break;
                 default:
@@ -157,10 +158,11 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
 //                    File temp = new File(Environment.getExternalStorageDirectory() + "/" + SystemUtility.PHOTO_FILE_NAME);
                     Bundle bundle = data.getExtras(); // 从data中取出传递回来缩略图的信息，图片质量差，适合传递小图片
                     Bitmap bitmap = (Bitmap) bundle.get("data"); // 将data中的信息流解析为Bitmap类型
-//                    userIcon.setImageBitmap(bitmap);// 显示图片
+                    userIcon.setImageBitmap(bitmap);// 显示图片
+                    MyService.onSaveBitmap(bitmap,getActivity(),mApp.getAccount().getUserPhone());
                     LOG.e("------------RESULT_CAPTURE--------");
-                    Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), bitmap, null,null));
-                    starCropPhoto(uri);
+//                    Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), bitmap, null,null));
+//                    starCropPhoto(uri);
                 }
 
                 break;

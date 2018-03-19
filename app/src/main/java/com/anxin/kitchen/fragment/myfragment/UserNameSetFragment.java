@@ -1,6 +1,7 @@
 package com.anxin.kitchen.fragment.myfragment;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,7 @@ import com.anxin.kitchen.utils.Log;
 /**
  * 设置用户名称界面
  */
-public class UserNameSetFragment extends HomeBaseFragment implements View.OnClickListener {
+public class UserNameSetFragment extends Fragment implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private View view;
     private ImageView backBtn;//返回
@@ -25,7 +26,6 @@ public class UserNameSetFragment extends HomeBaseFragment implements View.OnClic
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        hideMainBottom();
     }
 
     @Override
