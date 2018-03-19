@@ -11,16 +11,26 @@ public class MenuEntity implements BaseEntity {
     private String menuTitle;
     private int menuIconRes;
     private int groupId;
+    private int groupNum;
     public MenuEntity(String title, int iconRes) {
 
         this.menuTitle = title;
         this.menuIconRes = iconRes;
     }
 
-    public MenuEntity(String menuTitle, int menuIconRes, int groupId) {
+    public MenuEntity(String menuTitle, int menuIconRes, int groupId, int groupNum) {
         this.menuTitle = menuTitle;
         this.menuIconRes = menuIconRes;
         this.groupId = groupId;
+        this.groupNum = groupNum;
+    }
+
+    public int getGroupNum() {
+        return groupNum;
+    }
+
+    public void setGroupNum(int groupNum) {
+        this.groupNum = groupNum;
     }
 
     public long getMenuId() {

@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ import com.anxin.kitchen.bean.SearchGroupBean;
 import com.anxin.kitchen.decoration.IndexStickyViewDecoration;
 import com.anxin.kitchen.fragment.groupfragment.GroupMainFragment;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.view.MyListView;
@@ -38,6 +40,7 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
     private TextView mCancelTv;
     private ImageView mBackImg;
     private TextView mTitleTv;
+    private TextView mCompleteTv;
     private PrefrenceUtil mPrefrenceUtil;
     private Gson mGson;
     IndexStickyView mIndexStickyView;
@@ -60,6 +63,8 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
     private void initView() {
         mPrefrenceUtil = new PrefrenceUtil(this);
         mIndexStickyView = findViewById(R.id.indexStickyView);
+        mCompleteTv = findViewById(R.id.complete_bottom_tv);
+        mCompleteTv.setOnClickListener(this);
     }
 
     private void setGroupAndFriends() {
@@ -92,7 +97,6 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
                 ((ImageViewVH) holder).search_rl.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        myLog("----------------开始搜索");
                         Toast.makeText(GroupAndFriendsListActivitiy.this, "search", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -188,7 +192,15 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.cancel_tv:
-                this.finish();
+                Intent intent = new Intent();
+                setResult(Constant.ADD_FRIEND_CODE,intent);
+                finish();
+               break;
+            case R.id.complete_bottom_tv:
+                Intent intent1 = new Intent();
+                setResult(Constant.ADD_FRIEND_CODE,intent1);
+                finish();
+                break;
         }
     }
 
@@ -202,7 +214,7 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
         }
         this.grouplist.clear();
         myLog("----------------"+groupList.size());
-        for (int i=0;i<7;i++){
+        for (int i=0;i<groupList.size();i++){
             myLog("-----------gro-----"+groupList.get(i).getGroupDesc());
             this.grouplist.add(new MenuEntity(groupList.get(i).getGroupDesc(),R.drawable.vector_contact_focus));
         }

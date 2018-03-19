@@ -108,6 +108,19 @@ public class SystemUtility {
     }
 
     /**
+     * 添加好友到饭团
+     * */
+    public static String addFriendToGroupUrl(){
+        return AMUAC_IP + "/v1.0/group/add_user";
+    }
+
+    /**
+     * 查询饭团好友
+     * */
+    public static String getFriendsOfGroupUrl(){
+        return AMUAC_IP + "/v1.0/group/user_list";
+    }
+    /**
      * 查询团友信息url
      * */
     public static String deleteGroupUrl(){

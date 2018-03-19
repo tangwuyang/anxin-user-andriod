@@ -29,6 +29,7 @@ import com.anxin.kitchen.fragment.orderfragment.OrderMainFragment;
 import com.anxin.kitchen.interface_.OnGivedPermissionListener;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.PrefrenceUtil;
@@ -340,8 +341,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("-------------delte"+responseBody);
                 //重新请求团信息
-                requestNet(SystemUtility.searchGroupUrl(),null,RE_GET_GROUP);
-                groupMainFragment.updataGroup();
+                String token = new Cache(this).getAMToken();
+                Map<String,Object> dataMap = new HashMap<>();
+                dataMap.put(Constant.TOKEN,token);
+                requestNet(SystemUtility.searchGroupUrl(),dataMap,RE_GET_GROUP);
 
             }else if (null!=status && status.equals(Constant.HAS_NO_PREMISSION)){
                 Toast.makeText(context, "您暂时无权限删除此团", Toast.LENGTH_SHORT).show();
@@ -352,6 +355,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
             String status = StringUtils.parserMessage(responseBody,"message");
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("-------------re"+responseBody);
+                String gsonSt =StringUtils.parserMessage(responseBody,"data");
+                Gson gson = new Gson();
+                SearchGroupBean bean = gson.fromJson(gsonSt, SearchGroupBean.class);
+                myLog(bean.getData().size()+"--------"+gsonSt);
+                prefrenceUtil.putGroups(gsonSt);
+                groupMainFragment.updataGroup(bean);
             }else if (null != status && status.equals(Constant.LOGIN_FIRST)){
                 startNewActivity(LoginActivity.class);
             }

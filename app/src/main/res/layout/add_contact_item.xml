@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="58.7dp"
+                android:background="@color/white"
+               >
+
+
+    <LinearLayout
+        android:id="@+id/info_rl"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_marginLeft="16dp"
+            android:id="@+id/img_avatar"
+            android:layout_width="@dimen/profile_weight"
+            android:layout_height="@dimen/profile_height"
+            android:layout_centerVertical="true"
+            android:scaleType="centerInside"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/vector_contact_focus"
+            />
+
+        <TextView
+            android:layout_centerVertical="true"
+            android:id="@+id/tv_name"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/img_avatar"
+            android:textColor="#373737"
+            android:textSize="@dimen/big_text_size" />
+
+        <TextView
+            android:id="@+id/tv_mobile"
+            android:gravity="left"
+            android:layout_width="0dp"
+            android:layout_weight="0.8"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_toRightOf="@id/tv_name"
+            android:textSize="@dimen/normal_text_size"
+            android:textColor="#969696" />
+
+        <TextView
+            android:id="@+id/add_tv"
+            android:gravity="center"
+            android:layout_width="48dp"
+            android:layout_height="26.7dp"
+            android:text="添加"
+            android:background="@drawable/add_contact_bg"
+            android:textColor="@color/title_bar_color"
+            android:textSize="@dimen/normal_text_size"
+            android:layout_marginRight="30dp"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

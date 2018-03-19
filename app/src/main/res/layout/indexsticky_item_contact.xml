@@ -4,7 +4,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="58.7dp"
                 android:background="@color/white"
-
                >
 
     <LinearLayout
@@ -20,6 +19,7 @@
             android:text="@string/delete"/>
     </LinearLayout>
     <RelativeLayout
+        android:id="@+id/info_rl"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ImageView

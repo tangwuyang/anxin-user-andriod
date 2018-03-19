@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,7 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
     private TextView mSureBt;
     private String mGroupName;
     private EditText mGroupNameEt;
+    private boolean isAdd = false;
     private static final String CREATE_GROUP = "CREATE_GROUP";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +102,21 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
             if (status.equals(Constant.LOGIN_FIRST)){
                 startNewActivity(LoginActivity.class);
             }else if (status.equals(Constant.REQUEST_SUCCESS)){
-                startNewActivity(GroupAndFriendsListActivitiy.class);
+                isAdd = true;
+                Intent intent = new Intent(CreateGroupActivity.this,GroupAndFriendsListActivitiy.class);
+                startActivityForResult(intent,Constant.GROUP_MAIN_REQEST_CODE);
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Constant.GROUP_MAIN_REQEST_CODE && resultCode == Constant.ADD_FRIEND_CODE){
+            Intent intent = new Intent();
+            intent.putExtra("isAdd",isAdd);
+            setResult(Constant.ADD_FRIEND_CODE,intent);
+            finish();
         }
     }
 }

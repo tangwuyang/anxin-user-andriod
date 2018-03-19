@@ -1,9 +1,14 @@
 package com.anxin.kitchen.fragment.groupfragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +24,7 @@ import android.widget.Toast;
 
 import com.anxin.kitchen.activity.AddNewFriendActivity;
 import com.anxin.kitchen.activity.CreateGroupActivity;
+import com.anxin.kitchen.activity.GroupMemberActivity;
 import com.anxin.kitchen.activity.InvateFriendActivity;
 import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.activity.MainActivity;
@@ -146,19 +152,18 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
     //下拉刷新
     private void setRefresh() {
-      /*  mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+     mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mRefreshLayout.setRefreshing(true);
                 mRefreshLayout.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mAdapter.reset(initDatas());
                         mRefreshLayout.setRefreshing(false);
                     }
                 }, 3000);
             }
-        });*/
+        });
     }
 
     private void setSearch() {
@@ -271,12 +276,14 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
        }else {
            Friendslist = new ArrayList<>();
        }
-        if(null != Friendslist){
+        if(null != Friendslist && friendList.size()>0){
            for (int i = 0;i<friendList.size();i++){
                ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),friendList.get(i).getPhone());
                Friendslist.add(contactEntity);
            }
-       }
+       }else {
+            Friendslist.add(new ContactEntity("暂无好友",""));
+        }
         mAdapter = new MyIndexStickyViewAdapter(Friendslist);
         mIndexStickyView.setAdapter(mAdapter);
        // mAdapter.notifyDataSetChanged();
@@ -290,7 +297,9 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         mAdapter.setOnItemLongClickListener(this);
     }
 
-    public void updataGroup() {
+    public void updataGroup(SearchGroupBean bean) {
+        setGroup(bean);
+        groupAdapter.notifyDataSetChanged();
     }
 
     class GroupAdapter extends BaseAdapter {
@@ -298,11 +307,15 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
         public GroupAdapter(List<MenuEntity> dataList) {
             this.dataList = dataList;
+            activity.myLog("-------dalist_size--------"+dataList.size());
         }
 
         @Override
         public int getCount() {
-            return dataList.size();
+            if (null != dataList){
+                return dataList.size();
+            }
+            return 0;
         }
 
         @Override
@@ -320,7 +333,13 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
             view = LayoutInflater.from(activity).inflate(R.layout.indexsticky_item_contact,viewGroup,false);
             final MenuEntity entity = dataList.get(i);
             TextView nameTv = view.findViewById(R.id.tv_name);
-            nameTv.setText(entity.getMenuTitle());
+            final RelativeLayout infoRl = view.findViewById(R.id.info_rl);
+            String nameAndNums = entity.getMenuTitle() + "("+entity.getGroupNum() +"人)";
+            Spannable string = new SpannableString(nameAndNums);
+            int blacktPosition = nameAndNums.indexOf("(");
+            int rightPosition = nameAndNums.indexOf(")")+1;
+            string.setSpan(new ForegroundColorSpan(activity.getResources().getColor(R.color.shallow_black)),blacktPosition,rightPosition, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            nameTv.setText(string);
             TextView deleteTv = view.findViewById(R.id.delete_tv);
             deleteTv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -329,6 +348,16 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
                     dataMap.put("groupId",entity.getGroupId());
                     dataMap.put("token",token);
                     activity.requestNet(SystemUtility.deleteGroupUrl(),dataMap,activity.DELETE_GROUP);
+                }
+            });
+
+            infoRl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(activity,GroupMemberActivity.class);
+                    intent.putExtra("groupId",entity.getGroupId());
+                    intent.putExtra("groupName",entity.getMenuTitle());
+                    startActivityForResult(intent,Constant.GROUP_MAIN_REQEST_CODE);
                 }
             });
             return view;
@@ -520,14 +549,15 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         }
         this.grouplist.clear();
         activity.myLog("----------------"+groupList.size());
-        for (int i=0;i<7;i++){
+        for (int i=0;i<groupList.size();i++){
             activity.myLog("----------------"+groupList.get(i).getGroupDesc());
-            this.grouplist.add(new MenuEntity(groupList.get(i).getGroupDesc(),R.drawable.vector_contact_focus,groupList.get(i).getId()));
+            this.grouplist.add(new MenuEntity(groupList.get(i).getGroupDesc(),R.drawable.vector_contact_focus,groupList.get(i).getId(),groupList.get(i).getGroupNum()));
         }
    /*     mAdapter = new MyIndexStickyViewAdapter(initDatas());
         mIndexStickyView.setAdapter(mAdapter);*/
 
     }
+
 
     class MenuAdapter extends BaseAdapter{
 
@@ -593,12 +623,9 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == GROUP_MAIN_REQEST_CODE) {
-            switch (resultCode) {
-                case CREATE_GROUP_RESULT_CODE:
-                    break;
-            }
-
+        if (requestCode == GROUP_MAIN_REQEST_CODE && resultCode == Constant.ADD_FRIEND_CODE) {
+            getAllGroups();
+            getAllFriends();
         }
     }
 

@@ -8,6 +8,7 @@
     <uses-sdk android:minSdkVersion="21" />
 
     <supports-screens android:anyDensity="true" />
+
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -30,9 +31,14 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-
+    <!-- 写联系人权限 -->
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <!-- 拨号权限 -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <!-- 读短信权限 -->
+    <uses-permission android:name="android.permission.READ_SMS" />
     <application
         android:name="com.anxin.kitchen.MyApplication"
         android:allowBackup="true"
@@ -62,13 +68,15 @@
         </activity>
         <activity android:name="com.anxin.kitchen.activity.LoginActivity" />
         <activity android:name="com.anxin.kitchen.tangwuyangs_test.TestMapActivity" />
+
         <service
             android:name="com.anxin.kitchen.utils.MyService"
             android:enabled="true"
             android:exported="false"
             android:stopWithTask="true"
-            tools:ignore="WrongManifestParent"/>
+            tools:ignore="WrongManifestParent" />
         <service android:name="com.amap.api.location.APSService" />
+
         <activity android:name="com.anxin.kitchen.activity.MessageCenterActivity" />
         <activity android:name="com.anxin.kitchen.activity.RecoveryMealActivity" />
         <activity android:name="com.anxin.kitchen.activity.BaseActivity" />
@@ -108,6 +116,9 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name="com.anxin.kitchen.activity.SetCountActivity" />
         <activity android:name="com.anxin.kitchen.activity.AddNewFriendActivity" />
-        <activity android:name="com.anxin.kitchen.activity.GroupAndFriendsListActivitiy"></activity>
+        <activity android:name="com.anxin.kitchen.activity.GroupAndFriendsListActivitiy" />
+        <activity android:name="com.anxin.kitchen.activity.GroupMemberActivity" />
+        <activity android:name="com.anxin.kitchen.activity.ContactsActivity"></activity>
     </application>
+
 </manifest>

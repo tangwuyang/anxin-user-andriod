@@ -50,7 +50,6 @@ public class FriendsBean {
         public int getId() {
             return id;
         }
-
         public void setGroupId(int groupId) {
             this.groupId = groupId;
         }

@@ -57,7 +57,6 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
         startActivity(intent);
     }
 
-
     //请求网络异步方法
     /**
      * post公共方法

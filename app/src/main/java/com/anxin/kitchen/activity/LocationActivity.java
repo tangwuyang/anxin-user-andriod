@@ -93,7 +93,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                     markerOptions.position(new LatLng(lat, lon));
                     markerOptions.title("当前位置");
                     markerOptions.visible(true);
-                    BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.add_normal));
+                    BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.position_1));
                     markerOptions.icon(bitmapDescriptor);
                     aMap.addMarker(markerOptions);
 
