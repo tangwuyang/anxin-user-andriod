@@ -3,41 +3,43 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true"
     android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
     tools:context="com.anxin.kitchen.tangwuyangs_test.TestMapActivity">
-    <include layout="@layout/title_bar"
+
+    <include
         android:id="@+id/top_layout"
-        />
+        layout="@layout/title_bar" />
 
     <LinearLayout
         android:id="@+id/search_ll"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_below="@id/top_layout"
         android:layout_width="match_parent"
+        android:layout_height="58.7dp"
+        android:layout_below="@id/top_layout"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingBottom="10.7dp"
-        android:paddingTop="10.7dp"
         android:paddingLeft="14dp"
         android:paddingRight="14dp"
-        android:layout_height="58.7dp">
+        android:paddingTop="10.7dp">
+
         <ImageView
             android:layout_width="20dp"
             android:layout_height="18.7dp"
-            android:src="@drawable/location_icon"
-            />
+            android:src="@drawable/location_icon" />
+
         <TextView
             android:id="@+id/location_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/big_text_size"
+            android:layout_marginLeft="10dp"
             android:text="深圳"
             android:textColor="@color/black"
-            android:layout_marginLeft="10dp"
-            />
+            android:textSize="@dimen/big_text_size" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -51,7 +53,7 @@
             android:layout_toStartOf="@+id/btn_search"
             android:background="@drawable/search_ll_bg"
             android:clickable="true"
-            android:gravity="center_vertical" >
+            android:gravity="center_vertical">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -64,13 +66,13 @@
                 android:id="@+id/input_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="4dp"
                 android:layout_marginStart="4dp"
-                android:layout_gravity="center_vertical"
-                android:inputType="text|textAutoComplete"
                 android:background="@color/transparent"
-                android:singleLine="true"
                 android:hint="请输入关键字"
+                android:inputType="text|textAutoComplete"
+                android:singleLine="true"
                 android:text=""
                 android:textColor="@color/black"
                 android:textSize="14sp" />
@@ -78,49 +80,55 @@
 
 
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+
         <com.amap.api.maps2d.MapView
-        android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        ></com.amap.api.maps2d.MapView>
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></com.amap.api.maps2d.MapView>
+
         <ImageView
-            android:layout_centerInParent="true"
-            android:src="@drawable/position_2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/position_2" />
     </RelativeLayout>
+
     <LinearLayout
-        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@color/white"
+        android:orientation="vertical">
+
         <LinearLayout
             android:id="@+id/chose_location_ll"
             android:layout_width="match_parent"
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
             android:gravity="center"
 
-            android:layout_height="wrap_content">
+            android:orientation="horizontal">
+
             <ImageView
-                android:layout_marginRight="@dimen/bar_left_right_padding"
-                android:layout_marginLeft="@dimen/bar_left_right_padding"
-                android:src="@drawable/location_small_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/bar_left_right_padding"
+                android:layout_marginRight="@dimen/bar_left_right_padding"
+                android:src="@drawable/location_small_icon" />
+
             <TextView
-          android:layout_marginTop="@dimen/bar_left_right_padding"
+                android:id="@+id/test_location_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/bar_left_right_padding"
-            android:visibility="gone"
-            android:id="@+id/test_location_tv"
-            android:textColor="@color/black"
-            android:layout_width="0dp"
+                android:layout_marginTop="@dimen/bar_left_right_padding"
                 android:layout_weight="1"
-            android:layout_height="wrap_content" />
+                android:textColor="@color/black"
+                android:visibility="gone" />
         </LinearLayout>
 
         <ListView

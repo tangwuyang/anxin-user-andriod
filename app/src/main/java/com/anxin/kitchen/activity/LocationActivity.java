@@ -259,13 +259,12 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
 
     @Override
     public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
-        Log.i(TAG, "onRegeocodeSearched: ---------------"+ regeocodeResult);
+        Log.i(TAG, "onRegeocodeSearched: ---------------"+ regeocodeResult.toString());
         mRelativePositionLv.setVisibility(View.GONE);
         mCameraTextView.setVisibility(View.VISIBLE);
         mChoseLocationLl.setVisibility(View.VISIBLE);
         String addressName = regeocodeResult.getRegeocodeAddress().getFormatAddress()
-                + "附近"
-        ;
+                + "附近";
          mCameraTextView.setText("   " + addressName);
     }
 

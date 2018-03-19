@@ -16,7 +16,7 @@
     <color name="red">#FF3232</color>
     <color name="invate_color">#914420</color>
     <color name="transparent">#00FFFFFF</color>
-    <color name="shallow_black">#969696</color>
+    <color name="shallow_black">#cccccc</color>
     //浅黑色
 
     <color name="divider_color">#c9c9c9</color>

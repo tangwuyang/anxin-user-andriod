@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.ClipHeaderActivity;
+import com.anxin.kitchen.activity.LocationActivity;
 import com.anxin.kitchen.activity.UserNameActivity;
 import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
@@ -48,6 +49,7 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
     private static final int CROP_PHOTO = 102;//相册编辑标志
     private static final int USER_NAME = 112;//相册编辑标志
     private MyApplication mApp = null;
+    private String username;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,8 +109,12 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
             case R.id.user_name_rlt://修改用户名
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), UserNameActivity.class);
-                intent.putExtra("userName", "");
+                intent.putExtra("userName", username);
                 getActivity().startActivityForResult(intent, USER_NAME);
+                break;
+            case R.id.user_address_rlt:
+                Intent startLocation = new Intent(getActivity(), LocationActivity.class);
+                startActivity(startLocation);
                 break;
             default:
                 break;
@@ -183,6 +189,9 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
                 if (resultCode == getActivity().RESULT_OK) {
                     if (data != null) {
                         String name = data.getStringExtra("userName");
+                        if (name != null && name.length() != 0) {
+                            userName.setText(name);
+                        }
                     }
                 }
                 break;
@@ -227,9 +236,9 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
     //更新用户信息
     private void updateUserAcount() {
         //获取本地用户名称
-        String name = mApp.getCache().getNickName();
-        if (name != null && name.length() != 0) {
-            userName.setText(name);
+        username = mApp.getCache().getNickName();
+        if (username != null && username.length() != 0) {
+            userName.setText(username);
         }
         //获取本地缓存头像
         String mImageURI = mApp.getCache().getAccountImageURI(mApp.getCache().getUserPhone());
