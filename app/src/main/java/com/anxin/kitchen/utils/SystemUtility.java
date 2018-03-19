@@ -72,6 +72,14 @@ public class SystemUtility {
     }
 
     /**
+     *  /v1.0/kitchen/menu
+     * 菜单
+     * */
+    public static String getKitchenMenuUrl() {
+        return AMUAC_IP + "/v1.0/kitchen/menu";
+    }
+
+    /**
      * 获取广告列表
      */
     public static String getBannerListUrl() {

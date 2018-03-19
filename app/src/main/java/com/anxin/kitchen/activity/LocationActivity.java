@@ -264,8 +264,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         mCameraTextView.setVisibility(View.VISIBLE);
         mChoseLocationLl.setVisibility(View.VISIBLE);
         String addressName = regeocodeResult.getRegeocodeAddress().getFormatAddress()
-                + "附近"
-        ;
+                + "附近";
          mCameraTextView.setText("   " + addressName);
     }
 
