@@ -40,6 +40,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -59,6 +60,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     public static final String GET_FRIEND = "GET_FRIEND";
     public static final String DELETE_GROUP = "DELETE_GROUP" ;
     private static final String RE_GET_GROUP = "再次请求团";
+    public static final String DELETE_FRIEND = "DELETE_FRIEND";
     private PrefrenceUtil prefrenceUtil;
     public static Context context;
     // 定义4个Fragment对象
@@ -268,9 +270,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
 
     @Override
     public void requestSuccess(String responseBody, String requestCode) {
-
+        String status = StringUtils.parserMessage(responseBody,"message");
         if (requestCode!=null && requestCode.equals(GET_KITCHEN_ID)){
-            String status = StringUtils.parserMessage(responseBody,"message");
+
             myLog("----------->"+responseBody + status);
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 Gson gson = new Gson();
@@ -287,57 +289,61 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
                 if (null != mealMainFragment){
                     mealMainFragment.setBanner();
                 }
-
                 return;
             }
         }
 
         //请求轮播广告返回
         if (requestCode!= null && requestCode.equals(GET_BANNER_LIST)){
-            String status = StringUtils.parserMessage(responseBody,"message");
+
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("--------"+responseBody);
             }
+            return;
         }
         //请求附近的菜单
         if (requestCode!=null && requestCode.equals(GET_MENU_MEAL)){
-            String status = StringUtils.parserMessage(responseBody,"message");
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("--------"+responseBody);
             }
+            return;
         }
 
 
         //查询所有创建的团
         if (requestCode!=null && requestCode.equals(SEARCH_GROUP)){
-            String status = StringUtils.parserMessage(responseBody,"message");
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 String gsonSt =StringUtils.parserMessage(responseBody,"data");
+                myLog("------------>"+gsonSt);
                 Gson gson = new Gson();
                 SearchGroupBean bean = gson.fromJson(gsonSt, SearchGroupBean.class);
-                myLog(bean.getData().size()+"--------"+gsonSt);
-                prefrenceUtil.putGroups(gsonSt);
-                groupMainFragment.setGroup(bean);
+                if (!gsonSt.equals(Constant.NULL)){
+                    myLog(bean.getData().size()+"--------"+gsonSt);
+                    prefrenceUtil.putGroups(gsonSt);
+                    groupMainFragment.setGroup(bean);
+                }
             }else if (null!=status && status.equals(Constant.LOGIN_FIRST)){
                 startNewActivity(LoginActivity.class);
             }
+            return;
         }
         //查询团友
         if (requestCode!=null && requestCode.equals(GET_FRIEND)){
-            String status = StringUtils.parserMessage(responseBody,"message");
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 Gson gson = new Gson();
                 myLog("--------"+responseBody);
                 FriendsBean bean = gson.fromJson(responseBody,FriendsBean.class);
-                prefrenceUtil.putFrinends(responseBody);
-                groupMainFragment.setFriend(bean);
+                if (null!=bean.getData() && bean.getData().size()>0){
+                    prefrenceUtil.putFrinends(responseBody);
+                    groupMainFragment.setFriend(bean);
+                }
             }else if (null!=status && status.equals(Constant.LOGIN_FIRST)){
                 startNewActivity(LoginActivity.class);
             }
+            return;
         }
 
         if (requestCode!=null && requestCode.equals(DELETE_GROUP)){
-            String status = StringUtils.parserMessage(responseBody,"message");
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("-------------delte"+responseBody);
                 //重新请求团信息
@@ -349,10 +355,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
             }else if (null!=status && status.equals(Constant.HAS_NO_PREMISSION)){
                 Toast.makeText(context, "您暂时无权限删除此团", Toast.LENGTH_SHORT).show();
             }
+            return;
         }
 
         if (requestCode!=null && requestCode.equals(RE_GET_GROUP)){
-            String status = StringUtils.parserMessage(responseBody,"message");
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("-------------re"+responseBody);
                 String gsonSt =StringUtils.parserMessage(responseBody,"data");
@@ -363,6 +369,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
                 groupMainFragment.updataGroup(bean);
             }else if (null != status && status.equals(Constant.LOGIN_FIRST)){
                 startNewActivity(LoginActivity.class);
+            }
+            return;
+        }
+
+        if (requestCode != null && requestCode.equals(DELETE_FRIEND)){
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)){
+                groupMainFragment.setDataChanged();
             }
         }
     }

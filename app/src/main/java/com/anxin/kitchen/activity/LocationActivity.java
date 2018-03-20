@@ -1,6 +1,7 @@
 package com.anxin.kitchen.activity;
 
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -30,6 +31,7 @@ import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeQuery;
 import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
@@ -44,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class LocationActivity extends BaseActivity implements AMap.OnCameraChangeListener,AMap.OnMapClickListener,GeocodeSearch.OnGeocodeSearchListener ,TextWatcher,Inputtips.InputtipsListener{
     private String city = "北京";
@@ -58,6 +62,46 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
     private boolean firstLocation = true;
     private GeocodeSearch geocoderSearch ;
     private AutoCompleteTextView mInputLocationTv;
+
+    private Map<String,String> priviceMap = new HashMap<>();
+
+    {
+        priviceMap.put("北京市",11+"");
+        priviceMap.put("天津市",12+"");
+        priviceMap.put("河北省",13+"");
+        priviceMap.put("山西省",14+"");
+        priviceMap.put("内蒙古自治区",15+"");
+        priviceMap.put("辽宁省",21+"");
+        priviceMap.put("吉林省",22+"");
+        priviceMap.put("黑龙江省",23+"");
+        priviceMap.put("上海市",31+"");
+        priviceMap.put("江苏省",32+"");
+        priviceMap.put("浙江省",33+"");
+        priviceMap.put("安徽省",34+"");
+        priviceMap.put("福建省",35+"");
+        priviceMap.put("江西省",36+"");
+        priviceMap.put("山东省",37+"");
+        priviceMap.put("河南省",41+"");
+        priviceMap.put("湖北省",42+"");
+        priviceMap.put("湖南省",43+"");
+        priviceMap.put("广东省",44+"");
+        priviceMap.put("广西壮族自治区",45+"");
+        priviceMap.put("海南省",46+"");
+        priviceMap.put("重庆市",50+"");
+        priviceMap.put("四川省",51+"");
+        priviceMap.put("贵州省",52+"");
+        priviceMap.put("云南省",53+"");
+        priviceMap.put("西藏自治区",54+"");
+        priviceMap.put("陕西省",61+"");
+        priviceMap.put("甘肃省",62+"");
+        priviceMap.put("青海省",63+"");
+        priviceMap.put("宁夏回族自治区",64+"");
+        priviceMap.put("新疆维吾尔自治区",65+"");
+        priviceMap.put("台湾省",71+"");
+        priviceMap.put("香港特别行政区",81+"");
+        priviceMap.put("澳门特别行政区",82+"");
+
+    }
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
         @Override
@@ -84,6 +128,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                     amapLocation.getAoiName();//获取当前定位点的AOI信息
                     lat = amapLocation.getLatitude();
                     lon = amapLocation.getLongitude();
+                    Log.v("pcw", amapLocation.getProvince()+"city"+amapLocation.getCityCode()+ "  dis"+amapLocation.getAdCode());
                     Log.v("pcw", "lat : " + lat + " lon : " + lon);
                     Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
 
@@ -135,6 +180,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         }
         geocoderSearch = new GeocodeSearch(this);
         geocoderSearch.setOnGeocodeSearchListener(this);
+
         setUpMap();
         ImageView back_img = (ImageView) findViewById(R.id.back_img);
         back_img.setOnClickListener(new View.OnClickListener() {
@@ -247,8 +293,9 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         mCameraTextView.setText("onCameraChangeFinish:"
                 + cameraPosition.toString() + "   " + lat_log[0] + "   " + lat_log[1]);
         RegeocodeQuery query = new RegeocodeQuery(point, 200,GeocodeSearch.AMAP);
-
+        //GeocodeQuery geocodeQuery = new GeocodeQuery()
         geocoderSearch.getFromLocationAsyn(query);
+
     }
 
     @Override
@@ -266,14 +313,19 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         String addressName = regeocodeResult.getRegeocodeAddress().getFormatAddress()
                 + "附近";
          mCameraTextView.setText("   " + addressName);
-         AMapLocation location = new AMapLocation(regeocodeResult.getRegeocodeAddress().getFormatAddress());
-         //区域编码
-         String distictCode = location.getAdCode();
-         //省份编码
-        String proviceCode = location.getProvince();
-        //城市编码
-        String cityCode = location.getCityCode();
-        Log.i(TAG, "onRegeocodeSearched: ---------->" + proviceCode + "---"+cityCode+"---"+distictCode);
+        String cityCode = regeocodeResult.getRegeocodeAddress().getCityCode();
+        String provice = regeocodeResult.getRegeocodeAddress().getProvince();
+        String districtCode = regeocodeResult.getRegeocodeAddress().getAdCode();
+        Set<String> proviceSet = priviceMap.keySet();
+        String priviceCode = null;
+        for (String proviceName :
+                proviceSet) {
+            if (proviceName.equals(provice)){
+                priviceCode = priviceMap.get(proviceName);
+            }
+        }
+        myLog("-------------provice"+priviceCode + "   cityCode"+cityCode + "  dist"+ districtCode);
+
     }
 
     @Override

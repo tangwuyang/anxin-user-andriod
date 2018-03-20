@@ -173,6 +173,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.meal_main_fragment, container,false);
         mPreserverRv = view.findViewById(R.id.preserver_rv);
+        mPreserverRv.setNestedScrollingEnabled(false);
         mPreserverRv.setFocusable(false);
         mMessageImg = view.findViewById(R.id.message_img);
         mRecoveryMealImg = view.findViewById(R.id.recovery_meal_img);

@@ -11,12 +11,15 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.anxin.kitchen.bean.FoodMenuBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +34,8 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     private ListView mContentLv;
     private ContentAdapter mContentAdapter;
     private PrefrenceUtil prefrenceUtil;
+    private Cache mCache;
+    private Gson mGson;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,9 +57,10 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
 
     private void getMenu() {
         long kitchenId = prefrenceUtil.getKitchenId();
+        String token = mCache.getAMToken();
         Map<String ,Object> dataMap = new HashMap<>();
-        dataMap.put("kitchenId",kitchenId);
-        requestNet(SystemUtility.getKitchenMenuUrl(),dataMap,REQUEST_MENU);
+        dataMap.put("token",token);
+        requestNet(SystemUtility.getFoodMenuUrl(),dataMap,REQUEST_MENU);
     }
 
     @Override
@@ -106,6 +112,8 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
             }
         });
         prefrenceUtil = new PrefrenceUtil(this);
+        mCache = new Cache(this);
+        mGson = new Gson();
     }
 
     private class CatalogAdapter extends BaseAdapter {
@@ -176,6 +184,15 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
         if (requestCode==REQUEST_MENU && status.equals(Constant.REQUEST_SUCCESS)){
             myLog("---------->menu" + responseString);
+            FoodMenuBean bean = mGson.fromJson(responseString,FoodMenuBean.class);
+            List<FoodMenuBean.Data> data = bean.getData();
+            List<String> muneList = new ArrayList<>();
+            for (FoodMenuBean.Data menu :
+                    data) {
+                muneList.add(menu.getCuisineName());
+            }
+            this.mCatalogList = muneList;
+            mCatalogAdapter.notifyDataSetChanged();
         }
     }
 }

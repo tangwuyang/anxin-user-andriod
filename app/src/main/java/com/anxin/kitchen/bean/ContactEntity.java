@@ -13,12 +13,52 @@ public class ContactEntity implements BaseEntity {
     private String name;
     private String avatar;
     private String mobile;
-
+    private int groupId;
+    private String userLogo;
+    private int groupUserId;
     public ContactEntity(String name, String mobile) {
         this.name = name;
         this.mobile = mobile;
     }
 
+    public ContactEntity(String name,  String mobile, int groupId, String userLogo) {
+        this.name = name;
+        this.mobile = mobile;
+        this.groupId = groupId;
+        this.userLogo = userLogo;
+    }
+
+    public ContactEntity(String name, String mobile, int groupId, String userLogo, int groupUserId) {
+        this.name = name;
+        this.mobile = mobile;
+        this.groupId = groupId;
+        this.userLogo = userLogo;
+        this.groupUserId = groupUserId;
+    }
+
+    public int getGroupUserId() {
+        return groupUserId;
+    }
+
+    public void setGroupUserId(int groupUserId) {
+        this.groupUserId = groupUserId;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getUserLogo() {
+        return userLogo;
+    }
+
+    public void setUserLogo(String userLogo) {
+        this.userLogo = userLogo;
+    }
 
     @Override
     public String getIndexField() {

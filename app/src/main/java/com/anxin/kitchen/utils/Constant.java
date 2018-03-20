@@ -1,5 +1,7 @@
 package com.anxin.kitchen.utils;
 
+import com.google.gson.Gson;
+
 /**
  * Created by 唐午阳 on 2018/2/25.
  */
@@ -18,4 +20,5 @@ public class Constant {
     public static final String TOKEN = "token";
     public static final String REQUEST_STATUS="message";
     public static final int ADD_FRIEND_CODE = 200;
+    public static final String NULL = "null";
 }

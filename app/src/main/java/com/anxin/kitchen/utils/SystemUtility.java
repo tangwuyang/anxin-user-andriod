@@ -73,10 +73,10 @@ public class SystemUtility {
 
     /**
      *  /v1.0/kitchen/menu
-     * 菜单
+     * 菜系
      * */
-    public static String getKitchenMenuUrl() {
-        return AMUAC_IP + "/v1.0/kitchen/menu";
+    public static String getFoodMenuUrl() {
+        return AMUAC_IP + "/v1.0/food/cuisine_list";
     }
 
     /**
@@ -115,6 +115,15 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/group/user_list";
     }
 
+
+    /**
+     * 删除团友url
+     * */
+    public static String deleteFriendsUrl(){
+        return AMUAC_IP + "/v1.0/group/del_user";
+    }
+
+
     /**
      * 添加好友到饭团
      * */
@@ -128,8 +137,9 @@ public class SystemUtility {
     public static String getFriendsOfGroupUrl(){
         return AMUAC_IP + "/v1.0/group/user_list";
     }
+
     /**
-     * 查询团友信息url
+     * 删除团url
      * */
     public static String deleteGroupUrl(){
         return AMUAC_IP + "/v1.0/group/del";

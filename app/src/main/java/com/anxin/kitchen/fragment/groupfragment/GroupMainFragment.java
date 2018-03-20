@@ -101,6 +101,8 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         requestInternetGetData();
         mRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         mIndexStickyView = view.findViewById(R.id.indexStickyView);
+        mMenuNames.add("创建饭团");
+        mMenuImgs.add(R.drawable.create_new_group_drawale);
         return view;
     }
 
@@ -278,7 +280,9 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
        }
         if(null != Friendslist && friendList.size()>0){
            for (int i = 0;i<friendList.size();i++){
-               ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),friendList.get(i).getPhone());
+               ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),
+                       friendList.get(i).getPhone(),friendList.get(i).getGroupId(),
+                       friendList.get(i).getUserLogo(),friendList.get(i).getId());
                Friendslist.add(contactEntity);
            }
        }else {
@@ -300,6 +304,10 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     public void updataGroup(SearchGroupBean bean) {
         setGroup(bean);
         groupAdapter.notifyDataSetChanged();
+    }
+
+    public void setDataChanged() {
+        mAdapter.notifyDataSetChanged();
     }
 
     class GroupAdapter extends BaseAdapter {
@@ -489,28 +497,22 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         }
         return Friendslist;
     }
+
+
     private void initView() {
         ((TextView)getActivity().findViewById(R.id.title_tv)).setText("饭团");
         mMenuImg = getActivity().findViewById(R.id.fantuan_menu_img);
         mMenuImg.setVisibility(View.VISIBLE);
         mMenuImg.setOnClickListener(this);
         getActivity().findViewById(R.id.back_img).setVisibility(View.GONE);
-        mMenuNames.add("创建饭团");
-        mMenuNames.add("新增团友");
-        mMenuNames.add("通讯录导入");
-        mMenuNames.add("邀请团友");
 
-        mMenuImgs.add(R.drawable.create_new_group_drawale);
-        mMenuImgs.add(R.drawable.new_friend_drawable);
-        mMenuImgs.add(R.drawable.contactor_imp_drawable);
-        mMenuImgs.add(R.drawable.invate_friend_drawable);
     }
 
     @Override
     public void onResume() {
         // TODO Auto-generated method stub
-        initView();
         super.onResume();
+        initView();
     }
 
     @Override
@@ -668,12 +670,26 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         }
 
         @Override
-        public void onBindContentViewHolder(RecyclerView.ViewHolder holder, int position, ContactEntity itemData) {
+        public void onBindContentViewHolder(RecyclerView.ViewHolder holder, int position, final ContactEntity itemData) {
 
             ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
             contentViewHolder.mMobile.setText(itemData.getMobile());
             contentViewHolder.mName.setText(itemData.getName());
             // contentViewHolder.mAvatar.setBackgroundResource(getResources().getDrawable(R.drawable.));
+            contentViewHolder.mDeleteTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                   int groupId =  itemData.getGroupId();
+                   int groupUserId = itemData.getGroupUserId();
+                   String name = itemData.getName();
+                    Toast.makeText(activity, "name"+name + "gid"  + groupId + "   " + groupUserId, Toast.LENGTH_SHORT).show();
+                    Map<String,Object> dataMap = new HashMap<>();
+                    dataMap.put("groupId",groupId);
+                    dataMap.put("groupUserId",groupUserId);
+                    dataMap.put("token",token);
+                    activity.requestNet(SystemUtility.deleteFriendsUrl(),dataMap,activity.DELETE_FRIEND);
+                }
+            });
         }
     }
 
@@ -682,13 +698,14 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         TextView mName;
         TextView mMobile;
         ImageView mAvatar;
-
+        TextView mDeleteTv;
         public ContentViewHolder(View itemView) {
 
             super(itemView);
             mName = (TextView) itemView.findViewById(R.id.tv_name);
             mMobile = (TextView) itemView.findViewById(R.id.tv_mobile);
             mAvatar = (ImageView) itemView.findViewById(R.id.img_avatar);
+            mDeleteTv = itemView.findViewById(R.id.delete_tv);
         }
     }
 
