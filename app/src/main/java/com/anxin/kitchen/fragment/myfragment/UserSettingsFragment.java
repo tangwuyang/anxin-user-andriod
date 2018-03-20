@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.activity.ClipHeaderActivity;
 import com.anxin.kitchen.activity.UserNameActivity;
+import com.anxin.kitchen.custom.view.SelectGenderPopupWindow;
 import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
@@ -41,7 +42,9 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private RoundedImageView userIcon;//用户头像
     private TextView userName;//用户名称
     private TextView userPhone;//用户电话
+    private TextView userGender;//用户性别
     private SelectPicPopupWindow menuWindowSelectPic;//选择头像图片弹窗
+    private SelectGenderPopupWindow menuSelectGender;//选择用户性别弹窗
     private static final int RESULT_CAPTURE = 122;
     private static final int RESULT_PICK = 133;
     private static final int CROP_PHOTO = 111;
@@ -81,6 +84,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         userIcon = (RoundedImageView) view.findViewById(R.id.user_icon);
         userName = (TextView) view.findViewById(R.id.user_name);
         userPhone = (TextView) view.findViewById(R.id.user_phone);
+        userGender = (TextView) view.findViewById(R.id.user_gender);
         //获取本地用户名称
         String name = mApp.getCache().getNickName();
         if (name != null && name.length() != 0) {
@@ -112,7 +116,9 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 getFragmentManager().popBackStack();
                 break;
             case R.id.user_icon_rlt://修改用户头像
-                showChooseDialog();
+                menuWindowSelectPic = new SelectPicPopupWindow(getActivity(), itemsOnClick);
+                menuWindowSelectPic.showAtLocation(getActivity().findViewById(R.id.RelativeLayout01),
+                        Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
                 break;
             case R.id.user_name_rlt://修改用户名
                 Intent intent = new Intent();
@@ -121,18 +127,15 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 getActivity().startActivityForResult(intent, USER_NAME);
                 break;
             case R.id.user_gender_rlt://修改用户性别
+                menuSelectGender = new SelectGenderPopupWindow(getActivity(), itemsGenderOnClick);
+                menuSelectGender.showAtLocation(getActivity().findViewById(R.id.RelativeLayout01),
+                        Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
                 break;
             case R.id.user_birthday_rlt://修改用户生日
                 break;
             default:
                 break;
         }
-    }
-
-    private void showChooseDialog() {
-        menuWindowSelectPic = new SelectPicPopupWindow(getActivity(), itemsOnClick);
-        menuWindowSelectPic.showAtLocation(getActivity().findViewById(R.id.RelativeLayout01),
-                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
     }
 
     private View.OnClickListener itemsOnClick = new View.OnClickListener() {
@@ -165,6 +168,24 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         }
 
     };
+    private View.OnClickListener itemsGenderOnClick = new View.OnClickListener() {
+
+        public void onClick(View v) {
+            menuSelectGender.dismiss();
+            switch (v.getId()) {
+                case R.id.btn_take_photo://性别选择：男
+                    userGender.setText("男");
+                    break;
+                case R.id.btn_pick_photo://性别选择：女
+                    userGender.setText("女");
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+    };
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         LOG.e("------------requestCode--------" + requestCode);
@@ -175,7 +196,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                     Bundle bundle = data.getExtras(); // 从data中取出传递回来缩略图的信息，图片质量差，适合传递小图片
                     Bitmap bitmap = (Bitmap) bundle.get("data"); // 将data中的信息流解析为Bitmap类型
                     userIcon.setImageBitmap(bitmap);// 显示图片
-                    MyService.onSaveBitmap(bitmap,getActivity(),mApp.getAccount().getUserPhone());
+                    MyService.onSaveBitmap(bitmap, getActivity(), mApp.getAccount().getUserPhone());
                     LOG.e("------------RESULT_CAPTURE--------");
 //                    Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), bitmap, null, null));
 //                    starCropPhoto(uri);
