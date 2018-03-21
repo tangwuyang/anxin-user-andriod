@@ -53,12 +53,12 @@ import okhttp3.Response;
 /**
  * 主界面
  */
-public class MainActivity extends BaseActivity implements View.OnClickListener,RequestNetListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, RequestNetListener {
     private static final int BAIDU_READ_PHONE_STATE = 100;
     private static final String TAG = "MainActivity";
     public static final String SEARCH_GROUP = "SEARCH_GROUP";
     public static final String GET_FRIEND = "GET_FRIEND";
-    public static final String DELETE_GROUP = "DELETE_GROUP" ;
+    public static final String DELETE_GROUP = "DELETE_GROUP";
     private static final String RE_GET_GROUP = "再次请求团";
     public static final String DELETE_FRIEND = "DELETE_FRIEND";
     private PrefrenceUtil prefrenceUtil;
@@ -85,6 +85,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     public static final String GET_BANNER_LIST = "GET_BANNER_LIST";
     private static final String GET_MENU_MEAL = "GET_MENU_MEAL";
     public String requesNetTag = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +98,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         // bindService(agentService, conn, Service.BIND_AUTO_CREATE);
         startService(agentService);
         requestLocationPermission();
+        //获取定位所有城市ID列表(本地缓存)
+        SystemUtility.sendGetAddressList();
         initView();//初始化界面控件
         setChioceItem(0);//初始化页面加载是显示点餐界面
         handler.postDelayed(new Runnable() {
@@ -109,7 +112,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
 
     private void requestLocationPermission() {
         boolean hasLocationPermission = getLocationPermission();
-        if (!hasLocationPermission){
+        if (!hasLocationPermission) {
             popRequestWindow();
         }
     }
@@ -119,7 +122,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
             @Override
             public void onGivedPermssion() {
-                ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, BAIDU_READ_PHONE_STATE);
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, BAIDU_READ_PHONE_STATE);
             }
         });
         dialog.show();
@@ -144,6 +147,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
                 break;
         }
     }
+
     private Handler handler = new Handler();
 
     private void initView() {
@@ -260,33 +264,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     //是否有位置权限
     public boolean getLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED
-                ){
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                ) {
             return false;
-        }else return true;
+        } else return true;
     }
-
 
 
     @Override
     public void requestSuccess(String responseBody, String requestCode) {
-        String status = StringUtils.parserMessage(responseBody,"message");
-        if (requestCode!=null && requestCode.equals(GET_KITCHEN_ID)){
+        String status = StringUtils.parserMessage(responseBody, "message");
+        if (requestCode != null && requestCode.equals(GET_KITCHEN_ID)) {
 
-            myLog("----------->"+responseBody + status);
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
+            myLog("----------->" + responseBody + status);
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 Gson gson = new Gson();
-                NearKitchenBean bean = gson.fromJson(responseBody,NearKitchenBean.class);
+                NearKitchenBean bean = gson.fromJson(responseBody, NearKitchenBean.class);
                 int kichtchenId = bean.getData().getKitchenid();
-                myLog("--------"+bean.getData().getKitchenname());
+                myLog("--------" + bean.getData().getKitchenname());
                 PrefrenceUtil prefrenceUtil = new PrefrenceUtil(MainActivity.this);
                 prefrenceUtil.putKitchenId(kichtchenId);
-                Map<String,Object> dataMap = new HashMap<>();
-                dataMap.put(Constant.KITCHEN_ID,kichtchenId);
-                requestNet(SystemUtility.getBannerListUrl(),dataMap,GET_BANNER_LIST);
-                requestNet(SystemUtility.getMenuMealUrl(),dataMap,GET_MENU_MEAL);
+                Map<String, Object> dataMap = new HashMap<>();
+                dataMap.put(Constant.KITCHEN_ID, kichtchenId);
+                requestNet(SystemUtility.getBannerListUrl(), dataMap, GET_BANNER_LIST);
+                requestNet(SystemUtility.getMenuMealUrl(), dataMap, GET_MENU_MEAL);
                 //再去获取广告列表
-                if (null != mealMainFragment){
+                if (null != mealMainFragment) {
                     mealMainFragment.setBanner();
                 }
                 return;
@@ -294,94 +297,94 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         }
 
         //请求轮播广告返回
-        if (requestCode!= null && requestCode.equals(GET_BANNER_LIST)){
+        if (requestCode != null && requestCode.equals(GET_BANNER_LIST)) {
 
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                myLog("--------"+responseBody);
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                myLog("--------" + responseBody);
             }
             return;
         }
         //请求附近的菜单
-        if (requestCode!=null && requestCode.equals(GET_MENU_MEAL)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                myLog("--------"+responseBody);
+        if (requestCode != null && requestCode.equals(GET_MENU_MEAL)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                myLog("--------" + responseBody);
             }
             return;
         }
 
 
         //查询所有创建的团
-        if (requestCode!=null && requestCode.equals(SEARCH_GROUP)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                String gsonSt =StringUtils.parserMessage(responseBody,"data");
-                myLog("------------>"+gsonSt);
+        if (requestCode != null && requestCode.equals(SEARCH_GROUP)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                String gsonSt = StringUtils.parserMessage(responseBody, "data");
+                myLog("------------>" + gsonSt);
                 Gson gson = new Gson();
                 SearchGroupBean bean = gson.fromJson(gsonSt, SearchGroupBean.class);
-                if (!gsonSt.equals(Constant.NULL)){
-                    myLog(bean.getData().size()+"--------"+gsonSt);
+                if (!gsonSt.equals(Constant.NULL)) {
+                    myLog(bean.getData().size() + "--------" + gsonSt);
                     prefrenceUtil.putGroups(gsonSt);
                     groupMainFragment.setGroup(bean);
                 }
-            }else if (null!=status && status.equals(Constant.LOGIN_FIRST)){
+            } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
                 startNewActivity(LoginActivity.class);
             }
             return;
         }
         //查询团友
-        if (requestCode!=null && requestCode.equals(GET_FRIEND)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
+        if (requestCode != null && requestCode.equals(GET_FRIEND)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 Gson gson = new Gson();
-                myLog("--------"+responseBody);
-                FriendsBean bean = gson.fromJson(responseBody,FriendsBean.class);
-                if (null!=bean.getData() && bean.getData().size()>0){
+                myLog("--------" + responseBody);
+                FriendsBean bean = gson.fromJson(responseBody, FriendsBean.class);
+                if (null != bean.getData() && bean.getData().size() > 0) {
                     prefrenceUtil.putFrinends(responseBody);
                     groupMainFragment.setFriend(bean);
                 }
-            }else if (null!=status && status.equals(Constant.LOGIN_FIRST)){
+            } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
                 startNewActivity(LoginActivity.class);
             }
             return;
         }
 
-        if (requestCode!=null && requestCode.equals(DELETE_GROUP)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                myLog("-------------delte"+responseBody);
+        if (requestCode != null && requestCode.equals(DELETE_GROUP)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                myLog("-------------delte" + responseBody);
                 //重新请求团信息
                 String token = new Cache(this).getAMToken();
-                Map<String,Object> dataMap = new HashMap<>();
-                dataMap.put(Constant.TOKEN,token);
-                requestNet(SystemUtility.searchGroupUrl(),dataMap,RE_GET_GROUP);
+                Map<String, Object> dataMap = new HashMap<>();
+                dataMap.put(Constant.TOKEN, token);
+                requestNet(SystemUtility.searchGroupUrl(), dataMap, RE_GET_GROUP);
 
-            }else if (null!=status && status.equals(Constant.HAS_NO_PREMISSION)){
+            } else if (null != status && status.equals(Constant.HAS_NO_PREMISSION)) {
                 Toast.makeText(context, "您暂时无权限删除此团", Toast.LENGTH_SHORT).show();
             }
             return;
         }
 
-        if (requestCode!=null && requestCode.equals(RE_GET_GROUP)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                myLog("-------------re"+responseBody);
-                String gsonSt =StringUtils.parserMessage(responseBody,"data");
+        if (requestCode != null && requestCode.equals(RE_GET_GROUP)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                myLog("-------------re" + responseBody);
+                String gsonSt = StringUtils.parserMessage(responseBody, "data");
                 Gson gson = new Gson();
                 SearchGroupBean bean = gson.fromJson(gsonSt, SearchGroupBean.class);
-                myLog(bean.getData().size()+"--------"+gsonSt);
+                myLog(bean.getData().size() + "--------" + gsonSt);
                 prefrenceUtil.putGroups(gsonSt);
                 groupMainFragment.updataGroup(bean);
-            }else if (null != status && status.equals(Constant.LOGIN_FIRST)){
+            } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
                 startNewActivity(LoginActivity.class);
             }
             return;
         }
 
-        if (requestCode != null && requestCode.equals(DELETE_FRIEND)){
-            if (null != status && status.equals(Constant.REQUEST_SUCCESS)){
+        if (requestCode != null && requestCode.equals(DELETE_FRIEND)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 groupMainFragment.setDataChanged();
             }
         }
     }
 
     @Override
-    public void requestFailure(String responseFailureBody,String requestCode) {
+    public void requestFailure(String responseFailureBody, String requestCode) {
 
     }
 

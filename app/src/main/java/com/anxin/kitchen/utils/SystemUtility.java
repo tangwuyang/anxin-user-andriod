@@ -9,6 +9,7 @@ import android.widget.ListView;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.Account;
+import com.anxin.kitchen.bean.AddressListBean;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.event.OnSaveBitmapEvent;
 import com.anxin.kitchen.event.OnUserAcountEvent;
@@ -20,6 +21,7 @@ import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,9 +33,14 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.anxin.kitchen.MyApplication.mApp;
 
 public class SystemUtility {
     private static final Log LOG = Log.getLog();
@@ -63,6 +70,12 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
     }
 
+    /**
+     * 获取省市县定位ID列表
+     */
+    public static String sendGetAddresshttp() {
+        return "http://tapi.anxinyc.com/v1.0/system/address_list";
+    }
 
     /**
      * 获取定位最近的厨房信息
@@ -72,9 +85,9 @@ public class SystemUtility {
     }
 
     /**
-     *  /v1.0/kitchen/menu
+     * /v1.0/kitchen/menu
      * 菜系
-     * */
+     */
     public static String getFoodMenuUrl() {
         return AMUAC_IP + "/v1.0/food/cuisine_list";
     }
@@ -96,54 +109,56 @@ public class SystemUtility {
 
     /**
      * 创建新的定参团url
-     * */
-    public static String CreateGroup(){
+     */
+    public static String CreateGroup() {
         return AMUAC_IP + "/v1.0/group/create";
     }
+
     /**
      * 查询所有团或者指定名字的团url
-     * */
-    public static String searchGroupUrl(){
+     */
+    public static String searchGroupUrl() {
         return AMUAC_IP + "/v1.0/group/list";
     }
 
 
     /**
      * 查询团友信息url
-     * */
-    public static String getFriendsUrl(){
+     */
+    public static String getFriendsUrl() {
         return AMUAC_IP + "/v1.0/group/user_list";
     }
 
 
     /**
      * 删除团友url
-     * */
-    public static String deleteFriendsUrl(){
+     */
+    public static String deleteFriendsUrl() {
         return AMUAC_IP + "/v1.0/group/del_user";
     }
 
 
     /**
      * 添加好友到饭团
-     * */
-    public static String addFriendToGroupUrl(){
+     */
+    public static String addFriendToGroupUrl() {
         return AMUAC_IP + "/v1.0/group/add_user";
     }
 
     /**
      * 查询饭团好友
-     * */
-    public static String getFriendsOfGroupUrl(){
+     */
+    public static String getFriendsOfGroupUrl() {
         return AMUAC_IP + "/v1.0/group/user_list";
     }
 
     /**
      * 删除团url
-     * */
-    public static String deleteGroupUrl(){
+     */
+    public static String deleteGroupUrl() {
         return AMUAC_IP + "/v1.0/group/del";
     }
+
     //第三方登陆，注册
     public static String sendUserLogin3(String platId, String sourceCode) {
         return AMUAC_IP + "/v1.0/user/login3?platId=" + platId + "&sourceCode=" + sourceCode + "&formData={}";
@@ -383,4 +398,93 @@ public class SystemUtility {
         return sf;
     }
 
+    //获取所有城市ID
+    public static void sendGetAddressList() {
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(sendGetAddresshttp(), new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                String result = "";
+                if (bytes != null) {
+                    result = new String(bytes);
+                    LOG.e("----------sendGetAddressList------------" + result);
+                    AddressListJason(result);
+                }
+            }
+
+            @Override
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                    }
+
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析地址信息
+     *
+     * @param jason
+     */
+    public static void AddressListJason(String jason) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(jason);
+            String data = jsonObject.getString("data");
+            JSONArray jsonArrayResult2 = new JSONArray(data);
+            int AccountCount2 = jsonArrayResult2.length();
+            Map<String, AddressListBean> addressNameMap = new HashMap<>();
+            Map<String, AddressListBean> addressIDMap = new HashMap<>();
+            for (int j = 0; j < AccountCount2; j++) {
+                String alarmMsg2 = jsonArrayResult2.getString(j);
+                JSONObject jsonAlarm2 = new JSONObject(alarmMsg2);
+                Iterator<?> it2 = jsonAlarm2.keys();
+                String resultKey2 = "";
+                String resultValue2 = null;
+                AddressListBean addressListBean = new AddressListBean();
+                while (it2.hasNext()) {
+                    resultKey2 = (String) it2.next().toString();
+                    resultValue2 = jsonAlarm2.getString(resultKey2).trim();
+                    if (resultKey2 == null) {
+                        resultKey2 = "";
+                    }
+                    if (resultValue2 == null) {
+                        resultValue2 = "";
+                    }
+                    resultValue2 = resultValue2.trim();
+                    if (resultKey2.equals("id")) {
+                        addressListBean.setAdID(resultValue2);
+                    } else if (resultKey2.equals("name")) {
+                        addressListBean.setAdName(resultValue2);
+                    } else if (resultKey2.equals("parentId")) {
+                        addressListBean.setAdParenID(resultValue2);
+                    } else if (resultKey2.equals("shortName")) {
+                        addressListBean.setAdShortName(resultValue2);
+                    } else if (resultKey2.equals("levelType")) {
+                        addressListBean.setAdLevelType(resultValue2);
+                    } else if (resultKey2.equals("cityCode")) {
+                        addressListBean.setAdCityCode(resultValue2);
+                    } else if (resultKey2.equals("zipCode")) {
+                        addressListBean.setAdZipCode(resultValue2);
+                    } else if (resultKey2.equals("lng")) {
+                        addressListBean.setAdLng(resultValue2);
+                    } else if (resultKey2.equals("lat")) {
+                        addressListBean.setAdLat(resultValue2);
+                    } else if (resultKey2.equals("pinyin")) {
+                        addressListBean.setAdPinyin(resultValue2);
+                    }
+                }
+                addressIDMap.put(addressListBean.getAdID(), addressListBean);
+                addressNameMap.put(addressListBean.getAdName(), addressListBean);
+            }
+            mApp.setAddressIDMap(addressIDMap);
+            mApp.setAddressNameMap(addressNameMap);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
