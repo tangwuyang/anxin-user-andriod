@@ -74,4 +74,5 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.2.4'
     compile 'com.youth.banner:banner:1.1.5'
     implementation files('libs/okio-1.8.0.jar')
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 }

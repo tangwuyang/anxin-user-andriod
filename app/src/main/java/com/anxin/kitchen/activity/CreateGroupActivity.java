@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anxin.kitchen.bean.GroupBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Cache;
@@ -102,8 +103,11 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
             if (status.equals(Constant.LOGIN_FIRST)){
                 startNewActivity(LoginActivity.class);
             }else if (status.equals(Constant.REQUEST_SUCCESS)){
+                GroupBean bean = mGson.fromJson(responseString,GroupBean.class);
                 isAdd = true;
                 Intent intent = new Intent(CreateGroupActivity.this,GroupAndFriendsListActivitiy.class);
+                int groupId = bean.getData().getId();
+                intent.putExtra("groupId",groupId);
                 startActivityForResult(intent,Constant.GROUP_MAIN_REQEST_CODE);
             }
         }

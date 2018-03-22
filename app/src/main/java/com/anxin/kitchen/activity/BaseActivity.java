@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
+import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -32,10 +33,12 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     private TextView titleTv;  //标题
     private boolean isDebug = true;  //是否是调试模式
     public static final String PREFERENCE_NAME = "ANXIN_ANDROID";
+    public Gson mGson;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mGson = new Gson();
     }
 
     //修改标题

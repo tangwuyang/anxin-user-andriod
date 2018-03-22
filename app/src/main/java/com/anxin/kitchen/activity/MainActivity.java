@@ -19,7 +19,9 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.anxin.kitchen.bean.BannerListBean;
 import com.anxin.kitchen.bean.FriendsBean;
+import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.NearKitchenBean;
 import com.anxin.kitchen.bean.SearchGroupBean;
 import com.anxin.kitchen.fragment.groupfragment.GroupMainFragment;
@@ -285,10 +287,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
                 dataMap.put(Constant.KITCHEN_ID,kichtchenId);
                 requestNet(SystemUtility.getBannerListUrl(),dataMap,GET_BANNER_LIST);
                 requestNet(SystemUtility.getMenuMealUrl(),dataMap,GET_MENU_MEAL);
-                //再去获取广告列表
-                if (null != mealMainFragment){
-                    mealMainFragment.setBanner();
-                }
+
                 return;
             }
         }
@@ -298,6 +297,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
 
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("--------"+responseBody);
+                //再去获取广告列表
+                BannerListBean bannerListBean = mGson.fromJson(responseBody,BannerListBean.class);
+                List<BannerListBean.Data> dataList = bannerListBean.getData();
+                if (null != mealMainFragment){
+                    mealMainFragment.setBanner(dataList);
+                }
             }
             return;
         }
@@ -305,6 +310,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         if (requestCode!=null && requestCode.equals(GET_MENU_MEAL)){
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("--------"+responseBody);
+                MealBean mealBean = mGson.fromJson(responseBody,MealBean.class);
+                mealMainFragment.setMeal(mealBean);
             }
             return;
         }

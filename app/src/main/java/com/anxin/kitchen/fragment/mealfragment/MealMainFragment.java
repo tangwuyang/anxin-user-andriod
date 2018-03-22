@@ -1,6 +1,7 @@
 package com.anxin.kitchen.fragment.mealfragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,17 +23,23 @@ import com.anxin.kitchen.activity.MessageCenterActivity;
 import com.anxin.kitchen.activity.PreserveActivity;
 import com.anxin.kitchen.activity.RecoveryMealActivity;
 import com.anxin.kitchen.activity.SendMealLocationActivity;
+import com.anxin.kitchen.bean.BannerListBean;
+import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.CustomGridView;
 import com.bumptech.glide.Glide;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.youth.banner.Banner;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,14 +63,11 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     public AMapLocationClient mLocationClient = null;
     private MainActivity activity;
 
-    String[] images= new String[] {
-            "http://218.192.170.132/BS80.jpg",
-            "http://img.zcool.cn/community/0166c756e1427432f875520f7cc838.jpg",
-            "http://img.zcool.cn/community/018fdb56e1428632f875520f7b67cb.jpg",
-            "http://img.zcool.cn/community/01c8dc56e1428e6ac72531cbaa5f2c.jpg",
-            "http://img.zcool.cn/community/01fda356640b706ac725b2c8b99b08.jpg",
-            "http://img.zcool.cn/community/01fd2756e142716ac72531cbf8bbbf.jpg",
-            "http://img.zcool.cn/community/0114a856640b6d32f87545731c076a.jpg"};
+    private ImageLoader imageLoader = ImageLoader.getInstance();
+    String[] mealTypeImgs= new String[] {
+        "drawable://" + R.drawable.lunch_icon,
+            "drawable://" + R.drawable.diner_icon,
+    };
     //设置图片标题:自动对应
     String[] titles=new String[]{"十大星级品牌联盟，全场2折起","全场2折起","十大星级品牌联盟","嗨购5折不要停","12趁现在","嗨购5折不要停，12.12趁现在","实打实大顶顶顶顶"};
     @Override
@@ -116,13 +120,19 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         }
     };
 
-    public void setBanner(){
+    public void setBanner(List<BannerListBean.Data> dataList){
         //设置样式,默认为:Banner.NOT_INDICATOR(不显示指示器和标题)
         //可选样式如下:
         //1. Banner.CIRCLE_INDICATOR    显示圆形指示器
         //2. Banner.NUM_INDICATOR   显示数字指示器
         //3. Banner.NUM_INDICATOR_TITLE 显示数字指示器和标题
         //4. Banner.CIRCLE_INDICATOR_TITLE  显示圆形指示器和标题
+        String[] bannerTitles = new String[dataList.size()];
+        String[] bannerUrls = new String[dataList.size()];
+        for (int i = 0; i<dataList.size();i++){
+            bannerTitles[i] = dataList.get(i).getBannerName();
+            bannerUrls[i] = dataList.get(i).getImg();
+        }
         mBanner.setBannerStyle(Banner.CIRCLE_INDICATOR_TITLE);
         //设置轮播样式（没有标题默认为右边,有标题时默认左边）
         //可选样式:
@@ -131,7 +141,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         //Banner.RIGHT  指示器居右
         mBanner.setIndicatorGravity(Banner.CENTER);
         //设置轮播要显示的标题和图片对应（如果不传默认不显示标题）
-        mBanner.setBannerTitle(titles);
+        mBanner.setBannerTitle(bannerTitles);
         //设置是否自动轮播（不设置则默认自动）
         mBanner.isAutoPlay(true);
         //设置轮播图片间隔时间（不设置默认为2000）
@@ -142,7 +152,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         //banner.setImages(images);
 
         //自定义图片加载框架
-        mBanner.setImages(images, new Banner.OnLoadImageListener() {
+        mBanner.setImages(bannerUrls, new Banner.OnLoadImageListener() {
             @Override
             public void OnLoadImage(ImageView view, Object url) {
                 System.out.println("加载中");
@@ -220,7 +230,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         // TODO Auto-generated method stub
         super.onResume();
         setListener();
-        setAdapter();
+
     }
 
     private void setListener() {
@@ -231,9 +241,9 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     }
 
     //设置点餐适配器
-    private void setAdapter() {
+    private void setAdapter(List<List<MealBean.Data>> dataList) {
         mLiearManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
-        PreserverAdapter adapter = new PreserverAdapter();
+        PreserverAdapter adapter = new PreserverAdapter(dataList);
         mPreserverRv.setLayoutManager(mLiearManager);
         mPreserverRv.setAdapter(adapter);
     }
@@ -262,15 +272,41 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         startActivity(intent);
     }
 
+    public void setMeal(MealBean mealBean) {
+        //更新首页菜品
+        List<MealBean.Data> mealList = mealBean.getData();
+        List<List<MealBean.Data>> dataList = new ArrayList<>();
+        List<MealBean.Data> thisDayData = new ArrayList<>();
+        long lastDay = 0;
+        for (MealBean.Data mel :
+                mealList) {
+            long thisDay = mel.getMenuDay();
+            if (thisDay!=lastDay){
+                lastDay = thisDay;
+                thisDayData = new ArrayList<>();
+                thisDayData.add(mel);
+                dataList.add(thisDayData);
+            }else {
+                thisDayData.add(mel);
+            }
+        }
+        setAdapter(dataList);
+    }
+
 
     private class PreserverAdapter extends RecyclerView.Adapter<PreserverAdapter.ViewHolderw>{
 
+        List<List<MealBean.Data>> dataList;
+        public PreserverAdapter(List<List<MealBean.Data>> dataList) {
+            this.dataList = dataList;
+        }
 
         @Override
         public ViewHolderw onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_item,parent,false);
             ViewHolderw holder = new ViewHolderw(view);
             holder.mPreserverDayRv = view.findViewById(R.id.preserver_rv);
+            holder.dateTv = view.findViewById(R.id.date_tv);
             return holder;
 
         }
@@ -279,12 +315,20 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         public void onBindViewHolder(ViewHolderw holder, int position) {
             GridLayoutManager layoutManage = new GridLayoutManager(getContext(), 2);
             // holder.mPreserverDayRv.setLayoutManager(layoutManage);
-            holder.mPreserverDayRv.setAdapter(new PreserverGridAdapter());
+            String dataSt = String.valueOf(dataList.get(position).get(0).getMenuDay());
+            StringBuffer dateBf = new StringBuffer();
+            dateBf.append(dataSt.substring(0,4));
+            dateBf.append(".");
+            dateBf.append(dataSt.substring(4,6));
+            dateBf.append(".");
+            dateBf.append(dataSt.substring(6));
+            holder.dateTv.setText(dateBf);
+            holder.mPreserverDayRv.setAdapter(new PreserverGridAdapter(this.dataList.get(position)));
         }
 
         @Override
         public int getItemCount() {
-            return 2;
+            return this.dataList.size();
         }
 
         public class ViewHolderw extends RecyclerView.ViewHolder {
@@ -292,6 +336,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             private CustomGridView mPreserverDayRv;
             public ViewHolderw(View itemView) {
                 super(itemView);
+
             }
         }
     }
@@ -324,10 +369,14 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     }
 
     private class PreserverGridAdapter extends BaseAdapter{
+        List<MealBean.Data> dataList;
+        public PreserverGridAdapter(List<MealBean.Data> data) {
+            this.dataList = data;
+        }
 
         @Override
         public int getCount() {
-            return 4;
+            return dataList.size();
         }
 
         @Override
@@ -342,7 +391,46 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_food_item,viewGroup,false);
+            MealViewHolder holder = null;
+            if (null == view) {
+                view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_food_item, viewGroup, false);
+                holder = new MealViewHolder();
+                holder.BackgroundImg = view.findViewById(R.id.main_img);
+                holder.iconImg = view.findViewById(R.id.type_img);
+                holder.titleTv = view.findViewById(R.id.meal_title_tv);
+                holder.contextTv = view.findViewById(R.id.meal_content_tv);
+                view.setTag(holder);
+            }else {
+                holder = (MealViewHolder) view.getTag();
+            }
+            DisplayImageOptions options = new DisplayImageOptions.Builder()
+                    .showImageForEmptyUri(R.drawable.food1)
+                    .cacheInMemory(true)
+                    .cacheOnDisk(true)
+                    .bitmapConfig(Bitmap.Config.RGB_565)
+                    .build();
+           // holder.BackgroundImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            String imgSrc = dataList.get(i).getImg();
+            activity.myLog("----------->"+imgSrc);
+            imageLoader.displayImage(dataList.get(i).getImg(),holder.BackgroundImg,options);
+            int type = dataList.get(i).getEatType();
+            if (type ==1){
+                imageLoader.displayImage(mealTypeImgs[0],holder.iconImg,options);
+            }else if (type == 2){
+                imageLoader.displayImage(mealTypeImgs[1],holder.iconImg,options);
+            }else if (type == 3){
+
+            }
+
             return view;
         }
-    }}
+    }
+
+    private class MealViewHolder{
+        private ImageView BackgroundImg;
+        private ImageView iconImg;
+        private TextView titleTv;
+        private TextView contextTv;
+    }
+
+}

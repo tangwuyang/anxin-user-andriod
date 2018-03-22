@@ -132,6 +132,13 @@ public class SystemUtility {
     }
 
     /**
+     * 添加多个好友到饭团
+     * */
+    public static String addFriendsToGroupUrl(){
+        return AMUAC_IP + "/v1.0/group/add_users";
+    }
+
+    /**
      * 查询饭团好友
      * */
     public static String getFriendsOfGroupUrl(){

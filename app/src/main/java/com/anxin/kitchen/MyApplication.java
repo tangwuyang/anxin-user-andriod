@@ -1,11 +1,17 @@
 package com.anxin.kitchen;
 
+import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 
 
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Log;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.umeng.analytics.MobclickAgent;
 
 import com.umeng.commonsdk.UMConfigure;
@@ -44,6 +50,20 @@ public class MyApplication extends MultiDexApplication {
         UMShareAPI.get(this);
         mApp = this;
         mAccount = getCache().getAcount(this);
+
+        initImageLoader(getApplicationContext());
+    }
+
+    private void initImageLoader(Context applicationContext) {
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true).cacheOnDisk(true).build();
+        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(applicationContext)
+                .defaultDisplayImageOptions(defaultOptions)
+                .threadPriority(Thread.NORM_PRIORITY-2)
+                .denyCacheImageMultipleSizesInMemory()
+                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
+                .tasksProcessingOrder(QueueProcessingType.LIFO).build();
+        ImageLoader.getInstance().init(configuration);
     }
 
     public static MyApplication getInstance() {

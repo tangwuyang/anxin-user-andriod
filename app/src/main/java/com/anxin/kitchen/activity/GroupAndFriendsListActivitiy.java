@@ -20,10 +20,14 @@ import com.anxin.kitchen.bean.MenuEntity;
 import com.anxin.kitchen.bean.SearchGroupBean;
 import com.anxin.kitchen.decoration.IndexStickyViewDecoration;
 import com.anxin.kitchen.fragment.groupfragment.GroupMainFragment;
+import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.PrefrenceUtil;
+import com.anxin.kitchen.utils.StringUtils;
+import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.MyListView;
 import com.bluetooth.tangwuyang.fantuanlibrary.IndexStickyView;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexHeaderFooterAdapter;
@@ -34,37 +38,89 @@ import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemLongClickListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class GroupAndFriendsListActivitiy extends BaseActivity implements View.OnClickListener,OnItemClickListener,OnItemLongClickListener{
+public class GroupAndFriendsListActivitiy extends BaseActivity implements View.OnClickListener,OnItemClickListener,OnItemLongClickListener,RequestNetListener{
+    private static final String ADD_FRIENDS = "ADD_FRIENDS";
     private TextView mCancelTv;
     private ImageView mBackImg;
     private TextView mTitleTv;
     private TextView mCompleteTv;
+    private TextView mChosedTv;
+
     private PrefrenceUtil mPrefrenceUtil;
     private Gson mGson;
     IndexStickyView mIndexStickyView;
     MyIndexStickyViewAdapter mAdapter;
     IndexHeaderFooterAdapter mBannerAdapter;
     private GroupAdapter groupAdapter = null;
-
+    private String mToken;
+    private Cache mCache;
     private ArrayList<ContactEntity> Friendslist;
     private List<MenuEntity> grouplist;
+    private List<ContactEntity> chosedFriendList;
+    private int groupId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_and_friends_list_activitiy);
         setTitleBar();
+        mCache = new Cache(this);
+        mToken = mCache.getAMToken();
         mGson = new Gson();
+        Intent intent = getIntent();
+        groupId = intent.getIntExtra("groupId",-1);
         initView();
         setGroupAndFriends();
+    }
+
+    //首先请求到所有团所对应的好友
+    private void getData() {
+        //弹出等待
+        popLoad();
+        //根据团查询每个团的好友
+        for (MenuEntity group:
+             grouplist) {
+            int groupId = group.getGroupId();
+            Map<String ,Object> dataMap = new HashMap<>();
+            dataMap.put("groupId",groupId);
+            dataMap.put("token",mToken);
+            requestNet(SystemUtility.getFriendsUrl(),dataMap,group.getMenuTitle());
+        }
+    }
+
+
+    @Override
+    public void requestSuccess(String responseString, String requestCode) {
+        super.requestSuccess(responseString, requestCode);
+        String status = StringUtils.parserMessage(responseString,Constant.REQUEST_STATUS);
+        if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
+            myLog("--------->"+responseString);
+            Intent intent1 = new Intent();
+            setResult(Constant.ADD_FRIEND_CODE,intent1);
+            String friends = mGson.toJson(chosedFriendList);
+            finish();
+        }
+    }
+
+    @Override
+    public void requestFailure(String responseFailure, String requestCode) {
+        super.requestFailure(responseFailure, requestCode);
+    }
+
+    private void popLoad() {
+
     }
 
     private void initView() {
         mPrefrenceUtil = new PrefrenceUtil(this);
         mIndexStickyView = findViewById(R.id.indexStickyView);
         mCompleteTv = findViewById(R.id.complete_bottom_tv);
+        mChosedTv = findViewById(R.id.chosed_num_tv);
         mCompleteTv.setOnClickListener(this);
+        chosedFriendList = new ArrayList<>();
     }
 
     private void setGroupAndFriends() {
@@ -72,8 +128,6 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
         mIndexStickyView.setAdapter(mAdapter);
         mIndexStickyView.addItemDecoration(new IndexStickyViewDecoration(this));
         //添加饭团组
-        groupAdapter = new GroupAdapter(this.getGroupList());
-        setFristGroup();
         setSearch();
         mAdapter.setOnItemClickListener(this);
         mAdapter.setOnItemLongClickListener(this);
@@ -197,12 +251,32 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
                 finish();
                break;
             case R.id.complete_bottom_tv:
-                Intent intent1 = new Intent();
-                setResult(Constant.ADD_FRIEND_CODE,intent1);
-                finish();
+                if (chosedFriendList.size()==0){
+                    Toast.makeText(this, "请选择好友", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Map<String,Object> dataMap = new HashMap<>();
+                StringBuffer phonesBf = new StringBuffer();
+                StringBuffer namesBf = new StringBuffer();
+                for (ContactEntity friend :
+                        chosedFriendList) {
+                    phonesBf.append(friend.getMobile()+",");
+                    namesBf.append(friend.getName()+", ");
+                }
+                String phones = phonesBf.substring(0,phonesBf.length());
+                String names = namesBf.substring(0,namesBf.length());
+                myLog("-----"+phones + "   " +names);
+                dataMap.put("groupId",groupId);
+                dataMap.put("token",mToken);
+                dataMap.put("phones",phones);
+                dataMap.put("names",names);
+                requestNet(SystemUtility.addFriendsToGroupUrl(),dataMap,ADD_FRIENDS);
+
                 break;
         }
     }
+
+
 
     public List<MenuEntity> getGroupList() {
         String groupSt = mPrefrenceUtil.getGroups();
@@ -258,12 +332,28 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
         }
 
         @Override
-        public void onBindContentViewHolder(RecyclerView.ViewHolder holder, int position, ContactEntity itemData) {
+        public void onBindContentViewHolder(RecyclerView.ViewHolder holder, int position, final ContactEntity itemData) {
 
-            ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
+            final ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
             contentViewHolder.mMobile.setText(itemData.getMobile());
             contentViewHolder.mName.setText(itemData.getName());
             contentViewHolder.mSelectImg.setVisibility(View.VISIBLE);
+            contentViewHolder.mSelectImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (contentViewHolder.isChose){
+                        contentViewHolder.isChose = false;
+                        chosedFriendList.remove(itemData);
+                        contentViewHolder.mSelectImg.setImageDrawable(GroupAndFriendsListActivitiy.this.getResources().getDrawable(R.drawable.unselected_drawable));
+                    }else {
+                        contentViewHolder.isChose = true;
+                        chosedFriendList.add(itemData);
+                        contentViewHolder.mSelectImg.setImageDrawable(GroupAndFriendsListActivitiy.this.getResources().getDrawable(R.drawable.selected_drawable));
+                    }
+
+                    mChosedTv.setText(chosedFriendList.size()+"人");
+                }
+            });
         }
     }
 
@@ -273,9 +363,10 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
         TextView mMobile;
         ImageView mAvatar;
         ImageView mSelectImg;
+        boolean isChose;
         public ContentViewHolder(View itemView) {
-
             super(itemView);
+            isChose = false;
             mSelectImg = itemView.findViewById(R.id.select_img);
             mName = (TextView) itemView.findViewById(R.id.tv_name);
             mMobile = (TextView) itemView.findViewById(R.id.tv_mobile);
