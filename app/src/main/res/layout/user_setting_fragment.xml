@@ -31,11 +31,23 @@
                 <ImageView
                     android:id="@+id/back_btn"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="15dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="10dp"
                     android:src="@drawable/back_drawable" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:text="保存"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -63,6 +75,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
                 android:src="@drawable/enter_message_normal" />
+
             <com.anxin.kitchen.view.RoundedImageView
                 android:id="@+id/user_icon"
                 android:layout_width="35dp"
@@ -71,7 +84,7 @@
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/back_iv"
                 android:src="@drawable/icon"
-                app:riv_oval="true"/>
+                app:riv_oval="true" />
         </RelativeLayout>
 
         <View
@@ -113,6 +126,7 @@
                 android:textColor="#333333"
                 android:textSize="14sp" />
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp" />
@@ -136,13 +150,14 @@
                 android:id="@+id/user_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
                 android:text="1242345235"
                 android:textColor="#333333"
                 android:textSize="14sp" />
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp" />
@@ -182,6 +197,7 @@
                 android:textColor="#333333"
                 android:textSize="14sp" />
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp" />

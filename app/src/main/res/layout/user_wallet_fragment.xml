@@ -22,10 +22,11 @@
                 <ImageView
                     android:id="@+id/back_btn"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="15dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="10dp"
                     android:src="@drawable/back_drawable" />
 
                 <TextView
@@ -39,10 +40,11 @@
                 <TextView
                     android:id="@+id/detailed_btn"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="15dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="15dp"
                     android:text="查看明细"
                     android:textColor="@color/white"
                     android:textSize="15.7sp" />
