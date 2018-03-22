@@ -8,6 +8,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,6 +40,7 @@ import com.amap.api.services.geocoder.RegeocodeResult;
 import com.amap.api.services.help.Inputtips;
 import com.amap.api.services.help.InputtipsQuery;
 import com.amap.api.services.help.Tip;
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.user.R;
 
 import java.text.SimpleDateFormat;
@@ -49,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LocationActivity extends BaseActivity implements AMap.OnCameraChangeListener,AMap.OnMapClickListener,GeocodeSearch.OnGeocodeSearchListener ,TextWatcher,Inputtips.InputtipsListener{
+public class LocationActivity extends BaseActivity implements AMap.OnCameraChangeListener, AMap.OnMapClickListener, GeocodeSearch.OnGeocodeSearchListener, TextWatcher, Inputtips.InputtipsListener {
     private String city = "北京";
     private static final String TAG = "LocationActivity";
     private AMap aMap;
@@ -60,48 +62,9 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     private boolean firstLocation = true;
-    private GeocodeSearch geocoderSearch ;
+    private GeocodeSearch geocoderSearch;
     private AutoCompleteTextView mInputLocationTv;
 
-    private Map<String,String> priviceMap = new HashMap<>();
-
-    {
-        priviceMap.put("北京市",11+"");
-        priviceMap.put("天津市",12+"");
-        priviceMap.put("河北省",13+"");
-        priviceMap.put("山西省",14+"");
-        priviceMap.put("内蒙古自治区",15+"");
-        priviceMap.put("辽宁省",21+"");
-        priviceMap.put("吉林省",22+"");
-        priviceMap.put("黑龙江省",23+"");
-        priviceMap.put("上海市",31+"");
-        priviceMap.put("江苏省",32+"");
-        priviceMap.put("浙江省",33+"");
-        priviceMap.put("安徽省",34+"");
-        priviceMap.put("福建省",35+"");
-        priviceMap.put("江西省",36+"");
-        priviceMap.put("山东省",37+"");
-        priviceMap.put("河南省",41+"");
-        priviceMap.put("湖北省",42+"");
-        priviceMap.put("湖南省",43+"");
-        priviceMap.put("广东省",44+"");
-        priviceMap.put("广西壮族自治区",45+"");
-        priviceMap.put("海南省",46+"");
-        priviceMap.put("重庆市",50+"");
-        priviceMap.put("四川省",51+"");
-        priviceMap.put("贵州省",52+"");
-        priviceMap.put("云南省",53+"");
-        priviceMap.put("西藏自治区",54+"");
-        priviceMap.put("陕西省",61+"");
-        priviceMap.put("甘肃省",62+"");
-        priviceMap.put("青海省",63+"");
-        priviceMap.put("宁夏回族自治区",64+"");
-        priviceMap.put("新疆维吾尔自治区",65+"");
-        priviceMap.put("台湾省",71+"");
-        priviceMap.put("香港特别行政区",81+"");
-        priviceMap.put("澳门特别行政区",82+"");
-
-    }
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
         @Override
@@ -128,10 +91,11 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                     amapLocation.getAoiName();//获取当前定位点的AOI信息
                     lat = amapLocation.getLatitude();
                     lon = amapLocation.getLongitude();
-                    Log.v("pcw", amapLocation.getProvince()+"city"+amapLocation.getCityCode()+ "  dis"+amapLocation.getAdCode());
+                    Log.v("pcw", amapLocation.getProvince() + "city" + amapLocation.getCityCode() + "  dis" + amapLocation.getAdCode());
                     Log.v("pcw", "lat : " + lat + " lon : " + lon);
-                    Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
-
+                    Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict() + "street" + amapLocation.getStreet());
+                    Log.v("pcw", "street" + amapLocation.getStreet() + "streetNum" + amapLocation.getStreetNum());
+                    Log.v("pcw", "getAddress" + amapLocation.getAddress());
                     // 设置当前地图显示为当前位置
                     moveToLocation();
                     MarkerOptions markerOptions = new MarkerOptions();
@@ -152,7 +116,6 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
             }
         }
     };
-
 
 
     private void moveToLocation() {
@@ -234,6 +197,18 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         mLocationClient.setLocationListener(mLocationListener);
         mInputLocationTv.addTextChangedListener(this);
         init();
+        mChoseLocationLl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        mRelativePositionLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                finish();
+            }
+        });
     }
 
     /**
@@ -274,6 +249,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
     }
 
     private TextView mCameraTextView;
+
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
 
@@ -281,18 +257,18 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
 
     @Override
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
-        Log.i("change","----------------->"+cameraPosition.toString());
+        Log.i("change", "----------------->" + cameraPosition.toString());
         // 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
         String latloginfo = cameraPosition.target.toString();
-        String latlog = latloginfo.substring(latloginfo.indexOf("(")+1,latloginfo.indexOf(")"));
+        String latlog = latloginfo.substring(latloginfo.indexOf("(") + 1, latloginfo.indexOf(")"));
         String[] lat_log_s = latlog.split(",");
         double[] lat_log = new double[2];
         lat_log[0] = Double.valueOf(lat_log_s[0]);
         lat_log[1] = Double.valueOf(lat_log_s[1]);
-       LatLonPoint point = new LatLonPoint(lat_log[0],lat_log[1]);
-        mCameraTextView.setText("onCameraChangeFinish:"
-                + cameraPosition.toString() + "   " + lat_log[0] + "   " + lat_log[1]);
-        RegeocodeQuery query = new RegeocodeQuery(point, 200,GeocodeSearch.AMAP);
+        LatLonPoint point = new LatLonPoint(lat_log[0], lat_log[1]);
+//        mCameraTextView.setText("onCameraChangeFinish:"
+//                + cameraPosition.toString() + "   " + lat_log[0] + "   " + lat_log[1]);
+        RegeocodeQuery query = new RegeocodeQuery(point, 200, GeocodeSearch.AMAP);
         //GeocodeQuery geocodeQuery = new GeocodeQuery()
         geocoderSearch.getFromLocationAsyn(query);
 
@@ -300,37 +276,39 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
 
     @Override
     public void onMapClick(LatLng latLng) {
-        Toast.makeText(this, latLng+"", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, latLng + "", Toast.LENGTH_SHORT).show();
         mCameraTextView.setText("long pressed, point=" + latLng);
     }
 
     @Override
     public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
-        Log.i(TAG, "onRegeocodeSearched: ---------------"+ regeocodeResult.toString());
+        Log.i(TAG, "onRegeocodeSearched: ---------------" + regeocodeResult.toString());
         mRelativePositionLv.setVisibility(View.GONE);
         mCameraTextView.setVisibility(View.VISIBLE);
         mChoseLocationLl.setVisibility(View.VISIBLE);
         String addressName = regeocodeResult.getRegeocodeAddress().getFormatAddress()
                 + "附近";
-         mCameraTextView.setText("   " + addressName);
-        String cityCode = regeocodeResult.getRegeocodeAddress().getCityCode();
+        mCameraTextView.setText("   " + addressName);
+        //从服务器获取地址ID转换
+        String city = regeocodeResult.getRegeocodeAddress().getCity();
         String provice = regeocodeResult.getRegeocodeAddress().getProvince();
-        String districtCode = regeocodeResult.getRegeocodeAddress().getAdCode();
-        Set<String> proviceSet = priviceMap.keySet();
-        String priviceCode = null;
-        for (String proviceName :
-                proviceSet) {
-            if (proviceName.equals(provice)){
-                priviceCode = priviceMap.get(proviceName);
-            }
-        }
-        myLog("-------------provice"+priviceCode + "   cityCode"+cityCode + "  dist"+ districtCode);
+        String district = regeocodeResult.getRegeocodeAddress().getDistrict();
+        String cityID = MyApplication.getInstance().getAddressNameToID(city);
+        String proviceID = MyApplication.getInstance().getAddressNameToID(provice);
+        String districtID = MyApplication.getInstance().getAddressNameToID(district);
 
+//        myLog("-------------provice----------" + provice + "--------proviceCode---------" + proviceID);
+//        myLog("-------------city----------" + city + "--------cityCode---------" + cityID);
+//        myLog("-------------district----------" + district + "--------districtCode---------" + districtID);
+//        myLog("-------------proviceCode----------" + proviceID + "--------provice---------" + MyApplication.getInstance().getAddressIDToName(proviceID));
+//        myLog("-------------cityCode----------" + cityID + "--------city---------" + MyApplication.getInstance().getAddressIDToName(cityID));
+//        myLog("-------------districtCode----------" + districtID + "--------district---------" + MyApplication.getInstance().getAddressIDToName(districtID));
+//        myLog("-------------street----------" + regeocodeResult.getRegeocodeAddress().getStreetNumber());
     }
 
     @Override
     public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
-        Log.i(TAG, "onGeocodeSearched: ---------------"+ geocodeResult);
+        Log.i(TAG, "onGeocodeSearched: ---------------" + geocodeResult);
         mRelativePositionLv.setVisibility(View.GONE);
         mCameraTextView.setText(View.VISIBLE);
         mCameraTextView.setText("long pressed, point=" + geocodeResult.getGeocodeAddressList());
@@ -370,7 +348,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                 listString.add(map);
             }
             SimpleAdapter aAdapter = new SimpleAdapter(getApplicationContext(), listString, R.layout.location_item_layout,
-                    new String[] {"name","address"}, new int[] {R.id.poi_field_id, R.id.poi_value_id});
+                    new String[]{"name", "address"}, new int[]{R.id.poi_field_id, R.id.poi_value_id});
 
             mRelativePositionLv.setAdapter(aAdapter);
             aAdapter.notifyDataSetChanged();
