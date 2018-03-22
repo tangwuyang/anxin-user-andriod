@@ -55,12 +55,12 @@ import okhttp3.Response;
 /**
  * 主界面
  */
-public class MainActivity extends BaseActivity implements View.OnClickListener,RequestNetListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, RequestNetListener {
     private static final int BAIDU_READ_PHONE_STATE = 100;
     private static final String TAG = "MainActivity";
     public static final String SEARCH_GROUP = "SEARCH_GROUP";
     public static final String GET_FRIEND = "GET_FRIEND";
-    public static final String DELETE_GROUP = "DELETE_GROUP" ;
+    public static final String DELETE_GROUP = "DELETE_GROUP";
     private static final String RE_GET_GROUP = "再次请求团";
     public static final String DELETE_FRIEND = "DELETE_FRIEND";
     private PrefrenceUtil prefrenceUtil;
@@ -87,6 +87,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     public static final String GET_BANNER_LIST = "GET_BANNER_LIST";
     private static final String GET_MENU_MEAL = "GET_MENU_MEAL";
     public String requesNetTag = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +100,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         // bindService(agentService, conn, Service.BIND_AUTO_CREATE);
         startService(agentService);
         requestLocationPermission();
+        //获取定位所有城市ID列表(本地缓存)
+        SystemUtility.sendGetAddressList();
         initView();//初始化界面控件
         setChioceItem(0);//初始化页面加载是显示点餐界面
         handler.postDelayed(new Runnable() {
@@ -111,7 +114,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
 
     private void requestLocationPermission() {
         boolean hasLocationPermission = getLocationPermission();
-        if (!hasLocationPermission){
+        if (!hasLocationPermission) {
             popRequestWindow();
         }
     }
@@ -121,7 +124,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
             @Override
             public void onGivedPermssion() {
-                ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, BAIDU_READ_PHONE_STATE);
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, BAIDU_READ_PHONE_STATE);
             }
         });
         dialog.show();
@@ -146,6 +149,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
                 break;
         }
     }
+
     private Handler handler = new Handler();
 
     private void initView() {
@@ -262,10 +266,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
     //是否有位置权限
     public boolean getLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED
-                ){
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                ) {
             return false;
-        }else return true;
+        } else return true;
     }
 
 
@@ -293,8 +297,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,R
         }
 
         //请求轮播广告返回
-        if (requestCode!= null && requestCode.equals(GET_BANNER_LIST)){
-
+        if (requestCode != null && requestCode.equals(GET_BANNER_LIST)) {
             if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
                 myLog("--------"+responseBody);
                 //再去获取广告列表
