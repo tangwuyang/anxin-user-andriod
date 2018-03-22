@@ -17,16 +17,21 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.activity.ClipHeaderActivity;
 import com.anxin.kitchen.activity.UserNameActivity;
+import com.anxin.kitchen.custom.view.CustomDatePicker;
 import com.anxin.kitchen.custom.view.SelectGenderPopupWindow;
 import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.DateUtils;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RoundedImageView;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * 设置界面
@@ -43,12 +48,15 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private TextView userName;//用户名称
     private TextView userPhone;//用户电话
     private TextView userGender;//用户性别
+    private TextView userBirthday;//用户生日
     private SelectPicPopupWindow menuWindowSelectPic;//选择头像图片弹窗
     private SelectGenderPopupWindow menuSelectGender;//选择用户性别弹窗
     private static final int RESULT_CAPTURE = 122;
     private static final int RESULT_PICK = 133;
     private static final int CROP_PHOTO = 111;
     private static final int USER_NAME = 112;//相册编辑标志
+    private CustomDatePicker datePicker;
+    private String date;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,6 +93,8 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         userName = (TextView) view.findViewById(R.id.user_name);
         userPhone = (TextView) view.findViewById(R.id.user_phone);
         userGender = (TextView) view.findViewById(R.id.user_gender);
+        userBirthday = (TextView) view.findViewById(R.id.user_birthday);
+
         //获取本地用户名称
         String name = mApp.getCache().getNickName();
         if (name != null && name.length() != 0) {
@@ -101,6 +111,37 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         if (phone != null && phone.length() != 0) {
             userPhone.setText(phone);
         }
+        //获取本地用户性别
+        String sex = mApp.getAccount().getUserSex();
+        if (sex != null && sex.length() != 0) {
+            if (sex.equals("1")) {
+                userGender.setText("男");
+            } else if (sex.equals("2"))
+                userGender.setText("女");
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+        String time = sdf.format(new Date());
+        //获取本地用户生日
+        String UserDate = mApp.getAccount().getUserBirthdayTime();
+        if (UserDate != null && !UserDate.equals("null")) {
+            date = DateUtils.stampToDate(UserDate, "yyyy-MM-dd HH:mm");
+        } else
+            date = time.split(" ")[0];
+        userBirthday.setText(date);
+        /**
+         * 设置年月日
+         */
+        datePicker = new CustomDatePicker(getActivity(), "请选择日期", new CustomDatePicker.ResultHandler() {
+            @Override
+            public void handle(String time) {
+                date = time.split(" ")[0];
+                userBirthday.setText(date);
+            }
+        }, "1900-01-01 00:00", time);
+        datePicker.showSpecificTime(false); //显示时和分
+        datePicker.setIsLoop(false);
+        datePicker.setDayIsLoop(true);
+        datePicker.setMonIsLoop(true);
     }
 
     @Override
@@ -132,6 +173,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                         Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
                 break;
             case R.id.user_birthday_rlt://修改用户生日
+                datePicker.show(date);
                 break;
             default:
                 break;

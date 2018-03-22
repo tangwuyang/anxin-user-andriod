@@ -137,18 +137,26 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                 }
                 break;
             case R.id.wallet_rlt://用户钱包
-                UserWalletSetFragment userWalletSetFragment = new UserWalletSetFragment();
-                ft.replace(R.id.content_frame, userWalletSetFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
+                if (mApp.getAccount() == null) {
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                } else {
+                    UserWalletSetFragment userWalletSetFragment = new UserWalletSetFragment();
+                    ft.replace(R.id.content_frame, userWalletSetFragment);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.addToBackStack(null);
+                    ft.commit();
+                }
                 break;
             case R.id.user_address_rlt://用户地址
-                UserAddressFragment userAddressFragment = new UserAddressFragment();
-                ft.replace(R.id.content_frame, userAddressFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
+                if (mApp.getAccount() == null) {
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                } else {
+                    UserAddressFragment userAddressFragment = new UserAddressFragment();
+                    ft.replace(R.id.content_frame, userAddressFragment);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.addToBackStack(null);
+                    ft.commit();
+                }
                 break;
             case R.id.user_invitation_rlt://邀请用户
                 break;
