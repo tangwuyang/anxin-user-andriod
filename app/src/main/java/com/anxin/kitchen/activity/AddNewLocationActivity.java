@@ -11,11 +11,22 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.AddressBean;
+import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.MyService;
+import com.anxin.kitchen.utils.StringUtils;
+import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddNewLocationActivity extends BaseActivity implements View.OnClickListener {
     private ImageView mBackImg;//返回按钮
@@ -26,12 +37,13 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
     private EditText contactNameEdit;//联系人姓名
     private EditText contactPhontEdit;//联系人电话
     private EditText contactAddressEdit;//详细地址
-
+    private static final String sendAddAddress_http = "sendAddAddress";
     private static final int LOCATION_NAME = 102;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBusFactory.getInstance().register(this);
         setContentView(R.layout.activity_add_new_location);
         initView();
     }
@@ -97,6 +109,32 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         }
     }
 
+    /**
+     * 监听网络请求返回
+     *
+     * @param asyncHttpRequestMessage
+     */
+    public void onEventMainThread(AsyncHttpRequestMessage asyncHttpRequestMessage) {
+        String requestCode = asyncHttpRequestMessage.getRequestCode();
+        String responseMsg = asyncHttpRequestMessage.getResponseMsg();
+        String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+        switch (requestCode) {
+            //验证码发送
+            case sendAddAddress_http:
+                //网络请求返回成功
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    //解析验证码返回
+                    String code = StringUtils.parserMessage(responseMsg, "code");
+                    String data = StringUtils.parserMessage(responseMsg, "data");
+                    if (code != null && code.equals("1")) {
+                        finish();
+                        SystemUtility.sendGetAddressHttp();
+                    }
+                }
+                break;
+        }
+    }
+
     private void sendAddAddress() {
         String name = contactNameEdit.getText().toString();
         if (name == null || name.length() <= 0) {
@@ -104,9 +142,9 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
             return;
         }
         String phone = contactPhontEdit.getText().toString();
-        if (phone == null || phone.length() <= 0){
+        if (phone == null || phone.length() <= 0) {
             ToastUtil.showToast("请输入联系人电话号码");
-return;
+            return;
         }
         String address = contactAddressEdit.getText().toString();
         if (address == null || address.length() <= 0) {
@@ -117,5 +155,43 @@ return;
             ToastUtil.showToast("请选择送餐地址");
             return;
         }
+        sendAddAddressHttp(name, phone, address);
+    }
+
+    /**
+     * 添加地址信息
+     *
+     * @param name
+     * @param phone
+     * @param address
+     */
+    private void sendAddAddressHttp(String name, String phone, String address) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("isDefault", 0);
+            jsonObject.put("contactName", name);
+            jsonObject.put("phone", phone);
+            jsonObject.put("province", Integer.valueOf(addressBean.getProvinceID()));
+            jsonObject.put("city", Integer.valueOf(addressBean.getCityID()));
+            jsonObject.put("district", Integer.valueOf(addressBean.getDistrictID()));
+            jsonObject.put("street", addressBean.getStreetName());
+            jsonObject.put("address", address);
+            jsonObject.put("longitude", addressBean.getLongitude());
+            jsonObject.put("latitude", addressBean.getLatitude());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String urlPath = SystemUtility.sendAddAddress();
+        Map<String, Object> dataMap = new HashMap();
+        dataMap.put("token", SystemUtility.AMToken);
+        dataMap.put("formData", jsonObject.toString());
+        SystemUtility.requestNetPost(urlPath, dataMap, sendAddAddress_http);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //EventBusFactory销毁
+        EventBusFactory.getInstance().unregister(this);
     }
 }

@@ -11,18 +11,27 @@ import java.io.Serializable;
 
 public class AddressBean implements Serializable {
 
+    private String addressID;//地址ID
+    private String userID;//用户ID
     private String phoneNumber;//联系人电话
     private String isDefault;//是否默认
     private String contactName;//联系人名称
     private String provinceName;//省
+    private String provinceID;//省ID
     private String cityName;//市
+    private String cityID;//市ID
     private String districtName;//区
+    private String districtID;//区ID
     private String streetName;//街道
     private String address;//地址
     private String longitude;//经度
     private String latitude;//纬度
 
     public String getProvinceName() {
+        if (provinceName == null || provinceName.length() <= 0) {
+            if (provinceID != null && provinceID.length() > 0)
+                provinceName = MyApplication.getInstance().getAddressIDToName(provinceID);
+        }
         return provinceName;
     }
 
@@ -36,7 +45,11 @@ public class AddressBean implements Serializable {
      * @return
      */
     public String getProvinceID() {
-        return MyApplication.getInstance().getAddressNameToID(provinceName);
+        if (provinceID == null || provinceID.length() <= 0) {
+            if (provinceName != null && provinceName.length() > 0)
+                provinceID = MyApplication.getInstance().getAddressNameToID(provinceName);
+        }
+        return provinceID;
     }
 
     /**
@@ -45,7 +58,11 @@ public class AddressBean implements Serializable {
      * @return
      */
     public String getCityID() {
-        return MyApplication.getInstance().getAddressNameToID(cityName);
+        if (cityID == null || cityID.length() <= 0) {
+            if (cityName != null && cityName.length() > 0)
+                cityID = MyApplication.getInstance().getAddressNameToID(cityName);
+        }
+        return cityID;
     }
 
     /**
@@ -54,7 +71,23 @@ public class AddressBean implements Serializable {
      * @return
      */
     public String getDistrictID() {
-        return MyApplication.getInstance().getAddressNameToID(districtName);
+        if (districtID == null || districtID.length() <= 0) {
+            if (districtName != null && districtName.length() > 0)
+                districtID = MyApplication.getInstance().getAddressNameToID(districtName);
+        }
+        return districtID;
+    }
+
+    public void setProvinceID(String provinceID) {
+        this.provinceID = provinceID;
+    }
+
+    public void setCityID(String cityID) {
+        this.cityID = cityID;
+    }
+
+    public void setDistrictID(String districtID) {
+        this.districtID = districtID;
     }
 
     public String getPhoneNumber() {
@@ -82,6 +115,10 @@ public class AddressBean implements Serializable {
     }
 
     public String getCityName() {
+        if (cityName == null || cityName.length() <= 0) {
+            if (cityID != null && cityID.length() > 0)
+                cityName = MyApplication.getInstance().getAddressIDToName(cityID);
+        }
         return cityName;
     }
 
@@ -90,6 +127,10 @@ public class AddressBean implements Serializable {
     }
 
     public String getDistrictName() {
+        if (districtName == null || districtName.length() <= 0) {
+            if (districtID != null && districtID.length() > 0)
+                districtName = MyApplication.getInstance().getAddressIDToName(districtID);
+        }
         return districtName;
     }
 
@@ -129,10 +170,30 @@ public class AddressBean implements Serializable {
         this.latitude = latitude;
     }
 
+    public String getAddressID() {
+        return addressID;
+    }
+
+    public void setAddressID(String addressID) {
+        this.addressID = addressID;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
     @Override
     public String toString() {
         return "AddressBean{" +
-                "provinceName='" + provinceName + '\'' +
+                "addressID='" + addressID + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", isDefault='" + isDefault + '\'' +
+                ", contactName='" + contactName + '\'' +
+                ", provinceName='" + provinceName + '\'' +
                 ", cityName='" + cityName + '\'' +
                 ", districtName='" + districtName + '\'' +
                 ", streetName='" + streetName + '\'' +

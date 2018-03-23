@@ -17,9 +17,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.activity.AddNewLocationActivity;
 import com.anxin.kitchen.activity.ClipHeaderActivity;
 import com.anxin.kitchen.activity.LocationActivity;
 import com.anxin.kitchen.activity.UserNameActivity;
+import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.anxin.kitchen.user.R;
@@ -48,6 +50,7 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
     private static final int RESULT_PICK = 101;//相册标志
     private static final int CROP_PHOTO = 102;//相册编辑标志
     private static final int USER_NAME = 112;//相册编辑标志
+    private static final int LOCATION_NAME = 103;
     private MyApplication mApp = null;
     private String username;
 
@@ -113,8 +116,9 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
                 getActivity().startActivityForResult(intent, USER_NAME);
                 break;
             case R.id.user_address_rlt:
-                Intent startLocation = new Intent(getActivity(), LocationActivity.class);
-                startActivity(startLocation);
+                Intent intent2 = new Intent();
+                intent2.setClass(getActivity(), LocationActivity.class);
+                startActivityForResult(intent2, LOCATION_NAME);
                 break;
             default:
                 break;
@@ -193,6 +197,12 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
                             userName.setText(name);
                         }
                     }
+                }
+                break;
+            case LOCATION_NAME:
+                if (resultCode == getActivity().RESULT_OK) {
+                    AddressBean addressBean = (AddressBean) data.getSerializableExtra("AddressBean");
+//                    Log.i("", "--------addressBean-------ww--" + addressBean.toString());
                 }
                 break;
             default:

@@ -173,7 +173,6 @@
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:background="#3ed368"
-        android:alpha="0.5"
         android:text="完成"
         android:textColor="@color/white"
         android:textSize="18sp" />

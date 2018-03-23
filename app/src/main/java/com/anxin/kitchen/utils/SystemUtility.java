@@ -9,7 +9,9 @@ import android.widget.ListView;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.Account;
+import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.AddressListBean;
+import com.anxin.kitchen.event.AddressListEvent;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.event.OnSaveBitmapEvent;
 import com.anxin.kitchen.event.OnUserAcountEvent;
@@ -68,6 +70,16 @@ public class SystemUtility {
     //注册用户
     public static String sendUserPhoneLogin(String phone, String code) {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
+    }
+
+    //添加地址
+    public static String sendAddAddress() {
+        return AMUAC_IP + "/v1.0/user/add_address";
+    }
+
+    //获取送餐地址
+    public static String sendGetAddress() {
+        return AMUAC_IP + "/v1.0/user/address_list?token=" + AMToken;
     }
 
     /**
@@ -147,8 +159,8 @@ public class SystemUtility {
 
     /**
      * 添加多个好友到饭团
-     * */
-    public static String addFriendsToGroupUrl(){
+     */
+    public static String addFriendsToGroupUrl() {
         return AMUAC_IP + "/v1.0/group/add_users";
     }
 
@@ -265,6 +277,13 @@ public class SystemUtility {
         try {
             JSONObject jsonObject = new JSONObject(jason);
             String data = jsonObject.getString("data");
+            //解析服务器请求密钥，toKen
+            String toKen = new JSONObject(data).getString("token");
+            if (toKen != null && toKen.length() != 0) {
+                AMToken = toKen;
+                userAccount.setUserAMToKen(toKen);
+                MyApplication.getInstance().getCache().setAMToken(toKen);
+            }
             //解析用户信息
             String user = new JSONObject(data).getString("user");
             JSONObject userJason = new JSONObject(user);
@@ -328,13 +347,6 @@ public class SystemUtility {
                 } else if (resultKey.equals("createTime")) {
                     userAccount.setUserCreateTime(new Long(resultValue));
                 }
-            }
-            //解析服务器请求密钥，toKen
-            String toKen = new JSONObject(data).getString("token");
-            if (toKen != null && toKen.length() != 0) {
-                AMToken = toKen;
-                userAccount.setUserAMToKen(toKen);
-                MyApplication.getInstance().getCache().setAMToken(toKen);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -405,6 +417,40 @@ public class SystemUtility {
         return sf;
     }
 
+    /**
+     * 获取全部地址信息
+     */
+    public static void sendGetAddressHttp() {
+        String urlPath = sendGetAddress();
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(urlPath, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                String result = "";
+                if (bytes != null) {
+                    result = new String(bytes);
+//                    LOG.e("----------sendGetAddressList------------" + result);
+                    String code = StringUtils.parserMessage(result, "code");
+                    String data = StringUtils.parserMessage(result, "data");
+                    if (code != null && code.equals("1")) {
+                        AddressListJason(data);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                    }
+
+                }
+            }
+        });
+    }
+
     //获取所有城市ID
     public static void sendGetAddressList() {
         AsyncHttpClient client = new AsyncHttpClient();
@@ -414,8 +460,8 @@ public class SystemUtility {
                 String result = "";
                 if (bytes != null) {
                     result = new String(bytes);
-                    LOG.e("----------sendGetAddressList------------" + result);
-                    AddressListJason(result);
+//                    LOG.e("----------sendGetAddressList------------" + result);
+                    AddressIDJason(result);
                 }
             }
 
@@ -433,11 +479,11 @@ public class SystemUtility {
     }
 
     /**
-     * 解析地址信息
+     * 解析地址ID信息
      *
      * @param jason
      */
-    public static void AddressListJason(String jason) {
+    public static void AddressIDJason(String jason) {
         JSONObject jsonObject = null;
         try {
             jsonObject = new JSONObject(jason);
@@ -490,6 +536,71 @@ public class SystemUtility {
             }
             mApp.setAddressIDMap(addressIDMap);
             mApp.setAddressNameMap(addressNameMap);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析地址信息
+     *
+     * @param jason
+     */
+    public static void AddressListJason(String jason) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(jason);
+            String data = jsonObject.getString("data");
+            JSONArray jsonArrayResult2 = new JSONArray(data);
+            int AccountCount2 = jsonArrayResult2.length();
+            List<AddressBean> addressListBean = new ArrayList<>();
+            for (int j = 0; j < AccountCount2; j++) {
+                String alarmMsg2 = jsonArrayResult2.getString(j);
+                JSONObject jsonAlarm2 = new JSONObject(alarmMsg2);
+                Iterator<?> it2 = jsonAlarm2.keys();
+                String resultKey2 = "";
+                String resultValue2 = null;
+                AddressBean addressBean = new AddressBean();
+                while (it2.hasNext()) {
+                    resultKey2 = (String) it2.next().toString();
+                    resultValue2 = jsonAlarm2.getString(resultKey2).trim();
+                    if (resultKey2 == null) {
+                        resultKey2 = "";
+                    }
+                    if (resultValue2 == null) {
+                        resultValue2 = "";
+                    }
+                    resultValue2 = resultValue2.trim();
+                    if (resultKey2.equals("id")) {
+                        addressBean.setAddressID(resultValue2);
+                    } else if (resultKey2.equals("phone")) {
+                        addressBean.setPhoneNumber(resultValue2);
+                    } else if (resultKey2.equals("province")) {
+                        addressBean.setProvinceID(resultValue2);
+                    } else if (resultKey2.equals("city")) {
+                        addressBean.setCityID(resultValue2);
+                    } else if (resultKey2.equals("district")) {
+                        addressBean.setDistrictID(resultValue2);
+                    } else if (resultKey2.equals("longitude")) {
+                        addressBean.setLongitude(resultValue2);
+                    } else if (resultKey2.equals("latitude")) {
+                        addressBean.setLatitude(resultValue2);
+                    } else if (resultKey2.equals("address")) {
+                        addressBean.setAddress(resultValue2);
+                    } else if (resultKey2.equals("street")) {
+                        addressBean.setStreetName(resultValue2);
+                    } else if (resultKey2.equals("contactName")) {
+                        addressBean.setContactName(resultValue2);
+                    } else if (resultKey2.equals("isDefault")) {
+                        addressBean.setIsDefault(resultValue2);
+                    } else if (resultKey2.equals("userId")) {
+                        addressBean.setUserID(resultValue2);
+                    }
+                }
+                addressListBean.add(addressBean);
+            }
+            MyApplication.getInstance().setAddressBeanList(addressListBean);
+            EventBusFactory.getInstance().post(new AddressListEvent());
         } catch (JSONException e) {
             e.printStackTrace();
         }

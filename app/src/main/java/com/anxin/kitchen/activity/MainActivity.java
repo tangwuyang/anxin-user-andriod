@@ -19,6 +19,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.BannerListBean;
 import com.anxin.kitchen.bean.FriendsBean;
 import com.anxin.kitchen.bean.MealBean;
@@ -101,7 +102,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         startService(agentService);
         requestLocationPermission();
         //获取定位所有城市ID列表(本地缓存)
-        SystemUtility.sendGetAddressList();
+        if (MyApplication.getInstance().getAddressNameMap() == null)
+            SystemUtility.sendGetAddressList();
         initView();//初始化界面控件
         setChioceItem(0);//初始化页面加载是显示点餐界面
         handler.postDelayed(new Runnable() {
@@ -273,24 +275,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
 
-
     @Override
     public void requestSuccess(String responseBody, String requestCode) {
-        String status = StringUtils.parserMessage(responseBody,"message");
-        if (requestCode!=null && requestCode.equals(GET_KITCHEN_ID)){
+        String status = StringUtils.parserMessage(responseBody, "message");
+        if (requestCode != null && requestCode.equals(GET_KITCHEN_ID)) {
 
-            myLog("----------->"+responseBody + status);
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
+            myLog("----------->" + responseBody + status);
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 Gson gson = new Gson();
-                NearKitchenBean bean = gson.fromJson(responseBody,NearKitchenBean.class);
+                NearKitchenBean bean = gson.fromJson(responseBody, NearKitchenBean.class);
                 int kichtchenId = bean.getData().getKitchenid();
-                myLog("--------"+bean.getData().getKitchenname());
+                myLog("--------" + bean.getData().getKitchenname());
                 PrefrenceUtil prefrenceUtil = new PrefrenceUtil(MainActivity.this);
                 prefrenceUtil.putKitchenId(kichtchenId);
-                Map<String,Object> dataMap = new HashMap<>();
-                dataMap.put(Constant.KITCHEN_ID,kichtchenId);
-                requestNet(SystemUtility.getBannerListUrl(),dataMap,GET_BANNER_LIST);
-                requestNet(SystemUtility.getMenuMealUrl(),dataMap,GET_MENU_MEAL);
+                Map<String, Object> dataMap = new HashMap<>();
+                dataMap.put(Constant.KITCHEN_ID, kichtchenId);
+                requestNet(SystemUtility.getBannerListUrl(), dataMap, GET_BANNER_LIST);
+                requestNet(SystemUtility.getMenuMealUrl(), dataMap, GET_MENU_MEAL);
 
                 return;
             }
@@ -298,22 +299,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         //请求轮播广告返回
         if (requestCode != null && requestCode.equals(GET_BANNER_LIST)) {
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                myLog("--------"+responseBody);
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                myLog("--------" + responseBody);
                 //再去获取广告列表
-                BannerListBean bannerListBean = mGson.fromJson(responseBody,BannerListBean.class);
+                BannerListBean bannerListBean = mGson.fromJson(responseBody, BannerListBean.class);
                 List<BannerListBean.Data> dataList = bannerListBean.getData();
-                if (null != mealMainFragment){
+                if (null != mealMainFragment) {
                     mealMainFragment.setBanner(dataList);
                 }
             }
             return;
         }
         //请求附近的菜单
-        if (requestCode!=null && requestCode.equals(GET_MENU_MEAL)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                myLog("--------"+responseBody);
-                MealBean mealBean = mGson.fromJson(responseBody,MealBean.class);
+        if (requestCode != null && requestCode.equals(GET_MENU_MEAL)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                myLog("--------" + responseBody);
+                MealBean mealBean = mGson.fromJson(responseBody, MealBean.class);
                 mealMainFragment.setMeal(mealBean);
             }
             return;
@@ -321,77 +322,77 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
 
         //查询所有创建的团
-        if (requestCode!=null && requestCode.equals(SEARCH_GROUP)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                String gsonSt =StringUtils.parserMessage(responseBody,"data");
-                myLog("------------>"+gsonSt);
+        if (requestCode != null && requestCode.equals(SEARCH_GROUP)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                String gsonSt = StringUtils.parserMessage(responseBody, "data");
+                myLog("------------>" + gsonSt);
                 Gson gson = new Gson();
                 SearchGroupBean bean = gson.fromJson(gsonSt, SearchGroupBean.class);
-                if (!gsonSt.equals(Constant.NULL)){
-                    myLog(bean.getData().size()+"--------"+gsonSt);
+                if (!gsonSt.equals(Constant.NULL)) {
+                    myLog(bean.getData().size() + "--------" + gsonSt);
                     prefrenceUtil.putGroups(gsonSt);
                     groupMainFragment.setGroup(bean);
                 }
-            }else if (null!=status && status.equals(Constant.LOGIN_FIRST)){
+            } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
                 startNewActivity(LoginActivity.class);
             }
             return;
         }
         //查询团友
-        if (requestCode!=null && requestCode.equals(GET_FRIEND)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
+        if (requestCode != null && requestCode.equals(GET_FRIEND)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 Gson gson = new Gson();
-                myLog("--------"+responseBody);
-                FriendsBean bean = gson.fromJson(responseBody,FriendsBean.class);
-                if (null!=bean.getData() && bean.getData().size()>0){
+                myLog("--------" + responseBody);
+                FriendsBean bean = gson.fromJson(responseBody, FriendsBean.class);
+                if (null != bean.getData() && bean.getData().size() > 0) {
                     prefrenceUtil.putFrinends(responseBody);
                     groupMainFragment.setFriend(bean);
                 }
-            }else if (null!=status && status.equals(Constant.LOGIN_FIRST)){
+            } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
                 startNewActivity(LoginActivity.class);
             }
             return;
         }
 
-        if (requestCode!=null && requestCode.equals(DELETE_GROUP)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                myLog("-------------delte"+responseBody);
+        if (requestCode != null && requestCode.equals(DELETE_GROUP)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                myLog("-------------delte" + responseBody);
                 //重新请求团信息
                 String token = new Cache(this).getAMToken();
-                Map<String,Object> dataMap = new HashMap<>();
-                dataMap.put(Constant.TOKEN,token);
-                requestNet(SystemUtility.searchGroupUrl(),dataMap,RE_GET_GROUP);
+                Map<String, Object> dataMap = new HashMap<>();
+                dataMap.put(Constant.TOKEN, token);
+                requestNet(SystemUtility.searchGroupUrl(), dataMap, RE_GET_GROUP);
 
-            }else if (null!=status && status.equals(Constant.HAS_NO_PREMISSION)){
+            } else if (null != status && status.equals(Constant.HAS_NO_PREMISSION)) {
                 Toast.makeText(context, "您暂时无权限删除此团", Toast.LENGTH_SHORT).show();
             }
             return;
         }
 
-        if (requestCode!=null && requestCode.equals(RE_GET_GROUP)){
-            if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-                myLog("-------------re"+responseBody);
-                String gsonSt =StringUtils.parserMessage(responseBody,"data");
+        if (requestCode != null && requestCode.equals(RE_GET_GROUP)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                myLog("-------------re" + responseBody);
+                String gsonSt = StringUtils.parserMessage(responseBody, "data");
                 Gson gson = new Gson();
                 SearchGroupBean bean = gson.fromJson(gsonSt, SearchGroupBean.class);
-                myLog(bean.getData().size()+"--------"+gsonSt);
+                myLog(bean.getData().size() + "--------" + gsonSt);
                 prefrenceUtil.putGroups(gsonSt);
                 groupMainFragment.updataGroup(bean);
-            }else if (null != status && status.equals(Constant.LOGIN_FIRST)){
+            } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
                 startNewActivity(LoginActivity.class);
             }
             return;
         }
 
-        if (requestCode != null && requestCode.equals(DELETE_FRIEND)){
-            if (null != status && status.equals(Constant.REQUEST_SUCCESS)){
+        if (requestCode != null && requestCode.equals(DELETE_FRIEND)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 groupMainFragment.setDataChanged();
             }
         }
     }
 
     @Override
-    public void requestFailure(String responseFailureBody,String requestCode) {
+    public void requestFailure(String responseFailureBody, String requestCode) {
 
     }
 

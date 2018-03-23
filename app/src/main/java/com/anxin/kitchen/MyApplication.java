@@ -5,6 +5,7 @@ import android.support.multidex.MultiDexApplication;
 
 
 import com.anxin.kitchen.bean.Account;
+import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.AddressListBean;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Log;
@@ -20,7 +21,9 @@ import com.umeng.socialize.Config;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +38,7 @@ public class MyApplication extends MultiDexApplication {
     private Account mAccount = null;//用户信息
     private Map<String, AddressListBean> addressNameMap = new HashMap<>();//跟据名称获取地址信息
     private Map<String, AddressListBean> addressIDMap = new HashMap<>();//根据ID获取地址信息
+    private List<AddressBean> addressBeanList = new ArrayList<>();//送餐地址信息
 
     {
         Config.DEBUG = true;
@@ -56,7 +60,9 @@ public class MyApplication extends MultiDexApplication {
         UMShareAPI.get(this);
         mApp = this;
         mAccount = getCache().getAcount(this);
-
+        addressNameMap = getCache().getAddressNameMap(this);
+        addressIDMap = getCache().getAddressIDMap(this);
+        addressBeanList = getCache().getAddressList(this);
         initImageLoader(getApplicationContext());
     }
 
@@ -65,7 +71,7 @@ public class MyApplication extends MultiDexApplication {
                 .cacheInMemory(true).cacheOnDisk(true).build();
         ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(applicationContext)
                 .defaultDisplayImageOptions(defaultOptions)
-                .threadPriority(Thread.NORM_PRIORITY-2)
+                .threadPriority(Thread.NORM_PRIORITY - 2)
                 .denyCacheImageMultipleSizesInMemory()
                 .diskCacheFileNameGenerator(new Md5FileNameGenerator())
                 .tasksProcessingOrder(QueueProcessingType.LIFO).build();
@@ -104,7 +110,7 @@ public class MyApplication extends MultiDexApplication {
      */
     public final synchronized void setAddressNameMap(Map<String, AddressListBean> addressNameMap) {
         this.addressNameMap = addressNameMap;
-//        mCache.setAcount(this, account);
+        mCache.setAddressNameMap(this, addressNameMap);
     }
 
     public final synchronized Map<String, AddressListBean> getAddressNameMap() {
@@ -122,6 +128,15 @@ public class MyApplication extends MultiDexApplication {
         return addressID;
     }
 
+    public void setAddressBeanList(List<AddressBean> addressBeanList) {
+        this.addressBeanList = addressBeanList;
+        mCache.setAddressList(this, addressBeanList);
+    }
+
+    public List<AddressBean> getAddressBeanList() {
+        return addressBeanList;
+    }
+
     /**
      * 缓存地址ID获取名称
      *
@@ -129,7 +144,7 @@ public class MyApplication extends MultiDexApplication {
      */
     public final synchronized void setAddressIDMap(Map<String, AddressListBean> addressIDMap) {
         this.addressIDMap = addressIDMap;
-//        mCache.setAcount(this, account);
+        mCache.setAddressIDMap(this, addressIDMap);
     }
 
     public final synchronized Map<String, AddressListBean> getAddressIDMap() {

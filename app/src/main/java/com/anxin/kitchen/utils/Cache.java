@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.anxin.kitchen.bean.Account;
+import com.anxin.kitchen.bean.AddressBean;
+import com.anxin.kitchen.bean.AddressListBean;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,6 +14,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static android.provider.Telephony.Mms.Part.FILENAME;
 
@@ -37,7 +42,18 @@ public class Cache {
      * Preferences ID Account.
      **/
     private static final String SAVED_ACCOUNT = "SAVED_ACCOUNT";
-
+    /**
+     * Preferences ID AddressID_NameMap.
+     **/
+    private static final String AddressID_NameMap = "AddressID_NameMap";
+    /**
+     * Preferences ID AddressID_IDMap.
+     **/
+    private static final String AddressID_IDMap = "AddressID_IDMap";
+    /**
+     * Preferences ID AddressID_IDMap.
+     **/
+    private static final String AddressList = "AddressList";
     /**
      * Preferences ID NickName.
      **/
@@ -95,6 +111,42 @@ public class Cache {
      */
     public final void setAcount(Context context, final Account acount) {
         saveObject(context, SAVED_ACCOUNT, acount);
+    }
+
+    public final Map<String, AddressListBean> getAddressNameMap(Context context) {
+        Map<String, AddressListBean> addressNameMap = (Map<String, AddressListBean>) readObject(context, AddressID_NameMap);
+//        Log.e("--------------", "-------getAcount---------" + account);
+        if (null == addressNameMap)
+            return null;
+        return addressNameMap;
+    }
+
+    public final void setAddressNameMap(Context context, final Map<String, AddressListBean> addressNameMap) {
+        saveObject(context, AddressID_NameMap, addressNameMap);
+    }
+
+    public final Map<String, AddressListBean> getAddressIDMap(Context context) {
+        Map<String, AddressListBean> addressNameMap = (Map<String, AddressListBean>) readObject(context, AddressID_IDMap);
+//        Log.e("--------------", "-------getAcount---------" + account);
+        if (null == addressNameMap)
+            return null;
+        return addressNameMap;
+    }
+
+    public final void setAddressIDMap(Context context, final Map<String, AddressListBean> addressNameMap) {
+        saveObject(context, AddressID_IDMap, addressNameMap);
+    }
+
+    public final List<AddressBean> getAddressList(Context context) {
+        List<AddressBean> addressNameMap = (List<AddressBean>) readObject(context, AddressList);
+//        Log.e("--------------", "-------getAcount---------" + account);
+        if (null == addressNameMap)
+            return new ArrayList<>();
+        return addressNameMap;
+    }
+
+    public final void setAddressList(Context context, final List<AddressBean> addressBeanList) {
+        saveObject(context, AddressList, addressBeanList);
     }
 
     /***
