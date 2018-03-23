@@ -31,6 +31,7 @@ import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.CustomGridView;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.youth.banner.Banner;
@@ -62,7 +63,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     private MainActivity activity;
-
+    List<MealBean.Data> mealList;
+    private MealBean mealBean;
     private ImageLoader imageLoader = ImageLoader.getInstance();
     String[] mealTypeImgs= new String[] {
             "drawable://" + R.drawable.lunch_icon,
@@ -255,7 +257,14 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 startNewActivity(MessageCenterActivity.class);
                 break;
             case R.id.preserver_meal_img:
-                startNewActivity(PreserveActivity.class);
+                Intent intent1 = new Intent(activity,PreserveActivity.class);
+                Gson gson = new Gson();
+                String mealBeanSt = null;
+                if (null != mealBean){
+                    mealBeanSt = gson.toJson(mealBean);
+                }
+                intent1.putExtra("mealListSt",mealBeanSt);
+                startActivity(intent1);
                 break;
             case R.id.recovery_meal_img:
                 startNewActivity(RecoveryMealActivity.class);
@@ -278,7 +287,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
 
     public void setMeal(MealBean mealBean) {
         //更新首页菜品
-        List<MealBean.Data> mealList = mealBean.getData();
+        this.mealBean = mealBean;
+        mealList = mealBean.getData();
         List<List<MealBean.Data>> dataList = new ArrayList<>();
         List<MealBean.Data> thisDayData = new ArrayList<>();
         long lastDay = 0;
@@ -423,8 +433,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             }else if (type == 2){
                 imageLoader.displayImage(mealTypeImgs[1],holder.iconImg,options);
             }else if (type == 3){
-
             }
+            holder.titleTv.setText(dataList.get(i).getPackageName());
 
             return view;
         }
