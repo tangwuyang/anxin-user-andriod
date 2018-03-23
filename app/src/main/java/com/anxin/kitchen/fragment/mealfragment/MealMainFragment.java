@@ -65,7 +65,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
 
     private ImageLoader imageLoader = ImageLoader.getInstance();
     String[] mealTypeImgs= new String[] {
-        "drawable://" + R.drawable.lunch_icon,
+            "drawable://" + R.drawable.lunch_icon,
             "drawable://" + R.drawable.diner_icon,
     };
     //设置图片标题:自动对应
@@ -261,7 +261,11 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 startNewActivity(RecoveryMealActivity.class);
                 break;
             case R.id.location_tv:
-                startNewActivity(SendMealLocationActivity.class);  //送餐地址活动
+                //startNewActivity(SendMealLocationActivity.class);
+                Intent intent = new Intent(activity,SendMealLocationActivity.class);
+                startActivity(intent);
+                activity.overridePendingTransition(R.anim.activity_open,R.anim.activity_close);
+                //送餐地址活动
             default:
                 break;
         }
@@ -409,7 +413,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                     .cacheOnDisk(true)
                     .bitmapConfig(Bitmap.Config.RGB_565)
                     .build();
-           // holder.BackgroundImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            // holder.BackgroundImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             String imgSrc = dataList.get(i).getImg();
             activity.myLog("----------->"+imgSrc);
             imageLoader.displayImage(dataList.get(i).getImg(),holder.BackgroundImg,options);

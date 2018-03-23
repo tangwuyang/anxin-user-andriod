@@ -378,6 +378,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
             myLog("--------getPoiID---------"+tipList.get(0).getPoiID());
             myLog("--------getTypeCode---------"+tipList.get(0).getTypeCode());
             myLog("--------getPoint---------"+tipList.get(0).getPoint());
+            tipList.get(0).getPoint().getLatitude();
             SimpleAdapter aAdapter = new SimpleAdapter(getApplicationContext(), listString, R.layout.location_item_layout,
                     new String[]{"name"}, new int[]{R.id.poi_field_id});
 
