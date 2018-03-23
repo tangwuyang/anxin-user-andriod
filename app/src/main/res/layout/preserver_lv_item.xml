@@ -20,8 +20,16 @@
         android:layout_weight="1"
         android:layout_height="match_parent">
         <include layout="@layout/preserver_food_item2"
+            android:id="@+id/lunch_item"
            />
-
+        <ImageView
+            android:id="@+id/add_img0"
+            android:src="@drawable/add_drawable"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:scaleType="centerInside"
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -34,7 +42,7 @@
             android:id="@+id/dinner_item"
             />
         <ImageView
-            android:id="@+id/add_img"
+            android:id="@+id/add_img1"
             android:src="@drawable/add_drawable"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
