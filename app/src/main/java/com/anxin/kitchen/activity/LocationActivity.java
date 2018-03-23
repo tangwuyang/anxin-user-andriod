@@ -1,5 +1,7 @@
 package com.anxin.kitchen.activity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
@@ -7,12 +9,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,8 +55,10 @@ import com.amap.api.services.help.Tip;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.PoiBean;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.ToastUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,7 +68,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LocationActivity extends BaseActivity implements AMap.OnCameraChangeListener, AMap.OnMapClickListener, GeocodeSearch.OnGeocodeSearchListener, TextWatcher, Inputtips.InputtipsListener, PoiSearch.OnPoiSearchListener {
+public class LocationActivity extends Activity implements AMap.OnCameraChangeListener, AMap.OnMapClickListener, GeocodeSearch.OnGeocodeSearchListener, TextWatcher, Inputtips.InputtipsListener, PoiSearch.OnPoiSearchListener {
     private String city = "北京";
     private static final String TAG = "LocationActivity";
     private AMap aMap;
@@ -71,6 +82,8 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
     private GeocodeSearch geocoderSearch;
     private AutoCompleteTextView mInputLocationTv;
     private TextView locationTv;//定位城市
+    private List<AddressBean> addressBeansList = new ArrayList();//地址列表
+    private MyAdaped myAdaped;//列表适配器
 
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
@@ -160,6 +173,23 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                 finish();
             }
         });
+        myAdaped = new MyAdaped();
+        mRelativePositionLv.setAdapter(myAdaped);
+        mRelativePositionLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                AddressBean addressBean = addressBeansList.get(i);
+//                Log.e("", "------AddressBean----------");
+                if (addressBean != null) {
+//                    ToastUtil.showToast(addressBean.getStreetName());
+                    Intent intent = getIntent();
+                    intent.putExtra("AddressBean", addressBean);
+                    setResult(RESULT_OK, intent);
+//                    Log.e("", "------AddressBean------setResult----");
+                }
+                finish();
+            }
+        });
     }
 
     private void setUpMap() {
@@ -191,12 +221,13 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
-        setTitle("选择您的地址");
         mapView = (MapView) findViewById(R.id.map_view);
         mCameraTextView = findViewById(R.id.test_location_tv);
         mRelativePositionLv = findViewById(R.id.relative_position_lv);
         mInputLocationTv = findViewById(R.id.input_edittext);
         mChoseLocationLl = findViewById(R.id.chose_location_ll);
+        TextView titleTv = findViewById(R.id.title_tv);
+        titleTv.setText("请选择您的地址");
         locationTv = findViewById(R.id.location_tv);
         //必须要写
         mapView.onCreate(savedInstanceState);
@@ -311,23 +342,15 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         mCameraTextView.setText("   " + addressName);
         locationTv.setText(regeocodeResult.getRegeocodeAddress().getCity());
         //从服务器获取地址ID转换
-        String city = regeocodeResult.getRegeocodeAddress().getCity();
-        String provice = regeocodeResult.getRegeocodeAddress().getProvince();
-        String district = regeocodeResult.getRegeocodeAddress().getDistrict();
-        String cityID = MyApplication.getInstance().getAddressNameToID(city);
-        String proviceID = MyApplication.getInstance().getAddressNameToID(provice);
-        String districtID = MyApplication.getInstance().getAddressNameToID(district);
-        String builder = regeocodeResult.getRegeocodeAddress().getBuilding();
-        List<RegeocodeRoad> street = regeocodeResult.getRegeocodeAddress().getRoads();
-        StreetNumber streetNumber = regeocodeResult.getRegeocodeAddress().getStreetNumber();
-//        myLog("-----------" + builder + " -------------------" + street.get(0) + "   " + streetNumber);
-//        myLog("-------------provice----------" + provice + "--------proviceCode---------" + proviceID);
-//        myLog("-------------city----------" + city + "--------cityCode---------" + cityID);
-//        myLog("-------------district----------" + district + "--------districtCode---------" + districtID);
-//        myLog("-------------proviceCode----------" + proviceID + "--------provice---------" + MyApplication.getInstance().getAddressIDToName(proviceID));
-//        myLog("-------------cityCode----------" + cityID + "--------city---------" + MyApplication.getInstance().getAddressIDToName(cityID));
-//        myLog("-------------districtCode----------" + districtID + "--------district---------" + MyApplication.getInstance().getAddressIDToName(districtID));
-//        myLog("-------------street----------" + regeocodeResult.getRegeocodeAddress().getStreetNumber());
+//        String city = regeocodeResult.getRegeocodeAddress().getCity();
+//        String provice = regeocodeResult.getRegeocodeAddress().getProvince();
+//        String district = regeocodeResult.getRegeocodeAddress().getDistrict();
+//        String cityID = MyApplication.getInstance().getAddressNameToID(city);
+//        String proviceID = MyApplication.getInstance().getAddressNameToID(provice);
+//        String districtID = MyApplication.getInstance().getAddressNameToID(district);
+//        String builder = regeocodeResult.getRegeocodeAddress().getBuilding();
+//        List<RegeocodeRoad> street = regeocodeResult.getRegeocodeAddress().getRoads();
+//        StreetNumber streetNumber = regeocodeResult.getRegeocodeAddress().getStreetNumber();
     }
 
     @Override
@@ -364,32 +387,24 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
     @Override
     public void onGetInputtips(List<Tip> tipList, int rCode) {
         if (rCode == AMapException.CODE_AMAP_SUCCESS) {
-            final List<HashMap<String, String>> listString = new ArrayList<HashMap<String, String>>();
+            addressBeansList.clear();
             for (int i = 0; i < tipList.size(); i++) {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("name", tipList.get(i).getName());
-                map.put("address", tipList.get(i).getDistrict());
-                listString.add(map);
+                Tip tip = tipList.get(i);
+                AddressBean addressBean = new AddressBean();
+                String district = tip.getDistrict();
+                String province = district.substring(0, district.indexOf("省") + 1);
+                String city = district.substring(district.indexOf("省") + 1, district.indexOf("市") + 1);
+                String distri = district.substring(district.indexOf("市") + 1, district.length());
+                addressBean.setProvinceName(province);
+                addressBean.setCityName(city);
+                addressBean.setDistrictName(distri);
+                addressBean.setStreetName(tip.getName());
+                addressBean.setLongitude(tip.getPoint().getLongitude() + "");
+                addressBean.setLatitude(tip.getPoint().getLatitude() + "");
+//                myLog("------AddressBean---------" + addressBean.toString());
+                addressBeansList.add(addressBean);
             }
-            myLog("--------getName---------"+tipList.get(0).getName());
-            myLog("--------getAdcode---------"+tipList.get(0).getAdcode());
-            myLog("--------getAddress---------"+tipList.get(0).getAddress());
-            myLog("--------getDistrict---------"+tipList.get(0).getDistrict());
-            myLog("--------getPoiID---------"+tipList.get(0).getPoiID());
-            myLog("--------getTypeCode---------"+tipList.get(0).getTypeCode());
-            myLog("--------getPoint---------"+tipList.get(0).getPoint());
-            tipList.get(0).getPoint().getLatitude();
-            SimpleAdapter aAdapter = new SimpleAdapter(getApplicationContext(), listString, R.layout.location_item_layout,
-                    new String[]{"name"}, new int[]{R.id.poi_field_id});
-
-            mRelativePositionLv.setAdapter(aAdapter);
-            aAdapter.notifyDataSetChanged();
-            mRelativePositionLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Toast.makeText(LocationActivity.this, "" + listString.get(i).get("name"), Toast.LENGTH_SHORT).show();
-                }
-            });
+            myAdaped.notifyDataSetChanged();
         } else {
 
         }
@@ -401,51 +416,76 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
             if (poiResult != null && poiResult.getQuery() != null) {// 搜索poi的结果
                 if (poiResult.getQuery().equals(query)) {// 是否是同一条
                     List<PoiItem> poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
-                    List<PoiBean> tem = new ArrayList();
-
-                    final List<HashMap<String, String>> locations = new ArrayList<HashMap<String, String>>();
+                    addressBeansList.clear();
                     if (poiItems != null && poiItems.size() > 0) {
                         for (int i = 0; i < poiItems.size(); i++) {
                             PoiItem poiItem = poiItems.get(i);   //写一个bean，作为数据存储
-                            PoiBean bean = new PoiBean();
-                            bean.setTitleName(poiItem.getTitle());
+                            AddressBean bean = new AddressBean();
+                            bean.setProvinceName(poiItem.getProvinceName());
                             bean.setCityName(poiItem.getCityName());
-                            bean.setAd(poiItem.getAdName());
-                            bean.setSnippet(poiItem.getSnippet());
-                            bean.setPoint(poiItem.getLatLonPoint());
-//                            Log.e("yufs", "" + poiItem.getTitle() + "," + poiItem.getProvinceName() + ","
-//                                    + poiItem.getCityName() + ","
-//                                    + poiItem.getAdName() + ","//区
-//                                    + poiItem.getSnippet() + ","
-//                                    + poiItem.getLatLonPoint() + "\n");
-                            tem.add(bean);
-                            HashMap<String, String> map = new HashMap<String, String>();
-                            map.put("name", poiItem.getTitle());
-                            map.put("address", poiItem.getTitle());
-
-                            locations.add(map);
+                            bean.setDistrictName(poiItem.getAdName());
+                            bean.setStreetName(poiItem.getTitle());
+                            bean.setLatitude(poiItem.getLatLonPoint().getLatitude() + "");
+                            bean.setLongitude(poiItem.getLatLonPoint().getLongitude() + "");
+//                            myLog("------AddressBean---------" + bean.toString());
+                            addressBeansList.add(bean);
                         }
 
                         mRelativePositionLv.setVisibility(View.VISIBLE);
                         mCameraTextView.setVisibility(View.GONE);
                         mChoseLocationLl.setVisibility(View.GONE);
-                        SimpleAdapter aAdapter = new SimpleAdapter(getApplicationContext(), locations, R.layout.location_item_layout,
-                                new String[]{"name", }, new int[]{R.id.poi_field_id});
-
-                        mRelativePositionLv.setAdapter(aAdapter);
-                        aAdapter.notifyDataSetChanged();
-                        mRelativePositionLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                Toast.makeText(LocationActivity.this, "" + locations.get(i).get("address"), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        myAdaped.notifyDataSetChanged();
                       /*  poiData.addAll(tem);
                         mAdapter.notifyDataSetChanged();  //解析成功更新list布局*/
                     }
                 }
             }
         }
+    }
+
+    class MyAdaped extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            // TODO Auto-generated method stub
+            return addressBeansList.size();
+        }
+
+        @Override
+        public AddressBean getItem(int position) {
+            // TODO Auto-generated method stub
+            return addressBeansList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            // TODO Auto-generated method stub
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+
+            View view = convertView;
+            final ViewHolder holder;
+            if (view == null) {
+                holder = new ViewHolder();
+                view = LayoutInflater.from(LocationActivity.this).inflate(R.layout.location_item_layout, null);
+                holder.group_name = (TextView) view.findViewById(R.id.poi_field_id);
+                view.setTag(holder);
+            } else {
+                holder = (ViewHolder) view.getTag();
+            }
+            String addressName = addressBeansList.get(position).getStreetName();
+            if (addressName != null && addressName.length() != 0)
+                holder.group_name.setText(addressName);
+            return view;
+        }
+
+        class ViewHolder {
+            private TextView group_name;
+        }
+
     }
 
     @Override

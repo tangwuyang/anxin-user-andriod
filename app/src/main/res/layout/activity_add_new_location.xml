@@ -34,6 +34,7 @@
                 android:textSize="@dimen/big_text_size" />
 
             <EditText
+                android:id="@+id/contact_name_edit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -68,6 +69,7 @@
                 android:textSize="@dimen/big_text_size" />
 
             <EditText
+                android:id="@+id/contact_phone_edit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -104,6 +106,7 @@
                 android:textSize="@dimen/big_text_size" />
 
             <TextView
+                android:id="@+id/street_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -147,6 +150,7 @@
                 android:textSize="@dimen/big_text_size" />
 
             <EditText
+                android:id="@+id/contact_address_edit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -169,6 +173,7 @@
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:background="#3ed368"
+        android:alpha="0.5"
         android:text="完成"
         android:textColor="@color/white"
         android:textSize="18sp" />

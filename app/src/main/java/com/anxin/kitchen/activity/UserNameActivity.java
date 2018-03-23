@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -38,7 +39,7 @@ import java.util.Map;
 /**
  * 登陆界面
  */
-public class UserNameActivity extends BaseActivity implements View.OnClickListener {
+public class UserNameActivity extends Activity implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private ImageView backBtn;//返回
     private TextView storeBtn;//保存
@@ -68,11 +69,6 @@ public class UserNameActivity extends BaseActivity implements View.OnClickListen
         userNameEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if (userNameEdit.getText().toString().length() != 0) {
-                    storeBtn.setAlpha(1f);
-                } else {
-                    storeBtn.setAlpha(0.5f);
-                }
             }
 
             @Override
@@ -82,7 +78,11 @@ public class UserNameActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                if (userNameEdit.getText().toString().length() != 0) {
+                    storeBtn.setAlpha(1f);
+                } else {
+                    storeBtn.setAlpha(0.5f);
+                }
             }
         });
     }
@@ -96,7 +96,7 @@ public class UserNameActivity extends BaseActivity implements View.OnClickListen
             case R.id.store_btn://保存
                 String name = userNameEdit.getText().toString();
                 if (null != name && name.length() != 0) {
-                    Intent intent = new Intent();
+                    Intent intent = getIntent();
                     intent.putExtra("userName", name);
                     setResult(this.RESULT_OK, intent);
                 }

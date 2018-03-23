@@ -54,7 +54,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private static final int RESULT_CAPTURE = 122;
     private static final int RESULT_PICK = 133;
     private static final int CROP_PHOTO = 111;
-    private static final int USER_NAME = 112;//相册编辑标志
+    private static final int USER_NAME = 112;
     private CustomDatePicker datePicker;
     private String date;
 
@@ -165,7 +165,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), UserNameActivity.class);
                 intent.putExtra("userName", "");
-                getActivity().startActivityForResult(intent, USER_NAME);
+                startActivityForResult(intent, USER_NAME);
                 break;
             case R.id.user_gender_rlt://修改用户性别
                 menuSelectGender = new SelectGenderPopupWindow(getActivity(), itemsGenderOnClick);
@@ -201,7 +201,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 case R.id.btn_pick_photo://打开系统相册
                     Intent intent = new Intent(Intent.ACTION_PICK, null);
                     intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                    getActivity().startActivityForResult(intent, RESULT_PICK);
+                    startActivityForResult(intent, RESULT_PICK);
                     break;
                 default:
                     break;
@@ -229,6 +229,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
 
     };
 
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         LOG.e("------------requestCode--------" + requestCode);
         switch (requestCode) {
@@ -262,6 +263,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 if (resultCode == getActivity().RESULT_OK) {
                     if (data != null) {
                         String name = data.getStringExtra("userName");
+                        userName.setText(name);
                     }
                 }
                 break;
@@ -300,6 +302,6 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         intent.setClass(getActivity(), ClipHeaderActivity.class);
         intent.setData(uri);
         intent.putExtra("side_length", 400);// 裁剪图片宽高
-        getActivity().startActivityForResult(intent, CROP_PHOTO);
+        startActivityForResult(intent, CROP_PHOTO);
     }
 }
