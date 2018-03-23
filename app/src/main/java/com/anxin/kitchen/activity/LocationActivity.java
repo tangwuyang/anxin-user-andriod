@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LocationActivity extends BaseActivity implements AMap.OnCameraChangeListener, AMap.OnMapClickListener, GeocodeSearch.OnGeocodeSearchListener, TextWatcher, Inputtips.InputtipsListener,PoiSearch.OnPoiSearchListener {
+public class LocationActivity extends BaseActivity implements AMap.OnCameraChangeListener, AMap.OnMapClickListener, GeocodeSearch.OnGeocodeSearchListener, TextWatcher, Inputtips.InputtipsListener, PoiSearch.OnPoiSearchListener {
     private String city = "北京";
     private static final String TAG = "LocationActivity";
     private AMap aMap;
@@ -70,6 +70,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
     private boolean firstLocation = true;
     private GeocodeSearch geocoderSearch;
     private AutoCompleteTextView mInputLocationTv;
+    private TextView locationTv;//定位城市
 
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
@@ -97,6 +98,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                     amapLocation.getAoiName();//获取当前定位点的AOI信息
                     lat = amapLocation.getLatitude();
                     lon = amapLocation.getLongitude();
+                    locationTv.setText(city);
                     Log.v("pcw", amapLocation.getProvince() + "city" + amapLocation.getCityCode() + "  dis" + amapLocation.getAdCode());
                     Log.v("pcw", "lat : " + lat + " lon : " + lon);
                     Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict() + "street" + amapLocation.getStreet());
@@ -195,6 +197,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         mRelativePositionLv = findViewById(R.id.relative_position_lv);
         mInputLocationTv = findViewById(R.id.input_edittext);
         mChoseLocationLl = findViewById(R.id.chose_location_ll);
+        locationTv = findViewById(R.id.location_tv);
         //必须要写
         mapView.onCreate(savedInstanceState);
         //初始化定位
@@ -203,18 +206,6 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         mLocationClient.setLocationListener(mLocationListener);
         mInputLocationTv.addTextChangedListener(this);
         init();
-        mChoseLocationLl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-        mRelativePositionLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                finish();
-            }
-        });
     }
 
     /**
@@ -276,16 +267,17 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
 //        mCameraTextView.setText("onCameraChangeFinish:"
 //                + cameraPosition.toString() + "   " + lat_log[0] + "   " + lat_log[1]);
         RegeocodeQuery query = new RegeocodeQuery(point, 200, GeocodeSearch.AMAP);
-        RegeocodeQuery geocodeQuery = new RegeocodeQuery(new LatLonPoint(latLng.latitude,latLng.longitude), 200,GeocodeSearch.AMAP);
+        RegeocodeQuery geocodeQuery = new RegeocodeQuery(new LatLonPoint(latLng.latitude, latLng.longitude), 200, GeocodeSearch.AMAP);
         geocoderSearch.getFromLocationAsyn(query);
-        doSearchQuery(city,latLng.latitude,latLng.longitude);
+        doSearchQuery(city, latLng.latitude, latLng.longitude);
 
     }
+
     /**
      * 开始进行poi搜索
      */
-    protected void doSearchQuery(String city,double latitude,double longitude) {
-        String mType="汽车服务|汽车销售|汽车维修|摩托车服务|餐饮服务|购物服务|生活服务|体育休闲服务|医疗保健服务|住宿服务|风景名胜|商务住宅|政府机构及社会团体|科教文化服务|交通设施服务|金融保险服务|公司企业|道路附属设施|地名地址信息|公共设施";
+    protected void doSearchQuery(String city, double latitude, double longitude) {
+        String mType = "|住宿服务|风景名胜|商务住宅|地名地址信息";
         query = new PoiSearch.Query("", mType, city);// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
         query.setPageSize(20);// 设置每页最多返回多少条poiitem
         query.setPageNum(1);// 设置查第一页
@@ -293,12 +285,14 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         poiSearch.setOnPoiSearchListener(this);
         //以当前定位的经纬度为准搜索周围5000米范围
         // 设置搜索区域为以lp点为圆心，其周围5000米范围
-        poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(latitude,longitude), 1000, true));//
+        poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(latitude, longitude), 1000, true));//
         poiSearch.searchPOIAsyn();// 异步搜索
     }
+
     int currentPage;
     private PoiSearch.Query query;// Poi查询条件类
     private PoiSearch poiSearch;
+
     @Override
     public void onMapClick(LatLng latLng) {
       /*  Toast.makeText(this, latLng + "", Toast.LENGTH_SHORT).show();
@@ -315,6 +309,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                 + "附近";
 
         mCameraTextView.setText("   " + addressName);
+        locationTv.setText(regeocodeResult.getRegeocodeAddress().getCity());
         //从服务器获取地址ID转换
         String city = regeocodeResult.getRegeocodeAddress().getCity();
         String provice = regeocodeResult.getRegeocodeAddress().getProvince();
@@ -325,7 +320,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
         String builder = regeocodeResult.getRegeocodeAddress().getBuilding();
         List<RegeocodeRoad> street = regeocodeResult.getRegeocodeAddress().getRoads();
         StreetNumber streetNumber = regeocodeResult.getRegeocodeAddress().getStreetNumber();
-        myLog("-----------"+builder + " -------------------" + street.get(0) + "   " + streetNumber);
+//        myLog("-----------" + builder + " -------------------" + street.get(0) + "   " + streetNumber);
 //        myLog("-------------provice----------" + provice + "--------proviceCode---------" + proviceID);
 //        myLog("-------------city----------" + city + "--------cityCode---------" + cityID);
 //        myLog("-------------district----------" + district + "--------districtCode---------" + districtID);
@@ -376,15 +371,22 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                 map.put("address", tipList.get(i).getDistrict());
                 listString.add(map);
             }
+            myLog("--------getName---------"+tipList.get(0).getName());
+            myLog("--------getAdcode---------"+tipList.get(0).getAdcode());
+            myLog("--------getAddress---------"+tipList.get(0).getAddress());
+            myLog("--------getDistrict---------"+tipList.get(0).getDistrict());
+            myLog("--------getPoiID---------"+tipList.get(0).getPoiID());
+            myLog("--------getTypeCode---------"+tipList.get(0).getTypeCode());
+            myLog("--------getPoint---------"+tipList.get(0).getPoint());
             SimpleAdapter aAdapter = new SimpleAdapter(getApplicationContext(), listString, R.layout.location_item_layout,
-                    new String[]{"name", "address"}, new int[]{R.id.poi_field_id, R.id.poi_value_id});
+                    new String[]{"name"}, new int[]{R.id.poi_field_id});
 
             mRelativePositionLv.setAdapter(aAdapter);
             aAdapter.notifyDataSetChanged();
             mRelativePositionLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Toast.makeText(LocationActivity.this, ""+listString.get(i).get("name"), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LocationActivity.this, "" + listString.get(i).get("name"), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -394,7 +396,7 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
 
     @Override
     public void onPoiSearched(PoiResult poiResult, int arg1) {
-        if(arg1==1000) {
+        if (arg1 == 1000) {
             if (poiResult != null && poiResult.getQuery() != null) {// 搜索poi的结果
                 if (poiResult.getQuery().equals(query)) {// 是否是同一条
                     List<PoiItem> poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
@@ -410,11 +412,11 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                             bean.setAd(poiItem.getAdName());
                             bean.setSnippet(poiItem.getSnippet());
                             bean.setPoint(poiItem.getLatLonPoint());
-                            Log.e("yufs", "" + poiItem.getTitle() + "," + poiItem.getProvinceName() + ","
-                                    + poiItem.getCityName() + ","
-                                    + poiItem.getAdName() + ","//区
-                                    + poiItem.getSnippet() + ","
-                                    + poiItem.getLatLonPoint() + "\n");
+//                            Log.e("yufs", "" + poiItem.getTitle() + "," + poiItem.getProvinceName() + ","
+//                                    + poiItem.getCityName() + ","
+//                                    + poiItem.getAdName() + ","//区
+//                                    + poiItem.getSnippet() + ","
+//                                    + poiItem.getLatLonPoint() + "\n");
                             tem.add(bean);
                             HashMap<String, String> map = new HashMap<String, String>();
                             map.put("name", poiItem.getTitle());
@@ -427,14 +429,14 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                         mCameraTextView.setVisibility(View.GONE);
                         mChoseLocationLl.setVisibility(View.GONE);
                         SimpleAdapter aAdapter = new SimpleAdapter(getApplicationContext(), locations, R.layout.location_item_layout,
-                                new String[]{"name", "address"}, new int[]{R.id.poi_field_id, R.id.poi_value_id});
+                                new String[]{"name", }, new int[]{R.id.poi_field_id});
 
                         mRelativePositionLv.setAdapter(aAdapter);
                         aAdapter.notifyDataSetChanged();
                         mRelativePositionLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                Toast.makeText(LocationActivity.this, ""+locations.get(i).get("address"), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LocationActivity.this, "" + locations.get(i).get("address"), Toast.LENGTH_SHORT).show();
                             }
                         });
                       /*  poiData.addAll(tem);
@@ -442,7 +444,8 @@ public class LocationActivity extends BaseActivity implements AMap.OnCameraChang
                     }
                 }
             }
-        }}
+        }
+    }
 
     @Override
     public void onPoiItemSearched(PoiItem poiItem, int i) {
