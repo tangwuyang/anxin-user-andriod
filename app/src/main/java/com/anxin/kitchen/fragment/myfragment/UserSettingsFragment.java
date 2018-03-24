@@ -28,10 +28,15 @@ import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RoundedImageView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * 设置界面
@@ -40,6 +45,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private Log LOG = Log.getLog();
     private View view;
     private ImageView backBtn;//返回
+    private TextView PreservationBtn;
     private RelativeLayout userIconBtn;//用户头像按钮
     private RelativeLayout userNameBtn;//用户姓名按钮
     private RelativeLayout userGenderBtn;//用户性别按钮
@@ -55,8 +61,13 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private static final int RESULT_PICK = 133;
     private static final int CROP_PHOTO = 111;
     private static final int USER_NAME = 112;
+    private static final String sendUpdateUser_http = "sendUpdateUser";
     private CustomDatePicker datePicker;
     private String date;
+    private String UserDate = null;//用户生日标志位
+    private int UserSex = 0;//用户性别标志位
+    private String UserName = null;//用户姓名标志位
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +90,8 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private void initView() {
         backBtn = (ImageView) view.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(this);
+        PreservationBtn = view.findViewById(R.id.PreservationBtn);
+        PreservationBtn.setOnClickListener(this);
 
         userIconBtn = (RelativeLayout) view.findViewById(R.id.user_icon_rlt);
         userNameBtn = (RelativeLayout) view.findViewById(R.id.user_name_rlt);
@@ -119,15 +132,15 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
             } else if (sex.equals("2"))
                 userGender.setText("女");
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         String time = sdf.format(new Date());
         //获取本地用户生日
-        String UserDate = mApp.getAccount().getUserBirthdayTime();
-        if (UserDate != null && !UserDate.equals("null")) {
-            date = DateUtils.stampToDate(UserDate, "yyyy-MM-dd HH:mm");
+        final String userDate = mApp.getAccount().getUserBirthdayTime();
+        if (userDate != null && !userDate.equals("null")) {
+            date = DateUtils.stampToDate(userDate, "yyyy-MM-dd");
+            userBirthday.setText(date);
         } else
             date = time.split(" ")[0];
-        userBirthday.setText(date);
         /**
          * 设置年月日
          */
@@ -136,8 +149,9 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
             public void handle(String time) {
                 date = time.split(" ")[0];
                 userBirthday.setText(date);
+                UserDate = DateUtils.dateToStamp(date);
             }
-        }, "1900-01-01 00:00", time);
+        }, "1900-01-01", time);
         datePicker.showSpecificTime(false); //显示时和分
         datePicker.setIsLoop(false);
         datePicker.setDayIsLoop(true);
@@ -155,6 +169,11 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         switch (v.getId()) {
             case R.id.back_btn:
                 getFragmentManager().popBackStack();
+                break;
+            case R.id.PreservationBtn:
+                if (UserName == null && UserDate == null && UserSex == 0)
+                    return;
+                sendUpdateAccount();
                 break;
             case R.id.user_icon_rlt://修改用户头像
                 menuWindowSelectPic = new SelectPicPopupWindow(getActivity(), itemsOnClick);
@@ -178,6 +197,37 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
             default:
                 break;
         }
+    }
+
+    //保存用戶信息
+    private void sendUpdateAccount() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (UserName != null && UserName.length() != 0) {
+                jsonObject.put("trueName", UserName);
+                mApp.getAccount().setUserNickName(UserName);
+                mApp.getAccount().setUserTrueName(UserName);
+            }
+            if (UserDate != null && UserDate.length() != 0) {
+                jsonObject.put("birthdayTime", UserDate);
+                mApp.getAccount().setUserBirthdayTime(UserDate);
+            }
+            if (UserSex != 0) {
+                jsonObject.put("sex", UserSex);
+                mApp.getAccount().setUserSex(UserSex + "");
+            }
+//            jsonObject.put("phone", phone);
+//            jsonObject.put("province", Integer.valueOf(addressBean.getProvinceID()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String urlPath = SystemUtility.sendUpdateUser();
+        Map<String, Object> dataMap = new HashMap();
+        dataMap.put("token", SystemUtility.AMToken);
+        dataMap.put("formData", jsonObject.toString());
+//        Log.e("onEventMainThread", "----------dataMap--------------" + dataMap.toString());
+        SystemUtility.requestNetPost(urlPath, dataMap, sendUpdateUser_http);
+        getFragmentManager().popBackStack();
     }
 
     private View.OnClickListener itemsOnClick = new View.OnClickListener() {
@@ -217,9 +267,11 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
             switch (v.getId()) {
                 case R.id.btn_take_photo://性别选择：男
                     userGender.setText("男");
+                    UserSex = 1;
                     break;
                 case R.id.btn_pick_photo://性别选择：女
                     userGender.setText("女");
+                    UserSex = 2;
                     break;
                 default:
                     break;
@@ -263,6 +315,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 if (resultCode == getActivity().RESULT_OK) {
                     if (data != null) {
                         String name = data.getStringExtra("userName");
+                        UserName = name;
                         userName.setText(name);
                     }
                 }

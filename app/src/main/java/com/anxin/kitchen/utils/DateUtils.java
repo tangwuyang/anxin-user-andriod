@@ -149,7 +149,7 @@ public class DateUtils {
      */
     public static String dateToStamp(String s) {
         String res = null;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date;
         try {
             date = simpleDateFormat.parse(s);

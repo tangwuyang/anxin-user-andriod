@@ -82,6 +82,11 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/update_address";
     }
 
+    //修改用户信息
+    public static String sendUpdateUser() {
+        return AMUAC_IP + "/v1.0/user/update";
+    }
+
     //删除地址
     public static String sendDeleteAddress() {
         return AMUAC_IP + "/v1.0/user/del_address";
