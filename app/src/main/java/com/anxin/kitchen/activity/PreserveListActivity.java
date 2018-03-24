@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 public class PreserveListActivity extends BaseActivity implements RequestNetListener{
     private static final String REQUEST_MENU = "REQUEST_MENU";
+    public static final int AFTER_CHOESE = 200;
     private ListView mMealCatalogLv;
     private List<String> mCatalogList = new ArrayList<>();
     private CatalogAdapter mCatalogAdapter;
@@ -36,6 +38,9 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     private PrefrenceUtil prefrenceUtil;
     private Cache mCache;
     private Gson mGson;
+    private long day;
+    private String type;
+    private String recevieData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +71,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     @Override
     protected void onResume() {
         super.onResume();
-        setData();
+        //setData();
         setCatalogAdapter();
         setContentAdapter();
     }
@@ -114,6 +119,13 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         prefrenceUtil = new PrefrenceUtil(this);
         mCache = new Cache(this);
         mGson = new Gson();
+        Intent intent = getIntent();
+        if (null!=intent){
+            recevieData = intent.getStringExtra("data");
+            day = Long.valueOf(recevieData.substring(0,recevieData.indexOf("-")));
+            type = recevieData.substring(recevieData.indexOf("-")+1);
+            myLog("------------->"+day + "  " + type);
+        }
     }
 
     private class CatalogAdapter extends BaseAdapter {
@@ -167,6 +179,17 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
                 @Override
                 public void onClick(View view) {
                     startNewActivity(MealIntroduceActivity.class);
+                }
+            });
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent();
+                    intent.putExtra("day",day);
+                    intent.putExtra("type",type);
+                    setResult(AFTER_CHOESE,intent);
+                    finish();
                 }
             });
             return view;

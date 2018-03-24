@@ -36,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class ClipHeaderActivity extends Activity implements OnTouchListener {
+public class ClipHeaderActivity extends BaseActivity implements OnTouchListener {
     private static final Log LOG = Log.getLog();
     private ImageView srcPic;
     private ImageButton bt_ok;

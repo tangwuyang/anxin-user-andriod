@@ -435,7 +435,13 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             }else if (type == 3){
             }
             holder.titleTv.setText(dataList.get(i).getPackageName());
-
+            List<MealBean.FoodList> foodLists = dataList.get(i).getFoodList();
+            StringBuffer foodBf = new StringBuffer();
+            for (MealBean.FoodList foodList:
+                    foodLists) {
+                foodBf.append(foodList.getDishName()+"\r\n");
+            }
+            holder.contextTv.setText(foodBf.toString());
             return view;
         }
     }

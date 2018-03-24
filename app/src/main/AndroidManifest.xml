@@ -123,6 +123,7 @@
         <activity android:name="com.anxin.kitchen.activity.GroupAndFriendsListActivitiy" />
         <activity android:name="com.anxin.kitchen.activity.GroupMemberActivity" />
         <activity android:name="com.anxin.kitchen.activity.ContactsActivity"></activity>
+        <activity android:name="com.anxin.kitchen.activity.ClipHeaderActivity"/>
     </application>
 
 </manifest>

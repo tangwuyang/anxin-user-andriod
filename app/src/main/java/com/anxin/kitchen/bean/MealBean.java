@@ -32,7 +32,7 @@ public class MealBean {
     }
 
     public class FoodList {
-
+        private String dishName;
         private int foodId;
         private int cuisineId;
         private int tasteId;
@@ -40,6 +40,15 @@ public class MealBean {
         private int status;
         private int type;
         private String img;
+
+        public String getDishName() {
+            return dishName;
+        }
+
+        public void setDishName(String dishName) {
+            this.dishName = dishName;
+        }
+
         public void setFoodId(int foodId) {
             this.foodId = foodId;
         }
@@ -104,8 +113,8 @@ public class MealBean {
     }
 
 
-    public class Data {
-
+    public static class Data {
+        private boolean isSelectByMaster = false;
         private long menuDay;
         private int kitchenId;
         private int packageId;
@@ -117,6 +126,15 @@ public class MealBean {
         private String img;
         private int eatType;
         private List<FoodList> foodList;
+
+
+        public boolean isSelectByMaster() {
+            return isSelectByMaster;
+        }
+
+        public void setSelectByMaster(boolean selectByMaster) {
+            isSelectByMaster = selectByMaster;
+        }
 
         public void setMenuDay(long menuDay) {
             this.menuDay = menuDay;
