@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.AddNewLocationActivity;
+import com.anxin.kitchen.activity.EditAddressActivity;
 import com.anxin.kitchen.activity.LocationActivity;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.event.AddressListEvent;
@@ -43,7 +44,7 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
     private View view;
     private ImageView backBtn;//返回
     private Button addUserAddressBtn;//添加送餐地址
-    private static final String sendGetAddress_http = "sendGetAddress";
+    private static final String sendUpdateAddress_http = "sendUpdateAddress";
     private List<AddressBean> addressBeanList = new ArrayList<>();
     private ListView addressListView;
     private MyAdaped myAdaped;
@@ -111,6 +112,26 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
         myAdaped.notifyDataSetChanged();
     }
 
+    public void onEventMainThread(AsyncHttpRequestMessage asyncHttpRequestMessage) {
+        String requestCode = asyncHttpRequestMessage.getRequestCode();
+        String responseMsg = asyncHttpRequestMessage.getResponseMsg();
+        String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+        switch (requestCode) {
+            //验证码发送
+            case sendUpdateAddress_http:
+                //网络请求返回成功
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    //解析验证码返回
+                    String code = StringUtils.parserMessage(responseMsg, "code");
+                    String data = StringUtils.parserMessage(responseMsg, "data");
+                    if (code != null && code.equals("1")) {
+                        SystemUtility.sendGetAddressHttp();
+                    }
+                }
+                break;
+        }
+    }
+
     class MyAdaped extends BaseAdapter {
 
         @Override
@@ -150,7 +171,7 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
             } else {
                 holder = (ViewHolder) view.getTag();
             }
-            AddressBean addressBean = addressBeanList.get(position);
+            final AddressBean addressBean = addressBeanList.get(position);
             if (addressBean == null)
                 return view;
             String phoneNumber = addressBean.getPhoneNumber();
@@ -177,14 +198,16 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
             holder.addressDefultBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    updateAddressHttp(addressBean);
                 }
             });
             //编辑地址
             holder.addressEditBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    Intent addAddress = new Intent(getActivity(), EditAddressActivity.class);
+                    addAddress.putExtra("addressBean", addressBean);
+                    startActivity(addAddress);
                 }
             });
             return view;
@@ -196,6 +219,34 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
             private View content_iv;
         }
 
+    }
+
+    /**
+     * 修改地址信息
+     */
+    private void updateAddressHttp(AddressBean addressBean) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", addressBean.getAddressID());
+            jsonObject.put("isDefault", 1);
+            jsonObject.put("contactName", addressBean.getContactName());
+            jsonObject.put("phone", addressBean.getPhoneNumber());
+            jsonObject.put("province", Integer.valueOf(addressBean.getProvinceID()));
+            jsonObject.put("city", Integer.valueOf(addressBean.getCityID()));
+            jsonObject.put("district", Integer.valueOf(addressBean.getDistrictID()));
+            jsonObject.put("street", addressBean.getStreetName());
+            jsonObject.put("address", addressBean.getAddress());
+            jsonObject.put("longitude", addressBean.getLongitude());
+            jsonObject.put("latitude", addressBean.getLatitude());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String urlPath = SystemUtility.sendUpdateAddress();
+        Map<String, Object> dataMap = new HashMap();
+        dataMap.put("token", SystemUtility.AMToken);
+        dataMap.put("formData", jsonObject.toString());
+//        Log.e("onEventMainThread", "----------dataMap--------------" + dataMap.toString());
+        SystemUtility.requestNetPost(urlPath, dataMap, sendUpdateAddress_http);
     }
 
     @Override

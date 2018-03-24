@@ -77,6 +77,16 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/add_address";
     }
 
+    //修改地址
+    public static String sendUpdateAddress() {
+        return AMUAC_IP + "/v1.0/user/update_address";
+    }
+
+    //删除地址
+    public static String sendDeleteAddress() {
+        return AMUAC_IP + "/v1.0/user/del_address";
+    }
+
     //获取送餐地址
     public static String sendGetAddress() {
         return AMUAC_IP + "/v1.0/user/address_list?token=" + AMToken;

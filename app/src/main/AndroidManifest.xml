@@ -120,6 +120,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name="com.anxin.kitchen.activity.SetCountActivity" />
         <activity android:name="com.anxin.kitchen.activity.AddNewFriendActivity" />
+        <activity android:name="com.anxin.kitchen.activity.EditAddressActivity" />
         <activity android:name="com.anxin.kitchen.activity.GroupAndFriendsListActivitiy" />
         <activity android:name="com.anxin.kitchen.activity.GroupMemberActivity" />
         <activity android:name="com.anxin.kitchen.activity.ContactsActivity"></activity>

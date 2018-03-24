@@ -1,23 +1,19 @@
 package com.anxin.kitchen.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
-import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
@@ -28,7 +24,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddNewLocationActivity extends BaseActivity implements View.OnClickListener {
+public class EditAddressActivity extends BaseActivity implements View.OnClickListener {
     private ImageView mBackImg;//返回按钮
     private LinearLayout selectAddressRlt;//选择地址
     private TextView street_tv;//定位地址
@@ -38,6 +34,7 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
     private EditText contactPhontEdit;//联系人电话
     private EditText contactAddressEdit;//详细地址
     private static final String sendAddAddress_http = "sendAddAddress";
+    private static final String sendDeleteAddress_http = "sendDeleteAddress";
     private static final int LOCATION_NAME = 102;
 
     @Override
@@ -45,30 +42,41 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         EventBusFactory.getInstance().register(this);
         setContentView(R.layout.activity_add_new_location);
+        addressBean = (AddressBean) getIntent().getSerializableExtra("addressBean");
+        if (addressBean == null)
+            addressBean = new AddressBean();
         initView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setListeners();
-    }
-
-    private void setListeners() {
     }
 
     private void initView() {
-        setTitle("新增地址");
+        setTitle("编辑地址");
         mBackImg = findViewById(R.id.back_img);//返回按钮
         mBackImg.setOnClickListener(this);
         addAddressBtn = findViewById(R.id.add_address_btn);
         addAddressBtn.setOnClickListener(this);
         selectAddressRlt = findViewById(R.id.select_address_rlt);//选择地址
         selectAddressRlt.setOnClickListener(this);
+        TextView deleteAddress = findViewById(R.id.view_kitchen);//删除地址
+        deleteAddress.setOnClickListener(this);
+        deleteAddress.setText("删除");
+        deleteAddress.setVisibility(View.VISIBLE);
         street_tv = findViewById(R.id.street_tv);//地址
         contactNameEdit = findViewById(R.id.contact_name_edit);
         contactPhontEdit = findViewById(R.id.contact_phone_edit);
         contactAddressEdit = findViewById(R.id.contact_address_edit);
+        updateAddress();
+    }
+
+    private void updateAddress() {
+        contactNameEdit.setText(addressBean.getContactName());
+        contactPhontEdit.setText(addressBean.getPhoneNumber());
+        contactAddressEdit.setText(addressBean.getAddress());
+        street_tv.setText(addressBean.getStreetName());
     }
 
     @Override
@@ -99,14 +107,27 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
             case R.id.add_address_btn:
                 sendAddAddress();
                 break;
+            case R.id.view_kitchen:
+                sendDeleteAddress();
+                break;
             case R.id.select_address_rlt:
                 Intent intent = new Intent();
-                intent.setClass(AddNewLocationActivity.this, LocationActivity.class);
+                intent.setClass(EditAddressActivity.this, LocationActivity.class);
+                intent.putExtra("addressBean", addressBean);
                 startActivityForResult(intent, LOCATION_NAME);
                 break;
             default:
                 break;
         }
+    }
+
+    private void sendDeleteAddress() {
+        String urlPath = SystemUtility.sendDeleteAddress();
+        Map<String, Object> dataMap = new HashMap();
+        dataMap.put("token", SystemUtility.AMToken);
+        dataMap.put("id", addressBean.getAddressID());
+        Log.e("onEventMainThread", "----------dataMap--------------" + dataMap.toString());
+        SystemUtility.requestNetPost(urlPath, dataMap, sendDeleteAddress_http);
     }
 
     /**
@@ -118,10 +139,21 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         String requestCode = asyncHttpRequestMessage.getRequestCode();
         String responseMsg = asyncHttpRequestMessage.getResponseMsg();
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
-        Log.e("onEventMainThread", "----------responseMsg--------------" + responseMsg);
         switch (requestCode) {
             //验证码发送
             case sendAddAddress_http:
+                //网络请求返回成功
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    //解析验证码返回
+                    String code = StringUtils.parserMessage(responseMsg, "code");
+                    String data = StringUtils.parserMessage(responseMsg, "data");
+                    if (code != null && code.equals("1")) {
+                        finish();
+                        SystemUtility.sendGetAddressHttp();
+                    }
+                }
+                break;
+            case sendDeleteAddress_http:
                 //网络请求返回成功
                 if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
                     //解析验证码返回
@@ -164,7 +196,7 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
     }
 
     /**
-     * 添加地址信息
+     * 修改地址信息
      *
      * @param name
      * @param phone
@@ -173,7 +205,8 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
     private void sendAddAddressHttp(String name, String phone, String address) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("isDefault", 0);
+            jsonObject.put("id", addressBean.getAddressID());
+            jsonObject.put("isDefault", Integer.valueOf(addressBean.getIsDefault()));
             jsonObject.put("contactName", name);
             jsonObject.put("phone", phone);
             jsonObject.put("province", Integer.valueOf(addressBean.getProvinceID()));
@@ -186,7 +219,7 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String urlPath = SystemUtility.sendAddAddress();
+        String urlPath = SystemUtility.sendUpdateAddress();
         Map<String, Object> dataMap = new HashMap();
         dataMap.put("token", SystemUtility.AMToken);
         dataMap.put("formData", jsonObject.toString());
