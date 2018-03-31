@@ -25,16 +25,16 @@
             android:scrollbars="none"
             >
         </ListView>
-        <LinearLayout
+        <com.anxin.kitchen.view.RefreshLayout
+            android:id="@+id/refresh_ll"
             android:background="@color/white"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-
             android:paddingLeft="10dp">
 
-            <TextView
+           <!-- <TextView
                 android:id="@+id/catalog_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/main_bg_color"
-                    />
+                    />-->
                 <ListView
                     android:background="@color/white"
                     android:id="@+id/content_lv"
@@ -58,7 +58,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:layout_marginTop="1dp"></ListView>
-        </LinearLayout>
+        </com.anxin.kitchen.view.RefreshLayout>
     </LinearLayout>
     <RelativeLayout
         android:background="@color/white"

@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,12 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ViewKitchenActivity extends BaseActivity {
+public class ViewKitchenActivity extends BaseActivity implements View.OnClickListener{
     private static final String[] CONTENT = new String[] { "频道一", "频道二", "频道三", "频道四", "频道五", "频道六" };
     private List<Fragment> list=new ArrayList<Fragment>();
 
     private TabLayout tabLayout = null;
     private HorizontalScrollMenu hsm_container;
+    private ImageView mBackImg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +41,18 @@ public class ViewKitchenActivity extends BaseActivity {
     {
         hsm_container = (HorizontalScrollMenu) findViewById(R.id.hsm_container);
         hsm_container.setSwiped(false);
+        mBackImg = findViewById(R.id.back_img);
         hsm_container.setAdapter(new MenuAdapter());
+        mBackImg.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.back_img:
+                this.finish();
+                break;
+        }
     }
 
 

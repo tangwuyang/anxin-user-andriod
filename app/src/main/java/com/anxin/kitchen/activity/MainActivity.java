@@ -39,6 +39,7 @@ import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RequestLocationPermissionDialog;
+import com.anxin.kitchen.view.WaitingDialog;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -279,7 +280,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void requestSuccess(String responseBody, String requestCode) {
         String status = StringUtils.parserMessage(responseBody, "message");
         if (requestCode != null && requestCode.equals(GET_KITCHEN_ID)) {
-
             myLog("----------->" + responseBody + status);
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 Gson gson = new Gson();
@@ -292,7 +292,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 dataMap.put(Constant.KITCHEN_ID, kichtchenId);
                 requestNet(SystemUtility.getBannerListUrl(), dataMap, GET_BANNER_LIST);
                 requestNet(SystemUtility.getMenuMealUrl(), dataMap, GET_MENU_MEAL);
-
                 return;
             }
         }

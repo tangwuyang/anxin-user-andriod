@@ -2,8 +2,11 @@ package com.anxin.kitchen.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.anxin.kitchen.interface_.RequestNetListener;
@@ -13,6 +16,8 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 
 import org.apache.http.Header;
@@ -34,6 +39,7 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     private boolean isDebug = true;  //是否是调试模式
     public static final String PREFERENCE_NAME = "ANXIN_ANDROID";
     public Gson mGson;
+    private ImageLoader imageLoader = ImageLoader.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,5 +125,16 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     @Override
     public void requestFailure(String responseFailure,String requestCode) {
 
+    }
+
+    public void setImg(ImageView view, String src){
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.food1)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .build();
+        // holder.BackgroundImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        imageLoader.displayImage(src,view,options);
     }
 }

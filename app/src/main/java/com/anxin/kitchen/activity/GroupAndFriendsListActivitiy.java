@@ -321,7 +321,7 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
         @Override
         public RecyclerView.ViewHolder onCreateContentViewHolder(ViewGroup parent) {
 
-            View view = LayoutInflater.from(GroupAndFriendsListActivitiy.this).inflate(R.layout.indexsticky_item_contact, parent, false);
+            View view = LayoutInflater.from(GroupAndFriendsListActivitiy.this).inflate(R.layout.contact_item, parent, false);
             return new ContentViewHolder(view);
         }
 

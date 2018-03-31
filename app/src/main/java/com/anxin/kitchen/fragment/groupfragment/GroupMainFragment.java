@@ -41,6 +41,7 @@ import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.MyListView;
+import com.anxin.kitchen.view.WaitingDialog;
 import com.bluetooth.tangwuyang.fantuanlibrary.IndexStickyView;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexHeaderFooterAdapter;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexStickyViewAdapter;
@@ -81,6 +82,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     private List<Integer> mMenuImgs = new ArrayList<>();
     String token ;
     MainActivity activity;
+    private WaitingDialog mWaitingDiag;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +105,9 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         mIndexStickyView = view.findViewById(R.id.indexStickyView);
         mMenuNames.add("创建饭团");
         mMenuImgs.add(R.drawable.create_new_group_drawale);
+        mWaitingDiag = new WaitingDialog(activity);
+        mWaitingDiag.show();
+        mWaitingDiag.startAnimation();
         return view;
     }
 
@@ -544,6 +549,10 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     * 设置群
     * */
     public void setGroup(SearchGroupBean bean) {
+        if (null != mWaitingDiag){
+            mWaitingDiag.stopAnimation();
+            mWaitingDiag.dismiss();
+        }
         List<SearchGroupBean.Data> groupList = bean.getData();
         if (null == this.grouplist){
             this.grouplist = new ArrayList<>();
@@ -658,7 +667,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         @Override
         public RecyclerView.ViewHolder onCreateContentViewHolder(ViewGroup parent) {
 
-            View view = LayoutInflater.from(mContext).inflate(R.layout.indexsticky_item_contact, parent, false);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.contact_item, parent, false);
             return new ContentViewHolder(view);
         }
 
@@ -675,21 +684,10 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
             ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
             contentViewHolder.mMobile.setText(itemData.getMobile());
             contentViewHolder.mName.setText(itemData.getName());
+            activity.setImg(contentViewHolder.mAvatar,itemData.getUserLogo());
+
             // contentViewHolder.mAvatar.setBackgroundResource(getResources().getDrawable(R.drawable.));
-            contentViewHolder.mDeleteTv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                   int groupId =  itemData.getGroupId();
-                   int groupUserId = itemData.getGroupUserId();
-                   String name = itemData.getName();
-                    Toast.makeText(activity, "name"+name + "gid"  + groupId + "   " + groupUserId, Toast.LENGTH_SHORT).show();
-                    Map<String,Object> dataMap = new HashMap<>();
-                    dataMap.put("groupId",groupId);
-                    dataMap.put("groupUserId",groupUserId);
-                    dataMap.put("token",token);
-                    activity.requestNet(SystemUtility.deleteFriendsUrl(),dataMap,activity.DELETE_FRIEND);
-                }
-            });
+
         }
     }
 
@@ -705,7 +703,6 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
             mName = (TextView) itemView.findViewById(R.id.tv_name);
             mMobile = (TextView) itemView.findViewById(R.id.tv_mobile);
             mAvatar = (ImageView) itemView.findViewById(R.id.img_avatar);
-            mDeleteTv = itemView.findViewById(R.id.delete_tv);
         }
     }
 

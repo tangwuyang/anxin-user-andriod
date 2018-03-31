@@ -1,7 +1,9 @@
 package com.anxin.kitchen.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,37 +15,78 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.anxin.kitchen.bean.MealBean;
+import com.anxin.kitchen.bean.RecoverBean;
+import com.anxin.kitchen.interface_.RequestNetListener;
+import com.anxin.kitchen.tangwuyangs_test.Test;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Cache;
+import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.PrefrenceUtil;
+import com.anxin.kitchen.utils.StringUtils;
+import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.view.RefreshLayout;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
  *    康复食疗
  * */
-public class RecoveryMealActivity extends BaseActivity {
-private ListView mMealCatalogLv;
-private List<String> mCatalogList = new ArrayList<>();
-private CatalogAdapter mCatalogAdapter;
-private ListView mContentLv;
-private ContentAdapter mContentAdapter;
+public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener,
+        RefreshLayout.OnLoadListener,RequestNetListener{
+    private static final String GET_MENU_MEAL = "GET_MENU_MEAL";
+    private static final String GET_MENU_ = "GET_MENU_";  //请求菜单
+    private ListView mMealCatalogLv;
+    private List<String> mCatalogList = new ArrayList<>();
+    private CatalogAdapter mCatalogAdapter;
+    private ListView mContentLv;
+    private ContentAdapter mContentAdapter;
+    private RefreshLayout mMealRefreshLy;
+    private MealBean mealBean;
+    private PrefrenceUtil prefrenceUtil;
+    private int kichtchenId;
+    private List<RecoverBean.Data> mealList;
+    private String mToken;
+    private Cache mCache;
+    private Gson mGson;
+    private int page = 0;   //选择查看页码
+    private long dietId = -1; 	//食疗ID(-1标识全部)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recovery_meal);
         setTitleBar();
         initView();
+        mCache = new Cache(this);
+        mGson = new Gson();
+        prefrenceUtil = new PrefrenceUtil(RecoveryMealActivity.this);
+        Map<String, Object> dataMap = new HashMap<>();
+        mToken = mCache.getAMToken();
+        kichtchenId = prefrenceUtil.getKitchenId();
+        dataMap.put(Constant.KITCHEN_ID, kichtchenId);
+        dataMap.put("page",page);
+        dataMap.put("token",mToken);
+        dataMap.put("dietId",-1);
+
+        Map<String,Object> menuData = new HashMap<>();
+        menuData.put("token",mToken);
+        requestNet(SystemUtility.getRecoverMenuUrl(),menuData,GET_MENU_);
+        requestNet(SystemUtility.getRecoverList(), dataMap, GET_MENU_MEAL);
+        setData();
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setData();
         setCatalogAdapter();
-        setContentAdapter();
+
     }
 
     private void setContentAdapter() {
@@ -72,6 +115,7 @@ private ContentAdapter mContentAdapter;
     }
 
     private void initView() {
+        mMealRefreshLy = findViewById(R.id.refresh_ll);
         mMealCatalogLv = findViewById(R.id.meal_catalog_lv);
         mContentLv = findViewById(R.id.content_lv);
         ImageView back_img = (ImageView) findViewById(R.id.back_img);
@@ -81,13 +125,81 @@ private ContentAdapter mContentAdapter;
                 finish();
             }
         });
+        mMealRefreshLy.setOnLoadListener(this);
+        mMealRefreshLy.setOnRefreshListener(this);
     }
 
+
+    @Override
+    public void requestFailure(String responseFailure, String requestCode) {
+        super.requestFailure(responseFailure, requestCode);
+    }
+
+    @Override
+    public void requestSuccess(String responseBody, String requestCode) {
+        super.requestSuccess(responseBody, requestCode);
+        String status = StringUtils.parserMessage(responseBody, "message");
+
+        //请求附近的菜单
+        if (requestCode != null && requestCode.equals(GET_MENU_MEAL)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                myLog("--------" + responseBody);
+                RecoverBean bean = mGson.fromJson(responseBody,RecoverBean.class);
+                mealList = bean.getData();
+                setContentAdapter();
+            }
+            return;
+        }
+
+        if (requestCode != null && requestCode.equals(GET_MENU_)){
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)){
+
+            }
+            return;
+        }
+    }
 
     private void setTitleBar() {
         setTitle("康复食疗");
         findViewById(R.id.search_img).setVisibility(View.VISIBLE);
         RelativeLayout bottom_rl = findViewById(R.id.bottom_rl);
+    }
+
+    @Override
+    public void onRefresh() {
+        mMealRefreshLy.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                // 更新数据  更新完后调用该方法结束刷新
+                //mealBean.getData().clear();
+                for (int i = 0; i < 8; i++) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("itemImage", i+"刷新");
+                    map.put("itemText", i+"刷新");
+                }
+                mContentAdapter.notifyDataSetChanged();
+                mMealRefreshLy.setRefreshing(false);
+            }
+        }, 2000);
+    }
+
+    @Override
+    public void onLoad() {
+        mMealRefreshLy.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // 更新数据  更新完后调用该方法结束刷新
+                mMealRefreshLy.setLoading(false);
+                for (int i = 1; i < 10; i++) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("itemImage", i+"更多");
+                    map.put("itemText", i+"更多");
+
+                }
+                mContentAdapter.notifyDataSetChanged();
+            }
+        }, 2000);
     }
 
 
@@ -113,6 +225,11 @@ private ContentAdapter mContentAdapter;
             view = LayoutInflater.from(RecoveryMealActivity.this).inflate(R.layout.recovery_catalog_item,viewGroup,false);
             TextView catalogTv = view.findViewById(R.id.catalog_tv);
             catalogTv.setText(mCatalogList.get(position));
+            catalogTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
             return view;
         }
     }
@@ -120,7 +237,7 @@ private ContentAdapter mContentAdapter;
     private class ContentAdapter extends BaseAdapter{
         @Override
         public int getCount() {
-            return mCatalogList.size();
+            return mealList.size();
         }
 
         @Override
@@ -135,8 +252,62 @@ private ContentAdapter mContentAdapter;
 
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
-            view = LayoutInflater.from(RecoveryMealActivity.this).inflate(R.layout.expression_meal_item,viewGroup,false);
+            RecoverBean.Data meal = mealList.get(position);
+            ViewHolder holder = null;
+            if (null == view){
+                view = LayoutInflater.from(RecoveryMealActivity.this).inflate(R.layout.expression_meal_item,viewGroup,false);
+                holder = new ViewHolder();
+                holder.titleTv = view.findViewById(R.id.food_name);
+                holder.contentTv = view.findViewById(R.id.food_content);
+                holder.iconImg = view.findViewById(R.id.food_img);
+                holder.addTv = view.findViewById(R.id.add_img);
+                holder.reduceTv = view.findViewById(R.id.reduce_img);
+                holder.numTv = view.findViewById(R.id.nums_tv);
+                holder.priceTv = view.findViewById(R.id.meal_price_tv);
+                view.setTag(holder);
+            }else {
+                holder = (ViewHolder) view.getTag();
+            }
+            holder.titleTv.setText(meal.getPackageName());
+            StringBuffer buffer = new StringBuffer();
+            for (RecoverBean.FoodList food:meal.getFoodList()
+                 ) {
+                buffer.append(food.getDishName()+"\r\n");
+            }
+            holder.contentTv.setText(buffer.toString());
+            myLog("-------1------->"+ meal.getPrice());
+            holder.priceTv.setText("￥"+meal.getPrice());
+            final ViewHolder finalHolder = holder;
+            holder.reduceTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int nums = Integer.valueOf(finalHolder.numTv.getText().toString());
+                    if (nums>0){
+                        nums = nums-1;
+                        finalHolder.numTv.setText(nums+"");
+                    }
+                }
+            });
+
+            holder.addTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int nums = Integer.valueOf(finalHolder.numTv.getText().toString());
+                        nums = nums+1;
+                        finalHolder.numTv.setText(nums+"");
+                }
+            });
             return view;
         }
+    }
+
+    class ViewHolder{
+        TextView titleTv;
+        TextView contentTv;
+        ImageView iconImg;
+        ImageView addTv;
+        ImageView reduceTv;
+        TextView numTv;
+        TextView priceTv;
     }
 }

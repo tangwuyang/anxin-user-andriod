@@ -83,6 +83,13 @@ public class SystemUtility {
     }
 
     /**
+     * /v1.0/system/message_list
+     * 获取系统消息
+     * */
+    public static String getMessageListUrl() {
+        return AMUAC_IP + "/v1.0/system/message_list";
+    }
+    /**
      * 获取省市县定位ID列表
      */
     public static String sendGetAddresshttp() {
@@ -98,10 +105,18 @@ public class SystemUtility {
 
     /**
      * /v1.0/kitchen/menu
-     * 菜系
+     * 菜系  推荐菜品 首页
      */
     public static String getFoodMenuUrl() {
         return AMUAC_IP + "/v1.0/food/cuisine_list";
+    }
+
+    /**
+     *  /v1.0/food/package_list
+     *  获取康复食疗
+     * */
+    public static String getRecoverList() {
+        return AMUAC_IP + "/v1.0/food/package_list";
     }
 
     /**
@@ -117,6 +132,13 @@ public class SystemUtility {
      */
     public static String getMenuMealUrl() {
         return AMUAC_IP + "/v1.0/kitchen/menu";
+    }
+
+    /**
+     * 康复食疗菜系/v1.0/food/cuisine_list
+     */
+    public static String getRecoverMenuUrl() {
+        return AMUAC_IP + "/v1.0/system/diet_list";
     }
 
     /**
@@ -605,4 +627,6 @@ public class SystemUtility {
             e.printStackTrace();
         }
     }
+
+
 }

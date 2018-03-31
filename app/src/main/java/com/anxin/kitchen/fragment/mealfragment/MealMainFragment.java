@@ -30,6 +30,7 @@ import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.CustomGridView;
+import com.anxin.kitchen.view.WaitingDialog;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -66,6 +67,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     List<MealBean.Data> mealList;
     private MealBean mealBean;
     private ImageLoader imageLoader = ImageLoader.getInstance();
+    private WaitingDialog mWaitingDialog;
     String[] mealTypeImgs= new String[] {
             "drawable://" + R.drawable.lunch_icon,
             "drawable://" + R.drawable.diner_icon,
@@ -76,6 +78,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (MainActivity) MainActivity.context;
+        mWaitingDialog = new WaitingDialog(activity);
     }
 
 
@@ -173,6 +176,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
 
     private void getKitchenId() {
         if (null != activity){
+            mWaitingDialog.show();
+            mWaitingDialog.startAnimation();
             Map<String,Object> dataMap = new HashMap();
             dataMap.put("longitude",lon);
             dataMap.put("latitude",lat);
@@ -232,7 +237,6 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         // TODO Auto-generated method stub
         super.onResume();
         setListener();
-
     }
 
     private void setListener() {
@@ -244,6 +248,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
 
     //设置点餐适配器
     private void setAdapter(List<List<MealBean.Data>> dataList) {
+        mWaitingDialog.stopAnimation();
+        mWaitingDialog.dismiss();
         mLiearManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         PreserverAdapter adapter = new PreserverAdapter(dataList);
         mPreserverRv.setLayoutManager(mLiearManager);
@@ -267,7 +273,14 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 startActivity(intent1);
                 break;
             case R.id.recovery_meal_img:
-                startNewActivity(RecoveryMealActivity.class);
+                Intent intent2 = new Intent(activity,RecoveryMealActivity.class);
+                Gson gson2 = new Gson();
+                String mealBeanSt2 = null;
+                if (null != mealBean){
+                    mealBeanSt2 = gson2.toJson(mealBean);
+                }
+                intent2.putExtra("mealListSt",mealBeanSt2);
+                startActivity(intent2);
                 break;
             case R.id.location_tv:
                 //startNewActivity(SendMealLocationActivity.class);
