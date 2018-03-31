@@ -2,6 +2,8 @@ package com.anxin.kitchen.utils;
 
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -46,6 +48,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -366,8 +369,8 @@ public class SystemUtility {
                     userAccount.setUserInitials(resultValue);
                 } else if (resultKey.equals("nickName")) {
                     userAccount.setUserNickName(resultValue);
-                    MyApplication.getInstance().getCache().setNickName(resultValue);
                 } else if (resultKey.equals("trueName")) {
+                    MyApplication.getInstance().getCache().setNickName(resultValue);
                     userAccount.setUserTrueName(resultValue);
                 } else if (resultKey.equals("weixin")) {
                     userAccount.setUserWeiXin(resultValue);
@@ -404,6 +407,31 @@ public class SystemUtility {
         MyApplication.getInstance().setAccount(userAccount);
         EventBusFactory.postEvent(new OnUserAcountEvent());
         return userAccount;
+    }
+
+    /**
+     * 判断某个Activity 界面是否在前台
+     *
+     * @param context
+     * @param className 某个界面名称
+     * @return
+     */
+    public static boolean isForeground(Context context, String className) {
+        if (context == null || TextUtils.isEmpty(className)) {
+            return false;
+        }
+
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(1);
+        if (list != null && list.size() > 0) {
+            ComponentName cpn = list.get(0).topActivity;
+            if (className.equals(cpn.getClassName())) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 
     /**
@@ -649,6 +677,7 @@ public class SystemUtility {
                 }
                 addressListBean.add(addressBean);
             }
+            Collections.sort(addressListBean, comparator);
             MyApplication.getInstance().setAddressBeanList(addressListBean);
             EventBusFactory.getInstance().post(new AddressListEvent());
         } catch (JSONException e) {
