@@ -31,7 +31,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="0dp"
-                    android:text="浙大科技园"
+                    android:text="dad"
+                    android:layout_marginRight="30dp"
+                    android:drawableRight="@drawable/address_default_icon"
+                    android:drawablePadding="3dp"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
@@ -44,15 +47,16 @@
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
-                <ImageView
-                    android:id="@+id/defult_iv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/address_title"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="3dp"
-                    android:layout_toRightOf="@+id/address_title"
-                    android:src="@drawable/address_default_icon" />
+                <!--<ImageView-->
+                    <!--android:id="@+id/defult_iv"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignTop="@+id/address_title"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:layout_marginRight="10dp"-->
+                    <!--android:layout_marginTop="3dp"-->
+                    <!--android:layout_toRightOf="@+id/address_title"-->
+                    <!--android:src="@drawable/address_default_icon" />-->
             </RelativeLayout>
 
             <RelativeLayout

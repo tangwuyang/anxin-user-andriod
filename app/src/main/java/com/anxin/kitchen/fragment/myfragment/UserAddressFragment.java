@@ -171,7 +171,7 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
                 holder.addressPhone = view.findViewById(R.id.address_phone);
                 holder.addressDefultBtn = view.findViewById(R.id.address_defult);
                 holder.addressEditBtn = view.findViewById(R.id.address_edit);
-                holder.defult_iv = view.findViewById(R.id.defult_iv);
+//                holder.defult_iv = view.findViewById(R.id.defult_iv);
                 holder.content_iv = view.findViewById(R.id.content_iv);
                 view.setTag(holder);
             } else {
@@ -192,11 +192,11 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
             holder.addressTitle.setText(addressTitle);
             holder.addressText.setText(address);
             if (isDefault != null && isDefault.equals("1")) {
-                holder.defult_iv.setVisibility(View.VISIBLE);
+                holder.addressTitle.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.address_default_icon), null);
                 holder.addressDefultBtn.setVisibility(View.GONE);
                 holder.content_iv.setVisibility(View.GONE);
             } else {
-                holder.defult_iv.setVisibility(View.GONE);
+                holder.addressTitle.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
                 holder.addressDefultBtn.setVisibility(View.VISIBLE);
                 holder.content_iv.setVisibility(View.VISIBLE);
             }
@@ -221,7 +221,7 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
 
         class ViewHolder {
             private TextView addressTitle, addressText, addressPhone, addressEditBtn, addressDefultBtn;
-            private ImageView defult_iv;
+            //            private ImageView defult_iv;
             private View content_iv;
         }
 
