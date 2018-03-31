@@ -1,6 +1,16 @@
 package com.anxin.kitchen.utils;
 
 
+import android.annotation.SuppressLint;
+import android.content.ContentUris;
+import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +46,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -80,6 +91,45 @@ public class SystemUtility {
     //获取送餐地址
     public static String sendGetAddress() {
         return AMUAC_IP + "/v1.0/user/address_list?token=" + AMToken;
+    }
+
+    /**
+     * 搴峰¤嶉£熺枟鑿滅郴/v1.0/food/cuisine_list
+     */
+    public static String getRecoverMenuUrl() {
+        return AMUAC_IP + "/v1.0/system/diet_list";
+
+    }
+
+    //淇®鏀圭敤鎴蜂俊鎭
+    public static String sendUpdateUser() {
+        return AMUAC_IP + "/v1.0/user/update";
+    }
+
+    //淇®鏀瑰湴鍧€
+    public static String sendUpdateAddress() {
+        return AMUAC_IP + "/v1.0/user/update_address";
+    }
+
+    //鍒犻櫎鍦板潃
+    public static String sendDeleteAddress() {
+        return AMUAC_IP + "/v1.0/user/del_address";
+    }
+
+    /**
+     * /v1.0/system/message_list
+     * 鑾峰彇绯荤粺娑堟伅
+     */
+    public static String getMessageListUrl() {
+        return AMUAC_IP + "/v1.0/system/message_list";
+    }
+
+    /**
+     * /v1.0/food/package_list
+     * 鑾峰彇搴峰¤嶉£熺枟
+     */
+    public static String getRecoverList() {
+        return AMUAC_IP + "/v1.0/food/package_list";
     }
 
     /**
