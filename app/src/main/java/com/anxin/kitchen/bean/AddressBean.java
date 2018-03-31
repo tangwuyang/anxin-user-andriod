@@ -14,7 +14,7 @@ public class AddressBean implements Serializable {
     private String addressID;//地址ID
     private String userID;//用户ID
     private String phoneNumber;//联系人电话
-    private String isDefault;//是否默认
+    private String isDefault = "0";//是否默认
     private String contactName;//联系人名称
     private String provinceName;//省
     private String provinceID;//省ID

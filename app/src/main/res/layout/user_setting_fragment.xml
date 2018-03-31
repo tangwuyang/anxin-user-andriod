@@ -39,6 +39,7 @@
                     android:src="@drawable/back_drawable" />
 
                 <TextView
+                    android:id="@+id/PreservationBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -193,7 +194,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/Gender_next"
-                android:text="男"
+                android:text=""
                 android:textColor="#333333"
                 android:textSize="14sp" />
         </RelativeLayout>
@@ -233,7 +234,6 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/birthday_next"
-                android:text="1990-05-28"
                 android:textColor="#333333"
                 android:textSize="14sp" />
         </RelativeLayout>

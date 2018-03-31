@@ -18,7 +18,8 @@
     <dimen name="small_text_size">12sp</dimen>
     //小字号
     <dimen name="super_small_text_size">9.3dp</dimen>
-    <dimen name="bar_left_right_padding">13.3dp</dimen>  //标题栏左右内边距
+    <dimen name="bar_left_right_padding">13.3dp</dimen>
+    //标题栏左右内边距
 
     <dimen name="global_divider_size">1px</dimen>
     <dimen name="contact_item_left_margin">10dp</dimen>

@@ -83,6 +83,7 @@ public class LocationActivity extends Activity implements AMap.OnCameraChangeLis
     private AutoCompleteTextView mInputLocationTv;
     private TextView locationTv;//定位城市
     private List<AddressBean> addressBeansList = new ArrayList();//地址列表
+    private AddressBean myAddressBean = null;
     private MyAdaped myAdaped;//列表适配器
 
     //声明定位回调监听器
@@ -179,11 +180,17 @@ public class LocationActivity extends Activity implements AMap.OnCameraChangeLis
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 AddressBean addressBean = addressBeansList.get(i);
+                myAddressBean.setCityName(addressBean.getCityName());
+                myAddressBean.setStreetName(addressBean.getStreetName());
+                myAddressBean.setDistrictName(addressBean.getDistrictName());
+                myAddressBean.setProvinceName(addressBean.getProvinceName());
+                myAddressBean.setLatitude(addressBean.getLatitude());
+                myAddressBean.setLongitude(addressBean.getLongitude());
 //                Log.e("", "------AddressBean----------");
                 if (addressBean != null) {
 //                    ToastUtil.showToast(addressBean.getStreetName());
                     Intent intent = getIntent();
-                    intent.putExtra("AddressBean", addressBean);
+                    intent.putExtra("AddressBean", myAddressBean);
                     setResult(RESULT_OK, intent);
 //                    Log.e("", "------AddressBean------setResult----");
                 }
@@ -236,6 +243,9 @@ public class LocationActivity extends Activity implements AMap.OnCameraChangeLis
         //设置定位回调监听
         mLocationClient.setLocationListener(mLocationListener);
         mInputLocationTv.addTextChangedListener(this);
+        myAddressBean = (AddressBean) getIntent().getSerializableExtra("addressBean");
+        if (myAddressBean == null)
+            myAddressBean = new AddressBean();
         init();
     }
 

@@ -118,6 +118,12 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         String requestCode = asyncHttpRequestMessage.getRequestCode();
         String responseMsg = asyncHttpRequestMessage.getResponseMsg();
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+        String codeToKen = StringUtils.parserMessage(responseMsg, "code");
+        if (codeToKen != null && (codeToKen.equals("4") || codeToKen.equals("7"))) {
+            startActivity(new Intent(AddNewLocationActivity.this, LoginActivity.class));
+            return;
+        }
+//        Log.e("onEventMainThread", "----------responseMsg--------------" + responseMsg);
         switch (requestCode) {
             //验证码发送
             case sendAddAddress_http:
@@ -144,6 +150,10 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         String phone = contactPhontEdit.getText().toString();
         if (phone == null || phone.length() <= 0) {
             ToastUtil.showToast("请输入联系人电话号码");
+            return;
+        }
+        if (!SystemUtility.isMobileNO(phone)) {
+            ToastUtil.showToast("请输入正确的手机号码");
             return;
         }
         String address = contactAddressEdit.getText().toString();
@@ -185,6 +195,7 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         Map<String, Object> dataMap = new HashMap();
         dataMap.put("token", SystemUtility.AMToken);
         dataMap.put("formData", jsonObject.toString());
+        Log.e("onEventMainThread", "----------dataMap--------------" + dataMap.toString());
         SystemUtility.requestNetPost(urlPath, dataMap, sendAddAddress_http);
     }
 
