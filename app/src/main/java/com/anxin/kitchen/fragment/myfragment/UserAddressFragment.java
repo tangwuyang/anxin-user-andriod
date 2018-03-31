@@ -16,6 +16,7 @@ import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.AddNewLocationActivity;
 import com.anxin.kitchen.activity.EditAddressActivity;
 import com.anxin.kitchen.activity.LocationActivity;
+import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.event.AddressListEvent;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
@@ -104,9 +105,9 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
     /**
      * 监听网络请求返回
      *
-     * @param asyncHttpRequestMessage
+     * @param addressListEvent
      */
-    public void onEventMainThread(AddressListEvent asyncHttpRequestMessage) {
+    public void onEventMainThread(AddressListEvent addressListEvent) {
 //        LOG.e("----------------------------" + MyApplication.getInstance().getCache().getAddressList(getActivity()).toString());
         addressBeanList = MyApplication.getInstance().getAddressBeanList();
         myAdaped.notifyDataSetChanged();
@@ -116,6 +117,11 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
         String requestCode = asyncHttpRequestMessage.getRequestCode();
         String responseMsg = asyncHttpRequestMessage.getResponseMsg();
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+        String codeToKen = StringUtils.parserMessage(responseMsg, "code");
+        if (codeToKen != null && (codeToKen.equals("4") || codeToKen.equals("7"))) {
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            return;
+        }
         switch (requestCode) {
             //验证码发送
             case sendUpdateAddress_http:

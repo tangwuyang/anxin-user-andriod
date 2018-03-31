@@ -139,6 +139,11 @@ public class EditAddressActivity extends BaseActivity implements View.OnClickLis
         String requestCode = asyncHttpRequestMessage.getRequestCode();
         String responseMsg = asyncHttpRequestMessage.getResponseMsg();
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+        String codeToKen = StringUtils.parserMessage(responseMsg, "code");
+        if (codeToKen != null && (codeToKen.equals("4") || codeToKen.equals("7"))) {
+            startActivity(new Intent(EditAddressActivity.this, LoginActivity.class));
+            return;
+        }
         switch (requestCode) {
             //验证码发送
             case sendAddAddress_http:

@@ -5,12 +5,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.SystemUtility;
 
 /**
  * 设置界面
@@ -21,6 +23,7 @@ public class SettingFragment extends HomeBaseFragment implements View.OnClickLis
     private ImageView backBtn;//返回
     private RelativeLayout myRlt;//关于我们
     private RelativeLayout agreementRlt;//服务协议
+    private Button logoutLoginBtn;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,8 @@ public class SettingFragment extends HomeBaseFragment implements View.OnClickLis
         myRlt = (RelativeLayout) view.findViewById(R.id.my_rlt);
         agreementRlt = (RelativeLayout) view.findViewById(R.id.agreement_rlt);
         backBtn = (ImageView) view.findViewById(R.id.back_btn);
+        logoutLoginBtn = view.findViewById(R.id.logout_user);
+        logoutLoginBtn.setOnClickListener(this);
         backBtn.setOnClickListener(this);
         myRlt.setOnClickListener(this);
         agreementRlt.setOnClickListener(this);
@@ -76,6 +81,11 @@ public class SettingFragment extends HomeBaseFragment implements View.OnClickLis
                 ft2.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft2.addToBackStack(null);
                 ft2.commit();
+                break;
+            case R.id.logout_user:
+                mApp.setAccount(null);
+                SystemUtility.AMToken = "";
+                getFragmentManager().popBackStack();
                 break;
             default:
                 break;

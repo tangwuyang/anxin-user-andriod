@@ -118,7 +118,12 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         String requestCode = asyncHttpRequestMessage.getRequestCode();
         String responseMsg = asyncHttpRequestMessage.getResponseMsg();
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
-        Log.e("onEventMainThread", "----------responseMsg--------------" + responseMsg);
+        String codeToKen = StringUtils.parserMessage(responseMsg, "code");
+        if (codeToKen != null && (codeToKen.equals("4") || codeToKen.equals("7"))) {
+            startActivity(new Intent(AddNewLocationActivity.this, LoginActivity.class));
+            return;
+        }
+//        Log.e("onEventMainThread", "----------responseMsg--------------" + responseMsg);
         switch (requestCode) {
             //验证码发送
             case sendAddAddress_http:

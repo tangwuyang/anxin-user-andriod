@@ -85,6 +85,12 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
     }
 
     private void updateUserAcount() {
+        if (mApp.getAccount() == null) {
+            userName.setText("立即登录");
+            userPhone.setText("登录后可享受更多特权");
+            userIcon.setImageResource(R.drawable.icon);
+            return;
+        }
         //获取本地用户名称
         String name = mApp.getCache().getNickName();
         if (name != null && name.length() != 0) {
