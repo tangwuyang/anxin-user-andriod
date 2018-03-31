@@ -183,26 +183,28 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
         //查询数据，返回Cursor
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
         List<Map<String,Object>> list1 = new ArrayList<Map<String,Object>>();
-        while(cursor.moveToNext()) {
+        if (null != list1 && list1.size()>0) {
+            while (cursor.moveToNext()) {
 
 
-            //获取联系人的ID
-            String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-            //获取联系人的姓名
-            String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                //获取联系人的ID
+                String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                //获取联系人的姓名
+                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
-            //查询电话类型的数据操作
-            Cursor phones = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    null,
-                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId,
-                    null, null);
-            while (phones.moveToNext()) {
-                String phoneNumber = phones.getString(phones.getColumnIndex(
-                        ContactsContract.CommonDataKinds.Phone.NUMBER));
-                ContactEntity contactEntity = new ContactEntity(name,phoneNumber);
-                list.add(contactEntity);
+                //查询电话类型的数据操作
+                Cursor phones = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId,
+                        null, null);
+                while (phones.moveToNext()) {
+                    String phoneNumber = phones.getString(phones.getColumnIndex(
+                            ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    ContactEntity contactEntity = new ContactEntity(name, phoneNumber);
+                    list.add(contactEntity);
+                }
+                phones.close();
             }
-            phones.close();
         }
         return list;
     }
