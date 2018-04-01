@@ -60,6 +60,49 @@
                     android:layout_marginTop="1dp"></ListView>
         </com.anxin.kitchen.view.RefreshLayout>
     </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_above="@+id/bottom_rl"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:background="@color/main_bg_color"
+            android:paddingBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:paddingRight="@dimen/bar_left_right_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/shallow_text_color"
+                android:text="已选菜单"
+                />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:src="@drawable/delete_drawable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="清空"
+                    android:textColor="@color/shallow_text_color"
+                    android:textSize="@dimen/normal_text_size"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+        <com.anxin.kitchen.view.MyListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></com.anxin.kitchen.view.MyListView>
+    </LinearLayout>
     <RelativeLayout
         android:background="@color/white"
         android:id="@+id/bottom_rl"
@@ -78,8 +121,20 @@
             android:layout_marginLeft="@dimen/bar_left_right_padding"
             android:src="@drawable/shopping_cart_0"
             />
+        <TextView
+            android:visibility="visible"
+            android:id="@+id/nums_tv"
+            android:layout_width="13.3dp"
+            android:layout_height="13.3dp"
+            android:textColor="@color/white"
+            android:background="@drawable/nums_bg_drawabl"
+            android:gravity="center"
+            android:layout_marginLeft="70dp"
+            android:textSize="@dimen/super_small_text_size"
+            android:layout_marginTop="5dp"
+            android:text="1"/>
 
-            <LinearLayout
+        <LinearLayout
                 android:layout_marginTop="15dp"
                 android:layout_marginLeft="5dp"
                 android:orientation="vertical"
@@ -87,9 +142,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/money_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="￥99.00"
+                    android:text="未选购商品"
                     android:textColor="@color/white"
                     android:textSize="@dimen/super_big_text_size"
                     />
@@ -103,12 +159,14 @@
             </LinearLayout>
 
         <TextView
+            android:id="@+id/close_account_tv"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_width="133dp"
             android:layout_height="64dp"
-            android:background="@color/red"
-            android:text="去结算"
+            android:background="@color/color_desc"
+            android:text="20元起送"
+            android:clickable="false"
             android:gravity="center"
             android:textColor="@color/white"
             android:textSize="@dimen/title_text_size"

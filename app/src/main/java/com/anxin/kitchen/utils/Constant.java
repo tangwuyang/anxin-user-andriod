@@ -14,11 +14,11 @@ public class Constant {
     public static final String FRIENDSSTRING = "friendsString";
     public static final String GROUPSSTRING = "groupString";
     public static final String REQUEST_SUCCESS = "请求成功";
-    public static final String REQUEST_EXCEPTION = "请求异常";
+    public static final String REQUEST_EXCEPTION = "请求异常.";
     public static final String HAS_NO_PREMISSION = "无权限操作";
     public static final String LOGIN_FIRST = "请先登录";
     public static final String TOKEN = "token";
     public static final String REQUEST_STATUS="message";
-    public static final int ADD_FRIEND_CODE = 200;
+    public static final int ADD_FRIEND_CODE = 300;
     public static final String NULL = "null";
 }

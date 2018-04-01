@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.view.ChoseGroupDialog;
 import com.anxin.kitchen.view.OrderingRuleDialog;
 
@@ -37,6 +39,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private MealBean mealBean;
     private List<MealBean.Data> mealList;
     private PreserverAdapter preserverAdapter;
+    String mealListSt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,43 +58,53 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private void initData() {
         Intent intent = getIntent();
         if (null != intent){
-            String mealListSt = intent.getStringExtra("mealListSt");
+            mealListSt = intent.getStringExtra("mealListSt");
             mealBean = mGson.fromJson(mealListSt,MealBean.class);
+            myLog("------->" + mealListSt);
         }
-        mealList = mealBean.getData();
+        //String data = StringUtils.parserMessage(mealListSt,"data");
+
+        if (!((null==mealListSt)||mealListSt.equals(Constant.NULL))){
+            mealList = mealBean.getData();
+        }
 
         List<List<MealBean.Data>> dataList = new ArrayList<>();
         List<Long> days = new ArrayList<>();
         LinkedHashMap<Long,String> weakDays = new LinkedHashMap<>();
         LinkedHashMap<Long,Map<String,MealBean.Data>> preMealMaps = new LinkedHashMap<>();
         long lastDay = 0;
-        for (MealBean.Data mel :
-                mealList) {
-            long thisDay = mel.getMenuDay();
-            String weekDay = transToWeekDay(thisDay);
-            if (!weakDays.containsKey(thisDay)){
-                days.add(thisDay);
-                weakDays.put(thisDay,weekDay);
-            }
-            if (!preMealMaps.containsKey(thisDay)){
-                preMealMaps.put(thisDay,new HashMap<String, MealBean.Data>());
-            }
-            int type = mel.getEatType();
-            if (type == 1){
-                myLog("-----------------午餐");
-                if (!preMealMaps.get(thisDay).containsKey("午餐")){
-                    preMealMaps.get(thisDay).put("午餐",mel);
+        if (!((null==mealListSt)||mealListSt.equals(Constant.NULL))){
+            for (MealBean.Data mel :
+                    mealList) {
+                long thisDay = mel.getMenuDay();
+                String weekDay = transToWeekDay(thisDay);
+                if (!weakDays.containsKey(thisDay)){
+                    days.add(thisDay);
+                    weakDays.put(thisDay,weekDay);
                 }
-            }else if (type == 2){
-                myLog("-----------------晚餐");
-                if (!preMealMaps.get(thisDay).containsKey("晚餐")){
-                    preMealMaps.get(thisDay).put("晚餐",mel);
+                if (!preMealMaps.containsKey(thisDay)){
+                    preMealMaps.put(thisDay,new HashMap<String, MealBean.Data>());
                 }
+                int type = mel.getEatType();
+                if (type == 1){
+                    myLog("-----------------午餐");
+                    if (!preMealMaps.get(thisDay).containsKey("午餐")){
+                        preMealMaps.get(thisDay).put("午餐",mel);
+                    }
+                }else if (type == 2){
+                    myLog("-----------------晚餐");
+                    if (!preMealMaps.get(thisDay).containsKey("晚餐")){
+                        preMealMaps.get(thisDay).put("晚餐",mel);
+                    }
+                }
+
             }
+            updateUI(days,weakDays,preMealMaps);
+        }else {
 
         }
 
-        updateUI(days,weakDays,preMealMaps);
+
     }
 
     private void updateUI(List<Long> days, LinkedHashMap<Long, String> weakDays, LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps) {

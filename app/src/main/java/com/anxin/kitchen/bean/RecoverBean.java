@@ -102,7 +102,7 @@ public class RecoverBean {
     }
 
 
-    public class Data {
+    public static class Data {
 
         private String menuDay;
         private int kitchenId;
@@ -115,6 +115,16 @@ public class RecoverBean {
         private String img;
         private String eatType;
         private List<FoodList> foodList;
+        private int nums;
+
+        public int getNums() {
+            return nums;
+        }
+
+        public void setNums(int nums) {
+            this.nums = nums;
+        }
+
         public void setMenuDay(String menuDay) {
             this.menuDay = menuDay;
         }

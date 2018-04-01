@@ -311,10 +311,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
         //请求附近的菜单
         if (requestCode != null && requestCode.equals(GET_MENU_MEAL)) {
+            myLog("------------>status" + status);
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 myLog("--------" + responseBody);
                 MealBean mealBean = mGson.fromJson(responseBody, MealBean.class);
+                mealMainFragment.closeWaitingDialog();
                 mealMainFragment.setMeal(mealBean);
+            }else if (null != status && status.equals(Constant.REQUEST_EXCEPTION)){
+                Toast.makeText(context, "请求异常", Toast.LENGTH_SHORT).show();
+                mealMainFragment.closeWaitingDialog();
             }
             return;
         }

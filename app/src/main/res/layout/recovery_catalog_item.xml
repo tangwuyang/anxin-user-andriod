@@ -16,6 +16,7 @@
     android:textSize="@dimen/mid_text_size"
     />
     <TextView
+        android:visibility="gone"
         android:id="@+id/nums_tv"
         android:layout_width="13.3dp"
         android:layout_height="13.3dp"

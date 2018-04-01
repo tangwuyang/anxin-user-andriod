@@ -246,10 +246,13 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         mLocationTv.setOnClickListener(this);
     }
 
-    //设置点餐适配器
-    private void setAdapter(List<List<MealBean.Data>> dataList) {
+    public void closeWaitingDialog(){
         mWaitingDialog.stopAnimation();
         mWaitingDialog.dismiss();
+    }
+
+    //设置点餐适配器
+    private void setAdapter(List<List<MealBean.Data>> dataList) {
         mLiearManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         PreserverAdapter adapter = new PreserverAdapter(dataList);
         mPreserverRv.setLayoutManager(mLiearManager);
