@@ -199,10 +199,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         String responseMsg = asyncHttpRequestMessage.getResponseMsg();
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
         String codeToKen = StringUtils.parserMessage(responseMsg, "code");
-        if (codeToKen != null && (codeToKen.equals("4") || codeToKen.equals("7"))) {
-            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-            return;
-        }
         LOG.d("----------requestCode------" + requestCode);
         LOG.d("----------responseMsg------" + responseMsg);
         LOG.d("----------requestStatus------" + requestStatus);

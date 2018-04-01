@@ -74,10 +74,18 @@ public class UserWalletSetFragment extends HomeBaseFragment implements View.OnCl
                 ft.commit();
                 break;
             case R.id.wallet_withdrawals_rlt:
-
+                WalletExtractFragment walletExtractFragment = new WalletExtractFragment();
+                ft.replace(R.id.content_frame, walletExtractFragment);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.addToBackStack(null);
+                ft.commit();
                 break;
             case R.id.wallet_mortgage_rlt:
-
+                WalletDepositFragment walletDepositFragment = new WalletDepositFragment();
+                ft.replace(R.id.content_frame, walletDepositFragment);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.addToBackStack(null);
+                ft.commit();
                 break;
             default:
                 break;

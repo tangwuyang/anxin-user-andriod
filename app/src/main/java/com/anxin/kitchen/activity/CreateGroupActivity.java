@@ -77,7 +77,7 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
         }
         String token = new Cache(this).getAMToken();
         if (token==null){
-            startNewActivity(LoginActivity.class);
+            SystemUtility.startLoginUser(CreateGroupActivity.this);
         }else {
           /*  Map<String,Object> dataMap= new HashMap<>();
             dataMap.put("groupName",mGroupName);
@@ -101,7 +101,7 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
         if (requestCode==CREATE_GROUP){
             String status = StringUtils.parserMessage(responseString,"message");
             if (status.equals(Constant.LOGIN_FIRST)){
-                startNewActivity(LoginActivity.class);
+                SystemUtility.startLoginUser(CreateGroupActivity.this);
             }else if (status.equals(Constant.REQUEST_SUCCESS)){
                 GroupBean bean = mGson.fromJson(responseString,GroupBean.class);
                 isAdd = true;

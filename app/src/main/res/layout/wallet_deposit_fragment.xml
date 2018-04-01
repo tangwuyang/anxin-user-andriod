@@ -103,57 +103,33 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="10dp" />
+            android:layout_height="0.5dp"
+            android:background="@color/item_divider" />
 
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:layout_centerVertical="true"
-            android:background="@color/white"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:text="提现金额"
-            android:textColor="#333333"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:background="@color/white"
-            android:orientation="horizontal">
+            android:background="@color/white">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:text="￥"
+                android:text="押金金额"
                 android:textColor="#333333"
-                android:textSize="30sp" />
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:gravity="center_vertical|left"
-                android:hint="提现金额"
-                android:inputType="number"
-                android:paddingLeft="10dp"
-                android:textColor="@color/black"
-                android:textColorHint="#cccccc"
-                android:textSize="15sp" />
+                android:textSize="13sp" />
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingLeft="5dp"
-                android:paddingRight="10dp"
-                android:text="全部提现"
-                android:textColor="#45c26a"
-                android:textSize="12sp" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:text="300元"
+                android:textColor="#333333"
+                android:textSize="13sp" />
+        </RelativeLayout>
     </LinearLayout>
 
     <Button
@@ -164,9 +140,9 @@
         android:layout_marginBottom="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
+        android:alpha="0.5"
         android:background="#3ed368"
         android:text="确认提现"
-        android:alpha="0.5"
         android:textColor="@color/white"
         android:textSize="15sp" />
 </RelativeLayout>

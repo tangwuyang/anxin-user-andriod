@@ -6,6 +6,7 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -14,12 +15,14 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.AddressListBean;
@@ -30,17 +33,26 @@ import com.anxin.kitchen.event.OnUserAcountEvent;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
 import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -55,8 +67,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static com.anxin.kitchen.MyApplication.mApp;
+import static com.umeng.socialize.bean.RequestType.API;
 
 public class SystemUtility {
     private static final Log LOG = Log.getLog();
@@ -102,6 +125,107 @@ public class SystemUtility {
     public static String getRecoverMenuUrl() {
         return AMUAC_IP + "/v1.0/system/diet_list";
 
+    }
+
+    public static String setUserPhoto() { // 设置用户头像
+        return AMUAC_IP + "/file/upload";
+    }
+
+    public static void setHeadIcon(Uri uri) {
+//        String url = SystemUtility.setUserPhoto();
+//        try {
+//            // HttpPost httpPost = new HttpPost(url);
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            // 将bitmap一字节流输出 Bitmap.CompressFormat.PNG
+//            // 压缩格式，100：压缩率，baos：字节流
+//            final Bitmap photodata = MediaStore.Images.Media.getBitmap(MyApplication.getInstance().getContentResolver(), uri);
+//            photodata.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+//            byte[] buffer = baos.toByteArray();
+//            baos.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        JSONObject json = new JSONObject();
+//        try {
+//            json.put("userPhoto", userPhoto);
+//        } catch (JSONException e1) {
+//            e1.printStackTrace();
+//        }
+//        ByteArrayEntity entity = null;
+//        try {
+//            entity = new ByteArrayEntity(json.toString().getBytes("UTF-8"));
+//            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        client.post(MyApplication.getInstance(), url, entity, "application/json", new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                super.onSuccess(statusCode, headers, response);
+//
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                super.onFailure(statusCode, headers, throwable, errorResponse);
+//
+//            }
+//        });
+        OkHttpClient client = new OkHttpClient();
+// form 表单形式上传
+        File file = new File(uri.getPath());
+        Bitmap bitmap = SystemUtility.getBitmapFromUri(uri, MyApplication.getInstance());
+        compressBmpToFile(bitmap, file);
+        MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        if (file != null) {
+            // MediaType.parse() 里面是上传的文件类型。
+            RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
+            String filename = mApp.getCache().getUserPhone();
+            // 参数分别为， 请求key ，文件名称 ， RequestBody
+            requestBody.addFormDataPart("file", filename, body).addFormDataPart("path", "user_logo")
+                    .addFormDataPart("relation", "").addFormDataPart("token", AMToken);
+        }
+
+        Request request = new Request.Builder().url(SystemUtility.setUserPhoto()).post(requestBody.build()).build();
+// readTimeout("请求超时时间" , 时间单位);
+        client.newBuilder().readTimeout(5000, TimeUnit.MILLISECONDS).build().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                if (response.isSuccessful()) {
+                    String str = response.body().string();
+                    Log.e("lfq", response.message() + " , body " + str);
+
+                } else {
+                    Log.e("lfq", response.message() + " error : body " + response.body().string());
+                }
+            }
+        });
+    }
+
+    public static void compressBmpToFile(Bitmap bmp, File file) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int options = 50;//个人喜欢从80开始,
+        bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+        while (baos.toByteArray().length / 1024 > 100) {
+            baos.reset();
+            options -= 10;
+            bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(baos.toByteArray());
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //淇®鏀圭敤鎴蜂俊鎭
@@ -407,6 +531,11 @@ public class SystemUtility {
         MyApplication.getInstance().setAccount(userAccount);
         EventBusFactory.postEvent(new OnUserAcountEvent());
         return userAccount;
+    }
+
+    public static void startLoginUser(Context context) {
+        if (!SystemUtility.isForeground(context, "com.anxin.kitchen.activity.LoginActivity"))
+            context.startActivity(new Intent(context, LoginActivity.class));
     }
 
     /**

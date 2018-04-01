@@ -141,7 +141,7 @@ public class EditAddressActivity extends BaseActivity implements View.OnClickLis
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
         String codeToKen = StringUtils.parserMessage(responseMsg, "code");
         if (codeToKen != null && (codeToKen.equals("4") || codeToKen.equals("7"))) {
-            startActivity(new Intent(EditAddressActivity.this, LoginActivity.class));
+            SystemUtility.startLoginUser(EditAddressActivity.this);
             return;
         }
         switch (requestCode) {

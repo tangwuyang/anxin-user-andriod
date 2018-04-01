@@ -125,7 +125,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
             token = new Cache(activity).getAMToken();
         }
         if (token==null){
-            activity.startNewActivity(LoginActivity.class);
+            SystemUtility.startLoginUser(getActivity());
         }else {
             String url = SystemUtility.searchGroupUrl();
             Map<String,Object> dataMap = new HashMap<>();
@@ -140,7 +140,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
             token = new Cache(activity).getAMToken();
         }
         if (token==null){
-            activity.startNewActivity(LoginActivity.class);
+            SystemUtility.startLoginUser(getActivity());
         }else {
             String url = SystemUtility.getFriendsUrl();
             Map<String,Object> dataMap = new HashMap<>();

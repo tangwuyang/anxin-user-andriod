@@ -41,6 +41,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -83,8 +85,8 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private static final int STORAGE_PERMISSIONS_REQUEST_CODE = 0x04;
     private static final int OUTPUT_X = 480;
     private static final int OUTPUT_Y = 480;
-    private File fileUri = new File(Environment.getExternalStorageDirectory().getPath() + "/photo.jpg");
-    private File fileCropUri = new File(Environment.getExternalStorageDirectory().getPath() + "/crop_photo.jpg");
+    private File fileUri;
+    private File fileCropUri;
     private Uri imageUri;
     private Uri cropImageUri;
 
@@ -92,6 +94,8 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fileUri = new File(getActivity().getExternalCacheDir().getPath() + "anxin/photo.jpg");
+        fileCropUri = new File(getActivity().getExternalCacheDir().getPath() + "anxin/crop_photo.jpg");
         hideMainBottom();
     }
 
@@ -129,7 +133,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         userBirthday = (TextView) view.findViewById(R.id.user_birthday);
 
         //获取本地用户名称
-        String name = mApp.getCache().getNickName();
+        String name = mApp.getAccount().getUserTrueName();
         if (name != null && name.length() != 0) {
             userName.setText(name);
         }
@@ -257,6 +261,8 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
             switch (v.getId()) {
                 case R.id.btn_take_photo://打开相机
                     autoObtainCameraPermission();
+//                    imageUri = Uri.fromFile(fileUri);
+//                    takePicture(imageUri, CODE_CAMERA_REQUEST);
                     break;
                 case R.id.btn_pick_photo://打开系统相册
                     autoObtainStoragePermission();
@@ -301,7 +307,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                     imageUri = Uri.fromFile(fileUri);
                     //通过FileProvider创建一个content类型的Uri
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        imageUri = FileProvider.getUriForFile(getActivity(), "com.anxin.kitchen.fileprovider", fileUri);
+                        imageUri = FileProvider.getUriForFile(getActivity(), "com.anxin.kitchen.user.fileprovider", fileUri);
                     }
                     takePicture(imageUri, CODE_CAMERA_REQUEST);
                 } else {
@@ -326,6 +332,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         //将拍照结果保存至photo_file的Uri中，不保留在相册中
         intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intentCamera, requestCode);
+
     }
 
     /**
@@ -371,7 +378,6 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
             //相机返回
             case CODE_CAMERA_REQUEST:
                 cropImageUri = Uri.fromFile(fileCropUri);
-//                PhotoUtils.cropImageUri(this, imageUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CODE_RESULT_REQUEST);
 //                starCropPhoto(cropImageUri);
                 cropImageUri(imageUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CROP_PHOTO);
                 break;
@@ -382,7 +388,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                     cropImageUri = Uri.fromFile(fileCropUri);
                     Uri newUri = Uri.parse(SystemUtility.getPath(getActivity(), data.getData()));
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        newUri = FileProvider.getUriForFile(getActivity(), "com.anxin.kitchen.fileprovider", new File(newUri.getPath()));
+                        newUri = FileProvider.getUriForFile(getActivity(), "com.anxin.kitchen.user.fileprovider", new File(newUri.getPath()));
                     }
                     cropImageUri(newUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CROP_PHOTO);
 //                    starCropPhoto(newUri);
@@ -392,7 +398,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 break;
             case CROP_PHOTO:
                 if (data != null) {
-                    Bitmap bitmap = SystemUtility.getBitmapFromUri(cropImageUri, getActivity());
+//                    Bitmap bitmap = SystemUtility.getBitmapFromUri(cropImageUri, getActivity());
                     setPicToView(cropImageUri);
                 }
                 break;
@@ -421,7 +427,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                         imageUri = Uri.fromFile(fileUri);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             //通过FileProvider创建一个content类型的Uri
-                            imageUri = FileProvider.getUriForFile(getActivity(), "com.anxin.kitchen.fileprovider", fileUri);
+                            imageUri = FileProvider.getUriForFile(getActivity(), "com.anxin.kitchen.user.fileprovider", fileUri);
                         }
                         takePicture(imageUri, CODE_CAMERA_REQUEST);
                     } else {
@@ -447,17 +453,11 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     //设置头像
     private void setPicToView(Uri uri) {
         if (uri == null) {
-            LOG.e("------------setPicToView-----return---");
+//            LOG.e("------------setPicToView-----return---");
             return;
         }
         userIcon.setImageURI(uri);
-//        try {
-//            SystemUtility.setHeadIcon(uri);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        SystemUtility.setHeadIcon(uri);
 //        EventBusFactory.postEvent(new ViewUpdateHeadIconEvent());
     }
 
