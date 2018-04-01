@@ -83,8 +83,8 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private static final int CODE_CAMERA_REQUEST = 0xa1;
     private static final int CAMERA_PERMISSIONS_REQUEST_CODE = 0x03;
     private static final int STORAGE_PERMISSIONS_REQUEST_CODE = 0x04;
-    private static final int OUTPUT_X = 480;
-    private static final int OUTPUT_Y = 480;
+    private static final int OUTPUT_X = 80;
+    private static final int OUTPUT_Y = 80;
     private File fileUri;
     private File fileCropUri;
     private Uri imageUri;
@@ -371,7 +371,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         LOG.e("onActivityResult: requestCode: " + requestCode + "  resultCode:" + resultCode);
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != getActivity().RESULT_OK) {
-            LOG.e("onActivityResult: resultCode!=RESULT_OK");
+//            LOG.e("onActivityResult: resultCode!=RESULT_OK");
             return;
         }
         switch (requestCode) {
@@ -383,7 +383,6 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 break;
             //相册返回
             case CODE_GALLERY_REQUEST:
-
                 if (hasSdcard()) {
                     cropImageUri = Uri.fromFile(fileCropUri);
                     Uri newUri = Uri.parse(SystemUtility.getPath(getActivity(), data.getData()));
@@ -458,6 +457,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         }
         userIcon.setImageURI(uri);
         SystemUtility.setHeadIcon(uri);
+        mApp.getCache().setAccountImageURI(mApp.getCache().getUserPhone(), uri.getPath());
 //        EventBusFactory.postEvent(new ViewUpdateHeadIconEvent());
     }
 
@@ -499,7 +499,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         intent.putExtra("circleCrop", true);
         //1-false用uri返回图片
         //2-true直接用bitmap返回图片（此种只适用于小图片，返回图片过大会报错）
-        intent.putExtra("return-data", false);
+        intent.putExtra("return-data", true);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true);
         startActivityForResult(intent, requestCode);

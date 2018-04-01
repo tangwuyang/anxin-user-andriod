@@ -108,7 +108,7 @@ public class ClipHeaderActivity extends Activity implements OnTouchListener {
 
     private void initSrcPic() {
         Uri uri = getIntent().getData();
-        String path = CommonUtil.getRealFilePathFromUri(getApplicationContext(), uri);
+        String path = uri.getPath();
         if (TextUtils.isEmpty(path)) {
 //            LOG.e("--------initSrcPic--------isEmpty---");
             return;

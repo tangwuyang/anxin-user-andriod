@@ -132,46 +132,6 @@ public class SystemUtility {
     }
 
     public static void setHeadIcon(Uri uri) {
-//        String url = SystemUtility.setUserPhoto();
-//        try {
-//            // HttpPost httpPost = new HttpPost(url);
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            // 将bitmap一字节流输出 Bitmap.CompressFormat.PNG
-//            // 压缩格式，100：压缩率，baos：字节流
-//            final Bitmap photodata = MediaStore.Images.Media.getBitmap(MyApplication.getInstance().getContentResolver(), uri);
-//            photodata.compress(Bitmap.CompressFormat.JPEG, 20, baos);
-//            byte[] buffer = baos.toByteArray();
-//            baos.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        JSONObject json = new JSONObject();
-//        try {
-//            json.put("userPhoto", userPhoto);
-//        } catch (JSONException e1) {
-//            e1.printStackTrace();
-//        }
-//        ByteArrayEntity entity = null;
-//        try {
-//            entity = new ByteArrayEntity(json.toString().getBytes("UTF-8"));
-//            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        AsyncHttpClient client = new AsyncHttpClient();
-//        client.post(MyApplication.getInstance(), url, entity, "application/json", new JsonHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                super.onSuccess(statusCode, headers, response);
-//
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-//                super.onFailure(statusCode, headers, throwable, errorResponse);
-//
-//            }
-//        });
         OkHttpClient client = new OkHttpClient();
 // form 表单形式上传
         File file = new File(uri.getPath());
@@ -211,9 +171,9 @@ public class SystemUtility {
 
     public static void compressBmpToFile(Bitmap bmp, File file) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int options = 50;//个人喜欢从80开始,
+        int options = 60;
         bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
-        while (baos.toByteArray().length / 1024 > 100) {
+        while (baos.toByteArray().length / 1024 > 50) {
             baos.reset();
             options -= 10;
             bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
