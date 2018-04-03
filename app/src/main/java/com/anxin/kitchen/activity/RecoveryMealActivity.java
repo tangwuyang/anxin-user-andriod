@@ -1,17 +1,29 @@
 package com.anxin.kitchen.activity;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.opengl.Visibility;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,6 +39,7 @@ import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.view.MyListView;
 import com.anxin.kitchen.view.RefreshLayout;
 import com.google.gson.Gson;
 
@@ -42,7 +55,7 @@ import java.util.Map;
  *    康复食疗
  * */
 public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener,
-        RefreshLayout.OnLoadListener,RequestNetListener{
+        RefreshLayout.OnLoadListener,RequestNetListener,View.OnClickListener{
     private static final String GET_MENU_MEAL = "GET_MENU_MEAL"; //获取全部
     private static final String GET_MENU_ = "GET_MENU_";  //请求菜单
     private static final String GET_CA_MENU_MEAL = "GET_CA_MENU_MEAL";  //去获取具体某一个菜系的具体
@@ -67,6 +80,14 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
     private long dietId = -1; 	//食疗ID(-1标识全部)
     private boolean isChoseMeal;  //是否有选择食材
     private LinkedHashMap<String ,RecoverBean.Data> mChosedMeals = new LinkedHashMap<>();
+    private boolean isOpenShopCart = false;
+    private LinearLayout mShopCartLl;
+    private ImageView mHoverScreen;
+    private MyListView mShoppingCartLv;
+    private PopupWindow mPopupWindow;  //弹出购物车
+    private View mPopupView;  //购物车视图
+    private static View mBottom;
+    private static PopupWindow mPop;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +123,6 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
     }
 
     private void setCatalogAdapter(RecorverMenuBean bean) {
-
         if (null == mCatalogAdapter){
             mCatalogAdapter = new CatalogAdapter(bean.getData());
         }
@@ -110,6 +130,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
     }
 
 
+    @SuppressLint("WrongViewCast")
     private void initView() {
         mMealRefreshLy = findViewById(R.id.refresh_ll);
         mMealCatalogLv = findViewById(R.id.meal_catalog_lv);
@@ -127,6 +148,15 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         mBottomNum = findViewById(R.id.nums_tv);
         mMoneyTv = findViewById(R.id.money_tv);
         mCloseAccountTv = findViewById(R.id.close_account_tv);
+        mShopCartLl = findViewById(R.id.shopcart_ll);
+        mHoverScreen = findViewById(R.id.hover_screen);
+
+        //获取得到PopupWindow的布局文件
+        mPopupView = View.inflate(this, R.layout.shoping_cart_view, null);
+        mBottom = findViewById(R.id.bottom_rl);
+        mHoverScreen.setOnClickListener(this);
+        mShoppingCartImg.setOnClickListener(this);
+        mCloseAccountTv.setOnClickListener(this);
     }
 
 
@@ -213,6 +243,222 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                 mContentAdapter.notifyDataSetChanged();
             }
         }, 2000);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.shopping_cart_img:
+                if (isOpenShopCart){
+                    closeShoppingCart();
+                    hidenHoverScreen();
+                }else {
+                   // openShoppingCart();
+                    propetyAnim(mHoverScreen);
+                    mPopupWindow = showPopWindow(view, mPopupView, this, mHoverScreen);
+                }
+                break;
+            case R.id.hover_screen:
+                closeShoppingCart();
+                hidenHoverScreen();
+                break;
+            case R.id.close_account_tv:
+                startNewActivity(EnsureOrderActivity.class);
+                break;
+        }
+    }
+
+
+
+    /**
+     * 显示PopupWindow
+     * @param parent
+     * @param view
+     * @return
+     */
+    public  PopupWindow showPopWindow(View parent, View view, Context context, final ImageView iv_all) {
+        mPop = new PopupWindow(view,
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+       /* view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int popWidth = view.getMeasuredWidth();
+        int popHeight = view.getMeasuredHeight();
+        int loaction[] = new int[2];
+        parent.getLocationOnScreen(loaction);*/
+        mPop.setOutsideTouchable(true);
+        mPop.setFocusable(true);
+        //mPop.setBackgroundDrawable(new ColorDrawable(0));
+        mPop.setAnimationStyle(R.style.AnimBottom);
+        mPop.showAtLocation(parent, Gravity.CENTER,0,0);
+
+        mShoppingCartLv  = view.findViewById(R.id.shopping_cart_lv);
+        mShoppingCartLv.setAdapter(new ShoppingCartAdatpter());
+        //mPop.showAsDropDown(v,0,0);
+        view.setFocusable(true); // 这个很重要
+        view.setFocusableInTouchMode(true);
+
+        mPop.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                propetyAnim2(iv_all);
+                mPop = null;
+            }
+        });
+
+        // 重写onKeyListener
+        view.setOnKeyListener(new View.OnKeyListener() {
+
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    mPop.dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        // 点击其他地方消失
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // TODO Auto-generated method stub
+                if (mPop != null && mPop.isShowing()) {
+                    mPop.dismiss();
+                }
+                return false;
+            }
+        });
+
+        return mPop;
+    }
+
+
+    /**
+     * 半透明背景消失的动画
+     * @param iv
+     */
+    public static void propetyAnim2(final ImageView iv){
+        ObjectAnimator animator = ObjectAnimator.ofFloat(iv,"alpha",1,0.9f,0.7f,0.5f,0.2f,0);
+        animator.setDuration(500);
+        animator.setRepeatCount(0);
+        animator.start();
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                iv.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+    }
+
+    /**
+     半透明背景出现的动画
+     */
+    private void propetyAnim(ImageView iv) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(iv, "alpha", 0, 0.2f, 0.5f, 0.7f, 0.9f, 1);
+        animator.setDuration(500);
+        animator.setRepeatCount(0);
+        animator.start();
+        iv.setVisibility(View.VISIBLE);
+    }
+
+    private void hidenHoverScreen() {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(mHoverScreen, "alpha", 1, 0.9f, 0.7f, 0.7f, 0.5f, 0);
+        animator.setDuration(600);
+        animator.setRepeatCount(0);
+        animator.start();
+        mHoverScreen.setVisibility(View.GONE);
+    }
+
+
+    private void showHoverScreen() {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(mHoverScreen, "alpha", 0, 0.2f, 0.5f, 0.7f, 0.9f, 1);
+        animator.setDuration(600);
+        animator.setRepeatCount(0);
+        animator.start();
+        mHoverScreen.setVisibility(View.VISIBLE);
+    }
+
+    private void openShoppingCart() {
+        isOpenShopCart = true;
+        //设置购物车
+        setShopCartLv();
+        mShopCartLl.setVisibility(View.VISIBLE);
+        Animation openAnimation = AnimationUtils.loadAnimation(this, R.anim.shopcart_open);
+        openAnimation.setFillAfter(true);
+        mShopCartLl.startAnimation(openAnimation);
+    }
+
+    private void setShopCartLv() {
+        mShoppingCartLv.setAdapter(new ShoppingCartAdatpter());
+    }
+
+    private void closeShoppingCart() {
+        isOpenShopCart = false;
+        Animation closeAnimation = AnimationUtils.loadAnimation(this, R.anim.shopcart_close);
+        closeAnimation.setFillAfter(true);
+        mShopCartLl.startAnimation(closeAnimation);
+        closeAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mShopCartLl.setVisibility(View.GONE);
+                mShopCartLl.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
+
+    //购物车适配器
+    private class ShoppingCartAdatpter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            if (null == view){
+                view = LayoutInflater.from(RecoveryMealActivity.this).inflate(R.layout.shopping_cart_item,viewGroup,false);
+            }else {
+
+            }
+            return view;
+        }
     }
 
 
@@ -438,6 +684,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         if (num>0){
             mShoppingCartImg.setImageDrawable(getResources().getDrawable(R.drawable.shoppint_cart_1));
             mCloseAccountTv.setText("去结算");
+            mCloseAccountTv.setClickable(true);
             mCloseAccountTv.setBackgroundColor(getResources().getColor(R.color.red));
             mBottomNum.setVisibility(View.VISIBLE);
             mBottomNum.setText(num+"");
@@ -450,6 +697,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         }else {
             mShoppingCartImg.setImageDrawable(getResources().getDrawable(R.drawable.shopping_cart_0));
             mCloseAccountTv.setText("20元起送");
+            mCloseAccountTv.setClickable(false);
             mCloseAccountTv.setBackgroundColor(getResources().getColor(R.color.color_desc));
             mBottomNum.setVisibility(View.GONE);
             mBottomNum.setText("");

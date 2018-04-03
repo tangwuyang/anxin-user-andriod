@@ -48,6 +48,18 @@
             android:src="@drawable/search_drawable"/>
 
         <ImageView
+            android:id="@+id/transmit_img"
+            android:layout_alignParentRight="true"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginRight="@dimen/bar_left_right_padding"
+            android:paddingLeft="@dimen/bar_left_right_padding"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:background="@drawable/transmit_drawable"/>
+
+
+        <ImageView
             android:id="@+id/fantuan_menu_img"
             android:layout_alignParentRight="true"
             android:layout_width="24dp"

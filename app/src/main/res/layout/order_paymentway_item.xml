@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:paddingRight="@dimen/bar_left_right_padding"
+    android:paddingLeft="@dimen/bar_left_right_padding"
+    android:background="@color/white"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="5"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_marginRight="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/weixin_pay" />
+        <TextView
+            android:id="@+id/meal_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="微信支付"
+            android:textColor="@color/main_text_color"
+            android:textSize="@dimen/mid_text_size" />
+
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/unselected_drawable"
+        />
+</LinearLayout>

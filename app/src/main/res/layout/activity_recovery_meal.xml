@@ -60,19 +60,29 @@
                     android:layout_marginTop="1dp"></ListView>
         </com.anxin.kitchen.view.RefreshLayout>
     </LinearLayout>
-
-    <LinearLayout
+    <ImageView
+        android:id="@+id/hover_screen"
         android:visibility="gone"
-        android:layout_above="@+id/bottom_rl"
+        android:background="#44000000"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/shopcart_ll"
+        />
+    <LinearLayout
+        android:id="@+id/shopcart_ll"
+        android:visibility="visible"
+        android:layout_alignTop="@id/bottom_rl"
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_height="wrap_content">
         <LinearLayout
+            android:gravity="center"
             android:background="@color/main_bg_color"
             android:paddingBottom="10dp"
-            android:layout_marginTop="10dp"
+            android:paddingTop="10dp"
             android:paddingLeft="@dimen/bar_left_right_padding"
             android:paddingRight="@dimen/bar_left_right_padding"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
@@ -84,6 +94,7 @@
                 />
 
             <LinearLayout
+                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <ImageView
@@ -100,6 +111,7 @@
             </LinearLayout>
         </LinearLayout>
         <com.anxin.kitchen.view.MyListView
+            android:id="@+id/shopping_cart_lv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></com.anxin.kitchen.view.MyListView>
     </LinearLayout>
@@ -122,7 +134,7 @@
             android:src="@drawable/shopping_cart_0"
             />
         <TextView
-            android:visibility="visible"
+            android:visibility="gone"
             android:id="@+id/nums_tv"
             android:layout_width="13.3dp"
             android:layout_height="13.3dp"
