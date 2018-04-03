@@ -120,7 +120,7 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
         String codeToKen = StringUtils.parserMessage(responseMsg, "code");
         if (codeToKen != null && (codeToKen.equals("4") || codeToKen.equals("7"))) {
-            startActivity(new Intent(AddNewLocationActivity.this, LoginActivity.class));
+            SystemUtility.startLoginUser(AddNewLocationActivity.this);
             return;
         }
 //        Log.e("onEventMainThread", "----------responseMsg--------------" + responseMsg);

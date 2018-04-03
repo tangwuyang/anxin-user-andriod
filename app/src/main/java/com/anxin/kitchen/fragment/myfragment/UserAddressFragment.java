@@ -119,7 +119,7 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
         String codeToKen = StringUtils.parserMessage(responseMsg, "code");
         if (codeToKen != null && (codeToKen.equals("4") || codeToKen.equals("7"))) {
-            startActivity(new Intent(getActivity(), LoginActivity.class));
+            SystemUtility.startLoginUser(getActivity());
             return;
         }
         switch (requestCode) {

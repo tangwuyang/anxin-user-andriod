@@ -11,7 +11,7 @@ import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
 
 /**
- * 钱包明细界面
+ * 钱包提现界面
  */
 public class WalletExtractFragment extends HomeBaseFragment implements View.OnClickListener {
     private Log LOG = Log.getLog();
@@ -31,7 +31,7 @@ public class WalletExtractFragment extends HomeBaseFragment implements View.OnCl
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.wallet_detailed_fragment, null);
+        view = inflater.inflate(R.layout.wallet_extract_fragment, null);
         initView();//初始化界面控制
         return view;
     }

@@ -338,7 +338,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     groupMainFragment.setGroup(bean);
                 }
             } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
-                startNewActivity(LoginActivity.class);
+                SystemUtility.startLoginUser(MainActivity.this);
             }
             return;
         }
@@ -353,7 +353,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     groupMainFragment.setFriend(bean);
                 }
             } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
-                startNewActivity(LoginActivity.class);
+                SystemUtility.startLoginUser(MainActivity.this);
             }
             return;
         }
@@ -383,7 +383,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 prefrenceUtil.putGroups(gsonSt);
                 groupMainFragment.updataGroup(bean);
             } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
-                startNewActivity(LoginActivity.class);
+                SystemUtility.startLoginUser(MainActivity.this);
             }
             return;
         }

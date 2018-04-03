@@ -1,9 +1,13 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F0F0F0"
     android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -28,12 +32,141 @@
                 android:paddingRight="10dp"
                 android:src="@drawable/back_drawable" />
         </RelativeLayout>
-    <TextView
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:background="#f9ecb5"
+            android:gravity="center"
+            android:text="5个工作日内到账"
+            android:textColor="#ff2109"
+            android:textSize="10dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="@color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="支付宝账户"
+                android:textColor="#333333"
+                android:textSize="13sp" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:background="@null"
+                android:gravity="center_vertical|right"
+                android:hint="请输入您的支付宝账户"
+                android:paddingRight="10dp"
+                android:textColor="@color/black"
+                android:textColorHint="#cccccc"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/item_divider" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="@color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="姓名"
+                android:textColor="#333333"
+                android:textSize="13sp" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:background="@null"
+                android:gravity="center_vertical|right"
+                android:hint="请输入您的姓名"
+                android:paddingRight="10dp"
+                android:textColor="@color/black"
+                android:textColorHint="#cccccc"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_centerVertical="true"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:text="提现金额"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="￥"
+                android:textColor="#333333"
+                android:textSize="30sp" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical|left"
+                android:hint="提现金额"
+                android:inputType="number"
+                android:paddingLeft="10dp"
+                android:textColor="@color/black"
+                android:textColorHint="#cccccc"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingLeft="5dp"
+                android:paddingRight="10dp"
+                android:text="全部提现"
+                android:textColor="#45c26a"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/add_address_btn"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:background="#f9ecb5"
-        android:text="5个工作日内到账"
-        android:textSize="10dp"
-        android:textColor="#ff2109"
-        android:gravity="center"/>
-</LinearLayout>
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#3ed368"
+        android:text="确认提现"
+        android:alpha="0.5"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
+</RelativeLayout>

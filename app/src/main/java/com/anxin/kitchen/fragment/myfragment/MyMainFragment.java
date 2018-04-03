@@ -18,6 +18,7 @@ import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RoundedImageView;
 
 import java.io.File;
@@ -70,13 +71,13 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         userWalletBtn.setOnClickListener(this);
         settingBtn.setOnClickListener(this);
         userSetBtn.setOnClickListener(this);
-        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-                return false;
-            }
-        });
+//        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//                startActivity(new Intent(getActivity(), LoginActivity.class));
+//                return false;
+//            }
+//        });
 
         userIcon = (RoundedImageView) view.findViewById(R.id.user_icon);
         userName = (TextView) view.findViewById(R.id.user_name);
@@ -88,11 +89,12 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         if (mApp.getAccount() == null) {
             userName.setText("立即登录");
             userPhone.setText("登录后可享受更多特权");
+
             userIcon.setImageResource(R.drawable.icon);
             return;
         }
         //获取本地用户名称
-        String name = mApp.getCache().getNickName();
+        String name = mApp.getAccount().getUserTrueName();
         if (name != null && name.length() != 0) {
             userName.setText(name);
         }
@@ -133,7 +135,7 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                 break;
             case R.id.user_set://用户个性化设置
                 if (mApp.getAccount() == null) {
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    SystemUtility.startLoginUser(getActivity());
                 } else {
                     UserSettingsFragment userSettingsFragment = new UserSettingsFragment();
                     ft.replace(R.id.content_frame, userSettingsFragment);
@@ -144,7 +146,7 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                 break;
             case R.id.wallet_rlt://用户钱包
                 if (mApp.getAccount() == null) {
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    SystemUtility.startLoginUser(getActivity());
                 } else {
                     UserWalletSetFragment userWalletSetFragment = new UserWalletSetFragment();
                     ft.replace(R.id.content_frame, userWalletSetFragment);
@@ -155,7 +157,7 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                 break;
             case R.id.user_address_rlt://用户地址
                 if (mApp.getAccount() == null) {
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    SystemUtility.startLoginUser(getActivity());
                 } else {
                     UserAddressFragment userAddressFragment = new UserAddressFragment();
                     ft.replace(R.id.content_frame, userAddressFragment);
