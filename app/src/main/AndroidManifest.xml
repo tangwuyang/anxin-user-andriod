@@ -128,7 +128,7 @@
         <activity android:name="com.anxin.kitchen.activity.GroupMemberActivity" />
         <activity android:name="com.anxin.kitchen.activity.ContactsActivity" />
         <activity android:name="com.anxin.kitchen.activity.ClipHeaderActivity" />
-
+        <activity android:name="com.anxin.kitchen.activity.EnsureOrderActivity"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.anxin.kitchen.fileprovider"

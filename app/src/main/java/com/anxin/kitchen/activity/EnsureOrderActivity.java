@@ -38,6 +38,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         mTablemareLv.setAdapter(new TablewareAdapter());
         mPayWayLv.setAdapter(new PaymentAdapter());
         mTitleTv.setText("确认订单");
+        mTransmitImg.setVisibility(View.VISIBLE);
         mBackImg.setOnClickListener(this);
     }
 

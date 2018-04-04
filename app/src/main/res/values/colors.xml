@@ -35,4 +35,5 @@
     <color name="color_bg">#b0000000</color>
     <color name="color_gold">#ffda53</color>
     <color name="shallow_yellow">#f9ecb5</color>
+    <color name="pay_grey">#f8f8f8</color>
 </resources>
