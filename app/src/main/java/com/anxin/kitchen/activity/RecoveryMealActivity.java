@@ -307,6 +307,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                 mCatalogAdapter.menuList) {
                     date.setCounts(0);
                 }
+                mChosedMeals.clear();
                 mCatalogAdapter.notifyDataSetChanged();
                 mContentAdapter.notifyDataSetChanged();
                 setBottom();
@@ -790,6 +791,9 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                     int nums = Integer.valueOf(finalHolder.numTv.getText().toString());
                     if (nums>0){
                         nums = nums-1;
+                        if (nums == 0){
+                            mChosedMeals.remove(String.valueOf(meal.getPackageId()));
+                        }
                         finalHolder.numTv.setText(nums+"");
                         mCatalogAdapter.menuList.get(0).setCounts(mCatalogAdapter.menuList.get(0).getCounts()-1);
                         int type = meal.getDietId();
