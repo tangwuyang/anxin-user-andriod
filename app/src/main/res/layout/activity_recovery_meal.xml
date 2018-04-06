@@ -179,6 +179,7 @@
             android:background="@color/color_desc"
             android:text="20元起送"
             android:clickable="false"
+            android:enabled="false"
             android:gravity="center"
             android:textColor="@color/white"
             android:textSize="@dimen/title_text_size"

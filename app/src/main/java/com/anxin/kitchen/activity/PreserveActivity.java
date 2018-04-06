@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.view.ChoseGroupDialog;
 import com.anxin.kitchen.view.OrderingRuleDialog;
@@ -25,6 +26,7 @@ import com.anxin.kitchen.view.OrderingRuleDialog;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -40,12 +42,14 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private List<MealBean.Data> mealList;
     private PreserverAdapter preserverAdapter;
     String mealListSt;
+    List<Long> days ; //未来一周的长整型集合
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preserve);
         tellRule();
         initView();
+        getNextDayOfWeek();
         initData();
     }
 
@@ -69,22 +73,27 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         }
 
         List<List<MealBean.Data>> dataList = new ArrayList<>();
-        List<Long> days = new ArrayList<>();
         LinkedHashMap<Long,String> weakDays = new LinkedHashMap<>();
         LinkedHashMap<Long,Map<String,MealBean.Data>> preMealMaps = new LinkedHashMap<>();
+        //一周的时间跟周之间的对应
+        for (int i = 0; i<days.size();i++) {
+            Long day = days.get(i);
+            String weekDay = transToWeekDay(day);
+            if (!weakDays.containsKey(day)){
+                days.add(day);
+                weakDays.put(day,weekDay);
+            }
+
+            if (!preMealMaps.containsKey(day)){
+                preMealMaps.put(day,new HashMap<String, MealBean.Data>());
+            }
+        }
+
         long lastDay = 0;
         if (!((null==mealListSt)||mealListSt.equals(Constant.NULL))){
             for (MealBean.Data mel :
                     mealList) {
                 long thisDay = mel.getMenuDay();
-                String weekDay = transToWeekDay(thisDay);
-                if (!weakDays.containsKey(thisDay)){
-                    days.add(thisDay);
-                    weakDays.put(thisDay,weekDay);
-                }
-                if (!preMealMaps.containsKey(thisDay)){
-                    preMealMaps.put(thisDay,new HashMap<String, MealBean.Data>());
-                }
                 int type = mel.getEatType();
                 if (type == 1){
                     myLog("-----------------午餐");
@@ -107,11 +116,87 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
     }
 
+
+    //获取明天是星期几
+    private String getNextDayOfWeek(){
+        days = new ArrayList<>();
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month =  (now.get(Calendar.MONTH) + 1);
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        now.set(year, month, 0);
+        int dayOfMonth = now.get(Calendar.DAY_OF_MONTH);  //这个月的总天数
+        int sheYuday = dayOfMonth - day;
+        int diffDay = 7-sheYuday;
+
+        //这个月还差几天  去下个月中借齐
+        //只判断到了月 后期要添加年的逻辑  否则有问题
+        if (diffDay<=0){
+            for(int i = 1;i<=7;i++){
+                String dateSt = String.valueOf(year);
+                if (month<10){
+                    dateSt = dateSt+"0"+month;
+                }else {
+                    dateSt = dateSt+month;
+                }
+
+                if ((day+1)<10){
+                    dateSt = dateSt + "0"+ (day+i);
+                }else {
+                    dateSt = dateSt + (day+i);
+                }
+                days.add(Long.valueOf(dateSt));
+            }
+        }else {
+            //需要借的逻辑
+            //首先当前月还剩下几天
+            for (int i = 1; i <= sheYuday; i++) {
+                String dateSt = String.valueOf(year);
+                if (month < 10) {
+                    dateSt = dateSt + "0" + month;
+                } else {
+                    dateSt = dateSt + month;
+                }
+
+                if ((day + 1) < 10) {
+                    dateSt = dateSt + "0" + (day + 1);
+                } else {
+                    dateSt = dateSt +  (day + 1);
+                }
+                days.add(Long.valueOf(dateSt));
+            }
+            //补足7天
+            for(int i = 1; i<=7-sheYuday ; i++){
+                String dateSt = String.valueOf(year);
+                if ((month+1 )< 10) {
+                    dateSt = dateSt + "0" + (month+1);
+                } else {
+                    dateSt = dateSt + month;
+                }
+
+                if ((i) < 10) {
+                    dateSt = dateSt + "0" + (day);
+                } else {
+                    dateSt = dateSt + (day);
+                }
+                days.add(Long.valueOf(dateSt));
+            }
+
+        }
+        for (Long dayl :
+                days) {
+            myLog("-------------->"+year+"  " + month + "  " + day + "   " + dayOfMonth + "  " + dayl);
+        }
+        myLog("-------------->"+year+"  " + month + "  " + day + "   " + dayOfMonth);
+        return null;
+    }
+
     private void updateUI(List<Long> days, LinkedHashMap<Long, String> weakDays, LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps) {
         setAdapter(days,weakDays,preMealMaps);
     }
 
     private String transToWeekDay(long thisDay) {
+        myLog("--------->"+ thisDay);
         String dataSt = String.valueOf(thisDay);
         StringBuffer dateBf = new StringBuffer();
         dateBf.append(dataSt.substring(0,4));
@@ -129,19 +214,19 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         int day = d.getDay();
         myLog("---------------d" + day);
         switch (day){
-            case 0:
-                return "星期一";
             case 1:
-                return "星期二";
+                return "星期一";
             case 2:
-                return "星期三";
+                return "星期二";
             case 3:
-                return "星期四";
+                return "星期三";
             case 4:
-                return "星期五";
+                return "星期四";
             case 5:
-                return "星期六";
+                return "星期五";
             case 6:
+                return "星期六";
+            case 0:
                 return "星期天";
 
         }
