@@ -42,9 +42,16 @@ android {
     buildToolsVersion '26.0.2'
 }
 
-
 dependencies {
     compile 'com.android.support:multidex:1.0.1'
+    //PushSDK必须依赖基础组件库，所以需要加入对应依赖
+    compile 'com.umeng.sdk:common:1.5.0'
+//PushSDK必须依赖utdid库，所以需要加入对应依赖
+    compile 'com.umeng.sdk:utdid:1.1.5.3'
+//PushSDK
+    compile 'com.umeng.sdk:push:4.1.0'
+    //小米Push通道
+    compile 'com.umeng.sdk:push-xiaomi:1.0.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -56,20 +63,12 @@ dependencies {
     implementation files('libs/AMap2DMap_5.2.0_AMapSearch_5.7.0_AMapLocation_3.8.0_20180201.jar')
     implementation project(':fantuanlibrary')
     implementation files('libs/android-async-http-1.4.8.jar')
-    implementation files('libs/umeng-common-1.4.3.jar')
-    implementation files('libs/umeng-analytics-7.4.1.jar')
-    implementation files('libs/android-async-http-1.4.8.jar')
-    implementation files('libs/umeng_social_api.jar')
-    implementation files('libs/umeng_social_net.jar')
-    implementation files('libs/umeng_social_tool.jar')
     implementation files('libs/open_sdk_r5923_lite.jar')
     implementation files('libs/SocialSDK_QQ_Full.jar')
     implementation files('libs/SocialSDK_Sina_Full.jar')
     implementation files('libs/SocialSDK_WeiXin_Full.jar')
     implementation files('libs/wechat-sdk-android-with-mta-1.1.6.jar')
     implementation files('libs/weiboSDKCore.jar')
-    implementation files('libs/umeng_social_shareboard.jar')
-    implementation files('libs/umeng_shareboard_widget.jar')
     implementation files('libs/okhttp-3.2.0.jar')
     implementation 'com.google.code.gson:gson:2.2.4'
     compile 'com.youth.banner:banner:1.1.5'

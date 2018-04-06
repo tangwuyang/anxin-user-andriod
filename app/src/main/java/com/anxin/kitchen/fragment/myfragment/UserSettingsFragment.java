@@ -457,7 +457,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         }
         userIcon.setImageURI(uri);
         SystemUtility.setHeadIcon(uri);
-        mApp.getCache().setAccountImageURI(mApp.getCache().getUserPhone(), uri.getPath());
+//        mApp.getCache().setAccountImageURI(mApp.getCache().getUserPhone(), uri.getPath());
 //        EventBusFactory.postEvent(new ViewUpdateHeadIconEvent());
     }
 

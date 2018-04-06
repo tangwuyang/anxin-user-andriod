@@ -79,7 +79,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.anxin.kitchen.MyApplication.mApp;
-import static com.umeng.socialize.bean.RequestType.API;
 
 public class SystemUtility {
     private static final Log LOG = Log.getLog();
@@ -188,17 +187,17 @@ public class SystemUtility {
         }
     }
 
-    //淇®鏀圭敤鎴蜂俊鎭
+    //修改用户信息
     public static String sendUpdateUser() {
         return AMUAC_IP + "/v1.0/user/update";
     }
 
-    //淇®鏀瑰湴鍧€
+    //修改地址
     public static String sendUpdateAddress() {
         return AMUAC_IP + "/v1.0/user/update_address";
     }
 
-    //鍒犻櫎鍦板潃
+    //删除地址
     public static String sendDeleteAddress() {
         return AMUAC_IP + "/v1.0/user/del_address";
     }
