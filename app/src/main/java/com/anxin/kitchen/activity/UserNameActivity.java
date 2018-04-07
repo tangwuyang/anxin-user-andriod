@@ -3,37 +3,15 @@ package com.anxin.kitchen.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.anxin.kitchen.MyApplication;
-import com.anxin.kitchen.bean.Account;
-import com.anxin.kitchen.event.AsyncHttpRequestMessage;
-import com.anxin.kitchen.fragment.loginfragment.AddUserDataFragment;
 import com.anxin.kitchen.user.R;
-import com.anxin.kitchen.user.wxapi.WXEntryActivity;
-import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
-import com.anxin.kitchen.utils.StringUtils;
-import com.anxin.kitchen.utils.SystemUtility;
-import com.anxin.kitchen.utils.ToastUtil;
-import com.tencent.mm.opensdk.modelmsg.SendAuth;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**

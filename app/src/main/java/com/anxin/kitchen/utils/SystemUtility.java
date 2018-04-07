@@ -388,6 +388,7 @@ public class SystemUtility {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
+                        Log.e("", "------requestNetPost----------" + result);
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
                 }

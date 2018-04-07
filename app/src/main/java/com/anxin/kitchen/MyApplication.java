@@ -16,6 +16,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
+import org.android.agoo.huawei.HuaWeiRegister;
+import org.android.agoo.mezu.MeizuRegister;
 import org.android.agoo.xiaomi.MiPushRegistar;
 
 import java.util.ArrayList;
@@ -55,6 +57,10 @@ public class MyApplication extends MultiDexApplication {
         String carrier = android.os.Build.MANUFACTURER;
         if (carrier != null && carrier.equals("Xiaomi"))
             MiPushRegistar.register(getInstance(), "2882303761517755809", "5341775518809");
+        else if (carrier != null && carrier.equals("Huawei"))
+            HuaWeiRegister.register(getInstance());
+        else if (carrier != null && carrier.equals("Meizu"))
+            MeizuRegister.register(getInstance(), "", "");
     }
 
     private void initImageLoader(Context applicationContext) {

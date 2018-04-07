@@ -60,14 +60,14 @@ public class UmengHelper {
             public void onSuccess(String deviceToken) {
                 //注册成功会返回device token
                 dToken = deviceToken;
-//                Log.e(TAG, "onSuccess: deviceToken----" + deviceToken);
+                Log.e(TAG, "onSuccess: deviceToken----" + deviceToken);
                 MyApplication.getInstance().sendBroadcast(new Intent(UPDATE_STATUS_ACTION));
 //                setUserAlias("13");
             }
 
             @Override
             public void onFailure(String s, String s1) {
-//                Log.e(TAG, "onFailure: ---" + s + "     s1--" + s1);
+                Log.e(TAG, "onFailure: ---" + s + "     s1--" + s1);
                 MyApplication.getInstance().sendBroadcast(new Intent(UPDATE_STATUS_ACTION));
             }
         });
@@ -78,6 +78,21 @@ public class UmengHelper {
         setMessageHandler();
         setNotificationClickHandler();
 
+    }
+    /**
+     * 删除用户别名
+     */
+    public void deleteUserAlias(String userAlias) {
+        //设置用户id和device_token的一一映射关系，确保同一个alias只对应一台设备：
+        mPushAgent.deleteAlias(userAlias, ANXIN_Alias,
+                new UTrack.ICallBack() {
+
+                    @Override
+                    public void onMessage(boolean isSuccess, String message) {
+                        Log.e(TAG,"----------setUserAlias-------setAlias--------"+message);
+                    }
+
+                });
     }
 
     /**
@@ -100,7 +115,7 @@ public class UmengHelper {
 
                     @Override
                     public void onMessage(boolean isSuccess, String message) {
-//                        Log.e(TAG,"----------setUserAlias-------setAlias--------"+message);
+                        Log.e(TAG,"----------setUserAlias-------setAlias--------"+message);
                     }
 
                 });
@@ -222,10 +237,10 @@ public class UmengHelper {
     }
 
     private void getAppInfo() {
-        String pkgName = MyApplication.getInstance().getPackageName();
-        String info = String.format("DeviceToken:%s\n" + "SdkVersion:%s\nAppVersionCode:%s\nAppVersionName:%s",
-                PushAgent.getInstance(MyApplication.getInstance()).getRegistrationId(), MsgConstant.SDK_VERSION,
-                UmengMessageDeviceConfig.getAppVersionCode(MyApplication.getInstance()), UmengMessageDeviceConfig.getAppVersionName(MyApplication.getInstance()));
+//        String pkgName = MyApplication.getInstance().getPackageName();
+//        String info = String.format("DeviceToken:%s\n" + "SdkVersion:%s\nAppVersionCode:%s\nAppVersionName:%s",
+//                PushAgent.getInstance(MyApplication.getInstance()).getRegistrationId(), MsgConstant.SDK_VERSION,
+//                UmengMessageDeviceConfig.getAppVersionCode(MyApplication.getInstance()), UmengMessageDeviceConfig.getAppVersionName(MyApplication.getInstance()));
 //        Log.e(TAG, "应用包名:" + pkgName + "\n" + info);
     }
 }
