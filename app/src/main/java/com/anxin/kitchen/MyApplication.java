@@ -16,6 +16,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
+import org.android.agoo.xiaomi.MiPushRegistar;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +51,10 @@ public class MyApplication extends MultiDexApplication {
         addressIDMap = getCache().getAddressIDMap(this);
         addressBeanList = getCache().getAddressList(this);
         initImageLoader(getApplicationContext());
-//        UmengHelper.getInstance().init();
+        UmengHelper.getInstance().init();
+        String carrier = android.os.Build.MANUFACTURER;
+        if (carrier != null && carrier.equals("Xiaomi"))
+            MiPushRegistar.register(getInstance(), "2882303761517755809", "5341775518809");
     }
 
     private void initImageLoader(Context applicationContext) {

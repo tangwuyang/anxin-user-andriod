@@ -103,6 +103,11 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/auto_register_login";
     }
 
+    //上传手机信息
+    public static String sendPhoneReportDevice() {
+        return AMUAC_IP + "/v1.0/user/report_device";
+    }
+
     //注册用户
     public static String sendUserPhoneLogin(String phone, String code) {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
@@ -345,6 +350,7 @@ public class SystemUtility {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
+                        Log.e("", "------requestNetPost----------" + result);
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
                 }

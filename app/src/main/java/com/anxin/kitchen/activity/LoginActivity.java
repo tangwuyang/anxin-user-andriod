@@ -1,14 +1,20 @@
 package com.anxin.kitchen.activity;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +37,7 @@ import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
+import com.anxin.kitchen.utils.UmengHelper;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -261,6 +268,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 //            LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
             if (account != null) {
                 String trueName = account.getUserTrueName();
+                String userId = account.getUserID();
+                sendBindPhoneReport();
+                if (userId != null && userId.length() != 0)
+                    UmengHelper.getInstance().setUserAlias(userId);
                 if (null != trueName && !trueName.equals("暂无") && !trueName.equals("null")) {//登陆成功且用户信息不为空
                     ToastUtil.showToast("登陆成功");
                     finish();
@@ -276,6 +287,28 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 }
             }
         }
+    }
+
+    private void sendBindPhoneReport() {
+        String model = android.os.Build.MODEL;
+        String carrier = android.os.Build.MANUFACTURER;
+        String ANDROID_ID = Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID);
+//        LOG.e("-------手机唯一标识符------" + ANDROID_ID);
+//        LOG.e("-------手机型号------" + model);
+//        LOG.e("-------手机厂商------" + carrier);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("os", "android");
+            jsonObject.put("model", carrier + " " + model);
+            jsonObject.put("deviceId", ANDROID_ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String urlPath = SystemUtility.sendPhoneReportDevice();
+        Map<String, Object> dataMap = new HashMap();
+        dataMap.put("token", SystemUtility.AMToken);
+        dataMap.put("formData", jsonObject.toString());
+        SystemUtility.requestNetPost(urlPath, dataMap, "");
     }
 
     /**
@@ -324,7 +357,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      * @param code
      */
     private void sendUserPhoneLocking(final String userPhone, final String code) {
-        LOG.e("------------sendUserPhoneLocking------------");
+//        LOG.e("------------sendUserPhoneLocking------------");
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("phone", userPhone);
