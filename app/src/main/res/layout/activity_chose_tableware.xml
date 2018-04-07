@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="com.anxin.kitchen.activity.ChoseTablewareActivity">
+    <include layout="@layout/title_bar"
+        android:id="@+id/title_bar"/>
+    <ListView
+        android:paddingLeft="@dimen/bar_left_right_padding"
+        android:id="@+id/chose_tableware_lv"
+        android:divider="@color/hint_color"
+        android:dividerHeight="0.5dp"
+        android:layout_below="@id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_rl"
+        >
+    </ListView>
+    <LinearLayout
+        android:id="@+id/bottom_rl"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_height="@dimen/normal_item_height">
+        <TextView
+            android:id="@+id/unify_pay_tv"
+            android:layout_width="0dp"
+            android:text="统一支付"
+            android:gravity="center"
+            android:textSize="@dimen/title_text_size"
+            android:background="@color/invate_color"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/each_pay_tv"
+            android:background="@color/red"
+            android:layout_width="0dp"
+            android:text="AA支付"
+            android:gravity="center"
+            android:textSize="@dimen/title_text_size"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+    </LinearLayout>
+</RelativeLayout>

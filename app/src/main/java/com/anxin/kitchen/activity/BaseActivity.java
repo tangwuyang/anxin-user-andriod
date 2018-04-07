@@ -35,11 +35,12 @@ import okhttp3.Response;
 
 
 public class BaseActivity extends FragmentActivity implements RequestNetListener{
+
     private TextView titleTv;  //标题
     private boolean isDebug = true;  //是否是调试模式
     public static final String PREFERENCE_NAME = "ANXIN_ANDROID";
     public Gson mGson;
-    private ImageLoader imageLoader = ImageLoader.getInstance();
+    public ImageLoader imageLoader = ImageLoader.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

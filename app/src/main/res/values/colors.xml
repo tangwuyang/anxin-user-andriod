@@ -36,4 +36,6 @@
     <color name="color_gold">#ffda53</color>
     <color name="shallow_yellow">#f9ecb5</color>
     <color name="pay_grey">#f8f8f8</color>
+
+    <color name="hint_color">#cccccc</color>
 </resources>

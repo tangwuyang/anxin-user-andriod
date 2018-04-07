@@ -118,6 +118,11 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/address_list?token=" + AMToken;
     }
 
+    //获取送餐地址
+    public static String getTablewareListUrl() {
+        return AMUAC_IP + "/v1.0/system/tableware_list";
+    }
+
     /**
      * 搴峰¤嶉£熺枟鑿滅郴/v1.0/food/cuisine_list
      */
@@ -245,6 +250,10 @@ public class SystemUtility {
      */
     public static String getBannerListUrl() {
         return AMUAC_IP + "/v1.0/system/banner_list";
+    }
+
+    public static String getFoodURL() {
+        return AMUAC_IP + "/v1.0/food/package_list";
     }
 
 
@@ -909,5 +918,6 @@ public class SystemUtility {
     private static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
+
 
 }

@@ -31,7 +31,7 @@ public class MealBean {
         return data;
     }
 
-    public class FoodList {
+    public static class FoodList {
         private String dishName;
         private int foodId;
         private int cuisineId;
@@ -120,13 +120,22 @@ public class MealBean {
         private int packageId;
         private int dietId;
         private int cuisineId;
-        private int price;
+        private double price;
         private String dashPrice;
         private String packageName;
         private String img;
         private int eatType;
+        private int nums ; //选择的份数
         private List<FoodList> foodList;
 
+
+        public int getNums() {
+            return nums;
+        }
+
+        public void setNums(int nums) {
+            this.nums = nums;
+        }
 
         public boolean isSelectByMaster() {
             return isSelectByMaster;
@@ -177,11 +186,11 @@ public class MealBean {
             this.cuisineId = cuisineId;
         }
 
-        public int getPrice() {
+        public double getPrice() {
             return price;
         }
 
-        public void setPrice(int price) {
+        public void setPrice(double price) {
             this.price = price;
         }
 

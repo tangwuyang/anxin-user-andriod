@@ -2,6 +2,7 @@ package com.anxin.kitchen.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,13 +16,17 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.anxin.kitchen.bean.FoodsBean;
 import com.anxin.kitchen.bean.MealBean;
+import com.anxin.kitchen.bean.MealBean.FoodList;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.view.ChoseGroupDialog;
 import com.anxin.kitchen.view.OrderingRuleDialog;
+import com.google.gson.reflect.TypeToken;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,6 +40,7 @@ import java.util.Map;
 
 public class PreserveActivity extends BaseActivity implements View.OnClickListener{
     private static final int CHOSE_MEAL = 100;
+    private static final int SET_NUMS = 102;   //设置套餐数量
     private ListView mAddPreserveLv;
     private List mDayList = new ArrayList();
     private TextView viewKitchen;
@@ -43,6 +49,8 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private PreserverAdapter preserverAdapter;
     String mealListSt;
     List<Long> days ; //未来一周的长整型集合
+    ChoseGroupDialog dialog = null;
+    private TextView mCloseAcountTv;  //去结算
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -238,6 +246,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         findViewById(R.id.view_kitchen).setVisibility(View.VISIBLE);
         mAddPreserveLv = findViewById(R.id.add_preserve_lv);
         ImageView back_img = (ImageView) findViewById(R.id.back_img);
+        mCloseAcountTv = findViewById(R.id.close_account_tv);
         back_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -246,6 +255,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         });
         viewKitchen = findViewById(R.id.view_kitchen);
         viewKitchen.setOnClickListener(this);
+        mCloseAcountTv.setOnClickListener(this);
     }
 
     @Override
@@ -263,6 +273,8 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             case R.id.view_kitchen:
                 startNewActivity(ViewKitchenActivity.class);
                 break;
+            case R.id.close_account_tv:
+                startNewActivity(ChoseTablewareActivity.class);
             default:
                 break;
         }
@@ -271,14 +283,14 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private class PreserverAdapter extends BaseAdapter {
         private List<Long> days;
         private LinkedHashMap<Long, String> weakDays;
-        private LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps;
+        public LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps;
         public PreserverAdapter(List<Long> days, LinkedHashMap<Long, String> weakDays, LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps) {
             this.days = days;
             this.weakDays = weakDays;
             this.preMealMaps = preMealMaps;
         }
 
-        public void updateData(long day,String type,MealBean.Data meal){
+        public void updateData(long day, String type, MealBean.Data meal, FoodsBean.Data food){
             boolean isContain = preMealMaps.get(day).containsKey(type);
             if (isContain){
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -323,19 +335,31 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 MealBean.Data lunch = preMealMaps.get(day).get("午餐");
                 TextView mealTitle = lunchItem.findViewById(R.id.meal_title_tv);
                 TextView mealContext = lunchItem.findViewById(R.id.meal_content_tv);
+                ImageView foodImg = lunchItem.findViewById(R.id.food_img);
+                TextView priceTv = lunchItem.findViewById(R.id.price_tv);
+                priceTv.setText("￥"+lunch.getPrice());
                 mealTitle.setText(lunch.getPackageName());
                 if (lunch.isSelectByMaster()){
                     mealTitle.setTextColor(getResources().getColor(R.color.main_text_color));
                     mealContext.setTextColor(getResources().getColor(R.color.main_text_color));
                 }
-                List<MealBean.FoodList> foodLists = lunch.getFoodList();
+                List<FoodList> foodLists = lunch.getFoodList();
                 StringBuffer foodBf = new StringBuffer();
                 if (null!=foodLists&&foodLists.size() >0){
-                    for (MealBean.FoodList foodList:
+                    for (FoodList foodList:
                             foodLists) {
                         foodBf.append(foodList.getDishName()+"\r\n");
                     }
                     mealContext.setText(foodBf.toString());}
+
+                DisplayImageOptions options = new DisplayImageOptions.Builder()
+                        .showImageForEmptyUri(R.drawable.food1)
+                        .cacheInMemory(true)
+                        .cacheOnDisk(true)
+                        .bitmapConfig(Bitmap.Config.RGB_565)
+                        .build();
+                String imgSrc = lunch.getImg();
+                imageLoader.displayImage(imgSrc,foodImg,options);
                 ImageView deleteImg = lunchItem.findViewById(R.id.delete_img);
                 deleteImg.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -345,6 +369,33 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                         lunchItem.setTag(day+"-午餐");
                     }
                 });
+
+                //显示数量
+                myLog("-------------->"+lunch.getNums()+"份");
+                TextView numTv = lunchItem.findViewById(R.id.nums_tv);
+                if (lunch.getNums()>0){
+                    numTv.setText(lunch.getNums()+"份");
+                }
+
+                //午餐设置数量
+                LinearLayout setCountLl = lunchItem.findViewById(R.id.set_count_ll);
+                setCountLl.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                       dialog = new ChoseGroupDialog(PreserveActivity.this, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                lunchItem.setTag(day+"-午餐");
+                                Intent intent = new Intent(PreserveActivity.this, SetCountActivity.class);
+                                intent.putExtra("data",(String)lunchItem.getTag());
+                                startActivityForResult(intent,SET_NUMS);
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                    }
+                });
+
             }else {
                 lunchItem.setTag(day+"-午餐");
                 lunchItem.setVisibility(View.GONE);
@@ -366,21 +417,39 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                     MealBean.Data lunch = preMealMaps.get(day).get("晚餐");
                     TextView mealTitle = dinnerItem.findViewById(R.id.meal_title_tv);
                     TextView mealContext = dinnerItem.findViewById(R.id.meal_content_tv);
+                    ImageView foodImg = dinnerItem.findViewById(R.id.food_img);
                     if (lunch.isSelectByMaster()){
                         mealTitle.setTextColor(getResources().getColor(R.color.main_text_color));
                         mealContext.setTextColor(getResources().getColor(R.color.main_text_color));
                     }
+                    TextView priceTv = dinnerItem.findViewById(R.id.price_tv);
+                    priceTv.setText("￥"+lunch.getPrice());
+
+                    TextView numTv = dinnerItem.findViewById(R.id.nums_tv);
+                    if (lunch.getNums()>0){
+                        numTv.setText(lunch.getNums()+"份");
+                    }
 
                     mealTitle.setText(lunch.getPackageName());
-                    List<MealBean.FoodList> foodLists = lunch.getFoodList();
+                    List<FoodList> foodLists = lunch.getFoodList();
                     StringBuffer foodBf = new StringBuffer();
                     if (null!=foodLists&&foodLists.size() >0) {
-                        for (MealBean.FoodList foodList :
+                        for (FoodList foodList :
                                 foodLists) {
                             foodBf.append(foodList.getDishName() + "\r\n");
                         }
                         mealContext.setText(foodBf.toString());
                     }
+
+                    DisplayImageOptions options = new DisplayImageOptions.Builder()
+                            .showImageForEmptyUri(R.drawable.food1)
+                            .cacheInMemory(true)
+                            .cacheOnDisk(true)
+                            .bitmapConfig(Bitmap.Config.RGB_565)
+                            .build();
+                    String imgSrc = lunch.getImg();
+                    imageLoader.displayImage(imgSrc,foodImg,options);
+
                     ImageView deleteImg = dinnerItem.findViewById(R.id.delete_img);
                     deleteImg.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -391,6 +460,25 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                         }
                     });
                 }
+                //设置数量
+                LinearLayout setCountLl = dinnerItem.findViewById(R.id.set_count_ll);
+                setCountLl.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog = new ChoseGroupDialog(PreserveActivity.this, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dinnerItem.setTag(day+"-晚餐");
+                                Intent intent = new Intent(PreserveActivity.this, SetCountActivity.class);
+                                intent.putExtra("data",(String)dinnerItem.getTag());
+                                startActivityForResult(intent,SET_NUMS);
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                    }
+                });
+
             }else {
                 dinnerItem.setTag(day+"-晚餐");
                 dinnerItem.setVisibility(View.GONE);
@@ -404,15 +492,6 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                     }
                 });
             }
-
-            LinearLayout setCountLl = view.findViewById(R.id.set_count_ll);
-            setCountLl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ChoseGroupDialog dialog = new ChoseGroupDialog(PreserveActivity.this);
-                    dialog.show();
-                }
-            });
             return view;
         }
     }
@@ -422,17 +501,38 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CHOSE_MEAL && resultCode == PreserveListActivity.AFTER_CHOESE){
             MealBean.Data mel = new MealBean.Data();
-            mel.setSelectByMaster(true);
+            mel.setSelectByMaster(true);  //是否是后选择的 改变字体颜色
             long day = data.getLongExtra("day",20180101);
             String type = data.getStringExtra("type");
+            String foodSt = data.getStringExtra("food");
+            FoodsBean.Data food = mGson.fromJson(foodSt,FoodsBean.Data.class);
             mel.setMenuDay(day);
-            mel.setPackageName("重新选择的套餐");
+            mel.setPackageName(food.getPackageName());
+            String foodListSt = mGson.toJson(food.getFoodList());
+            List<MealBean.FoodList> foodList = mGson.fromJson(foodListSt, new TypeToken<List<FoodList>>() {}.getType());
+            mel.setFoodList(foodList);
+            mel.setPrice(food.getPrice());
+            mel.setImg(food.getImg());
             if (type.equals("午餐")){
                 mel.setEatType(1);
             }else if (type.equals("晚餐")){
                 mel.setEatType(2);
             }
-            preserverAdapter.updateData(day,type,mel);
+            preserverAdapter.updateData(day,type,mel,food);
+        }
+
+        if (requestCode == SET_NUMS && resultCode == SetCountActivity.SET_COUNT){
+            long day = data.getLongExtra("day",20180101);
+            String type = data.getStringExtra("type");
+            int nums = data.getIntExtra("nums",0);
+            myLog("------------>"+day+ "  " + type+ "  " + nums);
+            boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
+            myLog("-------------" + isContain);
+            if (isContain){
+                    preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(nums);
+                    myLog("--------------->fen:" +  preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
+            }
+            preserverAdapter.notifyDataSetChanged();
         }
     }
 }

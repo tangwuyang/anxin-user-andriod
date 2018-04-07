@@ -20,10 +20,14 @@ import com.anxin.kitchen.user.R;
 public class ChoseGroupDialog extends Dialog{
     private Context mContext;
     private OnGivedPermissionListener customDialogListener;
-    public ChoseGroupDialog(Context context) {
+    View.OnClickListener setCountListener;
+    public ChoseGroupDialog(Context context, View.OnClickListener setCountListener) {
         super(context);
         mContext = context;
+        this.setCountListener = setCountListener;
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +36,7 @@ public class ChoseGroupDialog extends Dialog{
         ImageView cancelImg = findViewById(R.id.cancel_img);
         TextView setcount = (TextView) findViewById(R.id.cancel_tv);
         TextView createNewGroup = (TextView) findViewById(R.id.open_right_tv);
-        setcount.setOnClickListener(clickListener2);
+        setcount.setOnClickListener(setCountListener);
         createNewGroup.setOnClickListener(clickListener3);
         cancelImg.setOnClickListener(clickListener);
     }

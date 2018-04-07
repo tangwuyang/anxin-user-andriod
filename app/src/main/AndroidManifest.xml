@@ -2,12 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.anxin.kitchen.user"
     android:versionCode="110"
-    android:versionName="1.1.0"
-    >
+    android:versionName="1.1.0">
 
     <uses-sdk android:minSdkVersion="21" />
 
     <supports-screens android:anyDensity="true" />
+
     <uses-permission android:name="android.permission.MOUNT_FORMAT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -44,6 +44,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <!-- 读短信权限 -->
     <uses-permission android:name="android.permission.READ_SMS" />
+
     <application
         android:name="com.anxin.kitchen.MyApplication"
         android:allowBackup="true"
@@ -55,6 +56,7 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="5832fd25989ff5dfbd86f77e98c015d0" />
+
         <activity
             android:name="com.anxin.kitchen.activity.MainActivity"
             android:exported="true">
@@ -118,7 +120,8 @@
         <activity android:name="com.anxin.kitchen.activity.GroupMemberActivity" />
         <activity android:name="com.anxin.kitchen.activity.ContactsActivity" />
         <activity android:name="com.anxin.kitchen.activity.ClipHeaderActivity" />
-        <activity android:name="com.anxin.kitchen.activity.EnsureOrderActivity"/>
+        <activity android:name="com.anxin.kitchen.activity.EnsureOrderActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.anxin.kitchen.fileprovider"
@@ -129,6 +132,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <activity android:name="com.anxin.kitchen.activity.ChoseTablewareActivity"></activity>
     </application>
 
 </manifest>
