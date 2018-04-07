@@ -49,7 +49,7 @@ public class MyApplication extends MultiDexApplication {
         addressIDMap = getCache().getAddressIDMap(this);
         addressBeanList = getCache().getAddressList(this);
         initImageLoader(getApplicationContext());
-        UmengHelper.getInstance().init();
+//        UmengHelper.getInstance().init();
     }
 
     private void initImageLoader(Context applicationContext) {
