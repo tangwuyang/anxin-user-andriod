@@ -36,7 +36,7 @@ import java.util.Map;
 public class UmengHelper {
 
     public static final String TAG = "UmengHelper";
-    public static final String ANXIN_Alias = "anxin";
+    public static final String ANXIN_Alias = "userId";
     public static final String UPDATE_STATUS_ACTION = "com.umeng.message.example.action.UPDATE_STATUS";
     public static UmengHelper mUmengHelper;
     public static String dToken = "";
@@ -54,45 +54,60 @@ public class UmengHelper {
         //注册推送服务，每次调用register方法都会回调该接口
         mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
         mPushAgent.setResourcePackageName("com.anxin.kitchen.user");
+        UMConfigure.init(MyApplication.getInstance(), "5a940df18f4a9d7d7b000197", "Channel ID", UMConfigure.DEVICE_TYPE_PHONE, "1dfe594cb7ca354ec036dbb62c297190");
         mPushAgent.register(new IUmengRegisterCallback() {
             @Override
             public void onSuccess(String deviceToken) {
                 //注册成功会返回device token
                 dToken = deviceToken;
-                Log.d(TAG, "onSuccess: deviceToken----" + deviceToken);
+                Log.e(TAG, "onSuccess: deviceToken----" + deviceToken);
                 MyApplication.getInstance().sendBroadcast(new Intent(UPDATE_STATUS_ACTION));
+//                setUserAlias("13");
             }
 
             @Override
             public void onFailure(String s, String s1) {
-                Log.d(TAG, "onFailure: ---" + s + "     s1--" + s1);
+                Log.e(TAG, "onFailure: ---" + s + "     s1--" + s1);
                 MyApplication.getInstance().sendBroadcast(new Intent(UPDATE_STATUS_ACTION));
             }
         });
-        UMConfigure.init(MyApplication.getInstance(), "5341775518809", "${UMENG_CHANNEL_VALUE}", UMConfigure.DEVICE_TYPE_PHONE, "prJz5OuvqVBZwn0L0BkAcA==");
         mPushAgent.onAppStart();
 
         getAppInfo();
 //        setUserTag();
-//        setUserAlias();
         setMessageHandler();
         setNotificationClickHandler();
 
+    }
+    /**
+     * 删除用户别名
+     */
+    public void deleteUserAlias(String userAlias) {
+        //设置用户id和device_token的一一映射关系，确保同一个alias只对应一台设备：
+        mPushAgent.deleteAlias(userAlias, ANXIN_Alias,
+                new UTrack.ICallBack() {
+
+                    @Override
+                    public void onMessage(boolean isSuccess, String message) {
+                        Log.e(TAG,"----------setUserAlias-------setAlias--------"+message);
+                    }
+
+                });
     }
 
     /**
      * 设置用户别名
      */
     public void setUserAlias(String userAlias) {
-        //设置用户id和device_token的一对多的映射关系：
-        mPushAgent.addAlias(userAlias, ANXIN_Alias, new UTrack.ICallBack() {
-
-            @Override
-            public void onMessage(boolean isSuccess, String message) {
-                Log.e(TAG,"----------setUserAlias-------addAlias--------"+message);
-            }
-
-        });
+//        //设置用户id和device_token的一对多的映射关系：
+//        mPushAgent.addAlias(userAlias, ANXIN_Alias, new UTrack.ICallBack() {
+//
+//            @Override
+//            public void onMessage(boolean isSuccess, String message) {
+//                Log.e(TAG,"----------setUserAlias-------addAlias--------"+message);
+//            }
+//
+//        });
         //设置用户id和device_token的一一映射关系，确保同一个alias只对应一台设备：
         mPushAgent.setAlias(userAlias, ANXIN_Alias,
 
@@ -192,13 +207,13 @@ public class UmengHelper {
             public void dealWithCustomAction(Context context, UMessage msg) {
                 Map<String, String> params = new HashMap<>();
                 params.put("msg_id", msg.msg_id);
-                Log.d(TAG, "dealWithCustomAction msg=" + msg.toString() + ", msg.custom=" + msg.custom);
+//                Log.e(TAG, "dealWithCustomAction msg=" + msg.toString() + ", msg.custom=" + msg.custom);
 
             }
 
             @Override
             public void launchApp(Context context, UMessage msg) {
-                Log.d(TAG, "launchApp msg=" + msg.toString() + ", msg.custom=" + msg.custom);
+//                Log.e(TAG, "launchApp msg=" + msg.toString() + ", msg.custom=" + msg.custom);
 
                 super.launchApp(context, msg);
             }
@@ -206,14 +221,14 @@ public class UmengHelper {
             @Override
             public void openUrl(Context context, UMessage msg) {
                 super.openUrl(context, msg);
-                Log.d(TAG, "openUrl msg=" + msg.toString() + ", msg.custom=" + msg.custom);
+//                Log.e(TAG, "openUrl msg=" + msg.toString() + ", msg.custom=" + msg.custom);
                 super.openUrl(context, msg);
             }
 
             @Override
             public void openActivity(Context context, UMessage msg) {
                 super.openActivity(context, msg);
-                Log.d(TAG, "openActivity msg=" + msg.toString() + ", msg.custom=" + msg.custom);
+//                Log.e(TAG, "openActivity msg=" + msg.toString() + ", msg.custom=" + msg.custom);
 
                 super.openActivity(context, msg);
             }
@@ -222,10 +237,10 @@ public class UmengHelper {
     }
 
     private void getAppInfo() {
-        String pkgName = MyApplication.getInstance().getPackageName();
-        String info = String.format("DeviceToken:%s\n" + "SdkVersion:%s\nAppVersionCode:%s\nAppVersionName:%s",
-                PushAgent.getInstance(MyApplication.getInstance()).getRegistrationId(), MsgConstant.SDK_VERSION,
-                UmengMessageDeviceConfig.getAppVersionCode(MyApplication.getInstance()), UmengMessageDeviceConfig.getAppVersionName(MyApplication.getInstance()));
-        Log.d(TAG, "应用包名:" + pkgName + "\n" + info);
+//        String pkgName = MyApplication.getInstance().getPackageName();
+//        String info = String.format("DeviceToken:%s\n" + "SdkVersion:%s\nAppVersionCode:%s\nAppVersionName:%s",
+//                PushAgent.getInstance(MyApplication.getInstance()).getRegistrationId(), MsgConstant.SDK_VERSION,
+//                UmengMessageDeviceConfig.getAppVersionCode(MyApplication.getInstance()), UmengMessageDeviceConfig.getAppVersionName(MyApplication.getInstance()));
+//        Log.e(TAG, "应用包名:" + pkgName + "\n" + info);
     }
 }

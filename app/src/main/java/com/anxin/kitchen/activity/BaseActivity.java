@@ -19,6 +19,7 @@ import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.umeng.message.PushAgent;
 
 import org.apache.http.Header;
 
@@ -45,6 +46,7 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PushAgent.getInstance(this).onAppStart();
         mGson = new Gson();
     }
 
