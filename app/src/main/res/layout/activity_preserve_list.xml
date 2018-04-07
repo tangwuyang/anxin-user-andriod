@@ -26,32 +26,14 @@
             android:scrollbars="none"
             >
         </ListView>
-        <LinearLayout
+        <com.anxin.kitchen.view.RefreshLayout
             android:background="@color/white"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-
             android:paddingLeft="10dp">
 
-            <TextView
-                android:id="@+id/catalog_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/title_bar"
-                android:text="全  部"
-                android:background="@color/white"
-                android:paddingTop="@dimen/bar_left_right_padding"
-                android:paddingBottom="@dimen/bar_left_right_padding"
-                android:textColor="@color/black"
-                android:textSize="@dimen/normal_text_size" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/main_bg_color"
-                />
             <ListView
                 android:background="@color/white"
                 android:id="@+id/content_lv"
@@ -59,7 +41,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_marginTop="1dp"></ListView>
-        </LinearLayout>
+        </com.anxin.kitchen.view.RefreshLayout>
     </LinearLayout>
 
 </RelativeLayout>

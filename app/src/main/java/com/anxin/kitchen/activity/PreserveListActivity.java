@@ -41,6 +41,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     private long day;
     private String type;
     private String recevieData;
+    private FoodMenuBean mMenubean;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +130,19 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     }
 
     private class CatalogAdapter extends BaseAdapter {
+        private List<Boolean> markList;
+
+        public CatalogAdapter() {
+            markList = new ArrayList<>();
+            for (int i = 0; i < mCatalogList.size(); i++) {
+                if (i == 0) {
+                    markList.add(true);
+                } else {
+                    markList.add(false);
+                }
+            }
+        }
+
         @Override
         public int getCount() {
             return mCatalogList.size();
@@ -145,11 +159,32 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         }
 
         @Override
-        public View getView(int position, View view, ViewGroup viewGroup) {
+        public View getView(final int position, View view, ViewGroup viewGroup) {
             view = LayoutInflater.from(PreserveListActivity.this).inflate(R.layout.recovery_catalog_item,viewGroup,false);
             TextView catalogTv = view.findViewById(R.id.catalog_tv);
             catalogTv.setText(mCatalogList.get(position));
             view.findViewById(R.id.nums_tv).setVisibility(View.GONE);
+            //设置背景
+            if (markList.get(position)){
+                view.setBackgroundColor(getResources().getColor(R.color.white));
+            }else {
+                view.setBackgroundColor(getResources().getColor(R.color.main_bg_color));
+            }
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int i = 0;i<markList.size();i++){
+                        if (i != position){
+                            markList.set(i,false);
+                        }else {
+                            markList.set(position,true);
+                        }
+                    }
+
+                    CatalogAdapter.this.notifyDataSetChanged();
+                }
+            });
             return view;
         }
     }
@@ -201,14 +236,16 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         super.requestFailure(responseFailure, requestCode);
     }
 
+
+
     @Override
     public void requestSuccess(String responseString, String requestCode) {
         super.requestSuccess(responseString, requestCode);
         String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
         if (requestCode==REQUEST_MENU && status.equals(Constant.REQUEST_SUCCESS)){
             myLog("---------->menu" + responseString);
-            FoodMenuBean bean = mGson.fromJson(responseString,FoodMenuBean.class);
-            List<FoodMenuBean.Data> data = bean.getData();
+            mMenubean = mGson.fromJson(responseString,FoodMenuBean.class);
+            List<FoodMenuBean.Data> data = mMenubean.getData();
             List<String> muneList = new ArrayList<>();
             for (FoodMenuBean.Data menu :
                     data) {
@@ -218,4 +255,6 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
             mCatalogAdapter.notifyDataSetChanged();
         }
     }
+
+
 }
