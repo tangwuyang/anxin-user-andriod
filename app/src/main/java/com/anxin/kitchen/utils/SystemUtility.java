@@ -34,6 +34,8 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
 import com.loopj.android.http.RequestParams;
 
+import org.apache.http.Header;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,8 +61,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.conn.ssl.SSLSocketFactory;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -280,6 +281,30 @@ public class SystemUtility {
      */
     public static String searchGroupUrl() {
         return AMUAC_IP + "/v1.0/group/list";
+    }
+    /**
+     * 查询订单列表url
+     */
+    public static String getOrderListUrl() {
+        return AMUAC_IP + "/v1.0/order/list";
+    }
+    /**
+     * 查询订单详情url
+     */
+    public static String getOrderDetailUrl() {
+        return AMUAC_IP + "/v1.0/order/info";
+    }
+    /**
+     * 查询最近订单url
+     */
+    public static String getRecenctOrdersUrl() {
+        return AMUAC_IP + "/v1.0/order/recent";
+    }
+    /**
+     * 查询订单数量url
+     */
+    public static String getOrdersNumUrl() {
+        return AMUAC_IP + "/v1.0/order/subscript";
     }
 
 
@@ -575,7 +600,7 @@ public class SystemUtility {
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
             trustStore.load(null, null);
             sf = new MySSLSocketFactory(trustStore);
-            sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            sf.setHostnameVerifier(cz.msebera.android.httpclient.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
         } catch (UnsupportedEncodingException e) {
         } catch (KeyStoreException e) {
@@ -602,7 +627,7 @@ public class SystemUtility {
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(urlPath, new AsyncHttpResponseHandler() {
             @Override
-            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+            public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
                 String result = "";
                 if (bytes != null) {
                     result = new String(bytes);
@@ -616,7 +641,7 @@ public class SystemUtility {
             }
 
             @Override
-            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+            public void onFailure(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes, Throwable throwable) {
                 {
                     String result = "";
                     if (bytes != null) {
@@ -625,6 +650,7 @@ public class SystemUtility {
 
                 }
             }
+
         });
     }
 
@@ -633,7 +659,7 @@ public class SystemUtility {
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(sendGetAddresshttp(), new AsyncHttpResponseHandler() {
             @Override
-            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+            public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
                 String result = "";
                 if (bytes != null) {
                     result = new String(bytes);
@@ -643,7 +669,7 @@ public class SystemUtility {
             }
 
             @Override
-            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+            public void onFailure(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes, Throwable throwable) {
                 {
                     String result = "";
                     if (bytes != null) {

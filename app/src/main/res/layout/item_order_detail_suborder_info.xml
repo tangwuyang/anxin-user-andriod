@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_order_detail_suborder_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/pay_grey"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="子订单信息"
+            android:textColor="@color/tv_gray"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/tv_order_detail_suborder_expand"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="∧ 收起"
+            android:textColor="@color/tv_green"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_order_detail_suborder_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.anxin.kitchen.view.MyGridView
+            android:id="@+id/gv_menber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="5"></com.anxin.kitchen.view.MyGridView>
+
+    </LinearLayout>
+
+</LinearLayout>

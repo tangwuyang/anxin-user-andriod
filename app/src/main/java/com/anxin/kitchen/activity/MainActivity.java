@@ -32,6 +32,7 @@ import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.PrefrenceUtil;
+import com.anxin.kitchen.utils.SharedPreferencesUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RequestLocationPermissionDialog;
@@ -52,6 +53,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public static final String DELETE_GROUP = "DELETE_GROUP";
     private static final String RE_GET_GROUP = "再次请求团";
     public static final String DELETE_FRIEND = "DELETE_FRIEND";
+    public static final String NET_GET_RECENCT_ORDERS ="getRecentOrders";
+    public static final String NET_GET_ORDERS_NUM ="getOrdersNum";
     private PrefrenceUtil prefrenceUtil;
     public static Context context;
     // 定义4个Fragment对象
@@ -372,6 +375,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 groupMainFragment.setDataChanged();
             }
         }
+
+        if(requestCode != null && requestCode.equals(NET_GET_RECENCT_ORDERS)){
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                orderMainFragment.setGroup(responseBody);
+                return;
+            }
+        }
+
+        if(requestCode != null && requestCode.equals(NET_GET_ORDERS_NUM)){
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                SharedPreferencesUtil.getInstance(this).putSP("getOrderNumTime",System.currentTimeMillis()+"");
+                orderMainFragment.setNum(responseBody);
+                return;
+            }
+        }
+
+
     }
 
     @Override

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -44,6 +43,14 @@ public class StringUtils {
             res.addAll(Arrays.asList(string.split(" ")));
         }
         return res;
+    }
+
+    public static boolean isEmpty(String str){
+        if(str==null ||str.isEmpty()){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 

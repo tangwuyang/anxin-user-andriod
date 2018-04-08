@@ -22,8 +22,10 @@ import com.umeng.message.PushAgent;
 import java.util.Map;
 import java.util.Set;
 
+import cz.msebera.android.httpclient.Header;
 
-public class BaseActivity extends FragmentActivity implements RequestNetListener{
+
+public class BaseActivity extends FragmentActivity implements RequestNetListener {
 
     private TextView titleTv;  //标题
     private boolean isDebug = true;  //是否是调试模式
@@ -101,14 +103,11 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
                 }
 
                 @Override
-                public void onFailure(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes, Throwable throwable) {
-                    {
-                        String result = "";
-                        if (bytes != null) {
-                            result = new String(bytes);
-                            myLog("--------->请求失败" +result);
-                        }
-
+                public void onFailure(int i,Header[] headers, byte[] bytes, Throwable throwable) {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                        myLog("--------->请求失败" +result);
                     }
                 }
 
