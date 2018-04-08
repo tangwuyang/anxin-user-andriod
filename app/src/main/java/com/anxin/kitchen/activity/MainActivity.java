@@ -7,16 +7,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
@@ -39,20 +35,11 @@ import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RequestLocationPermissionDialog;
-import com.anxin.kitchen.view.WaitingDialog;
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * 主界面
@@ -83,7 +70,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     // 定义FragmentManager对象管理器
     private FragmentManager fragmentManager;
     //欢迎页面
-    private RelativeLayout welcome_rlt;
     public static final String GET_KITCHEN_ID = "GET_KITCHEN_ID";
 
     public static final String GET_BANNER_LIST = "GET_BANNER_LIST";
@@ -107,12 +93,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             SystemUtility.sendGetAddressList();
         initView();//初始化界面控件
         setChioceItem(0);//初始化页面加载是显示点餐界面
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                welcome_rlt.setVisibility(View.GONE);
-            }
-        }, 2000);
     }
 
     private void requestLocationPermission() {
@@ -156,7 +136,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private Handler handler = new Handler();
 
     private void initView() {
-        welcome_rlt = (RelativeLayout) findViewById(R.id.welcome_bg);
         //初始化底部导航栏的控件
         myButtom_Lyt = (LinearLayout) findViewById(R.id.main_bottom_group);
         myButtomGroup = (RadioGroup) findViewById(R.id.bottom_radiogroup);

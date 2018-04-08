@@ -2,6 +2,7 @@ package com.anxin.kitchen.activity;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.Button;
@@ -36,7 +37,7 @@ import java.util.Map;
 /**
  * 登陆界面
  */
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends FragmentActivity implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private ImageView WXloginBtn;//微信登陆按钮
     private IWXAPI mApi;//微信登陆API
@@ -48,7 +49,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private int number = 60;
     private MyCountDownTimer mc;//验证码倒计时
     private Button loginBtn;//登陆按钮
-    private String loginData = null;//用户是否注册判断
+    private String loginData = "1";//用户是否注册判断
     private String userPhone;//用户号码
     private String phoneCode;//验证码
     private MyApplication mApp;//
@@ -132,6 +133,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 mc.start();//开启倒计时
                 break;
             case R.id.loginBtn:
+                userPhone = userPhoneEdit.getText().toString();
+                if (userPhone == null || userPhone.length() <= 0) {
+                    ToastUtil.showToast("请输入手机号码");
+                    return;
+                }
                 phoneCode = phoneCodeEdit.getText().toString();
                 if (phoneCode == null || phoneCode.length() <= 0) {
                     ToastUtil.showToast("请输入验证码");
@@ -189,7 +195,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     String data = StringUtils.parserMessage(responseMsg, "data");
                     if (code != null && code.equals("1")) {
                         if (data != null && !data.equals("null"))
+                            ToastUtil.showToast("发送成功");
                             loginData = data;
+                    }else if(code.equals("321")){
+                        ToastUtil.showToast("请求次数超限");
                     }
                 }
                 break;
@@ -291,6 +300,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      * @param type
      */
     private void sendPhoneCode(final String userPhone, final String type) {
+//        LOG.e("-----------sendPhoneCode-----------");
         String urlPath = SystemUtility.sendUserPhoneCode(userPhone, type);
         SystemUtility.requestNetGet(urlPath, sendUserPhoneCode_http);
     }
@@ -315,9 +325,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void sendPhoneLogin(final String userPhone, final String code, String loginData) {
         String urlPath = "";
         if (loginData.equals("1")) {
+            LOG.e("--------------sendUserPhoneLogin------------");
             urlPath = SystemUtility.sendUserPhoneLogin(userPhone, code);
             SystemUtility.requestNetGet(urlPath, sendUserPhoneLogin_http);
         } else if (loginData.equals("0")) {
+            LOG.e("--------------sendUserPhoneregister------------");
             urlPath = SystemUtility.sendUserPhoneregister(userPhone, code);
             SystemUtility.requestNetGet(urlPath, sendUserPhoneRegister_http);
         }

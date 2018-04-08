@@ -3,7 +3,6 @@ package com.anxin.kitchen;
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 
-
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.AddressListBean;
@@ -39,14 +38,22 @@ public class MyApplication extends MultiDexApplication {
     private Map<String, AddressListBean> addressIDMap = new HashMap<>();//根据ID获取地址信息
     private List<AddressBean> addressBeanList = new ArrayList<>();//送餐地址信息
 
+//    {
+//        PlatformConfig.setWeixin("wx634128d6db8c15cd", "75bf85878994d867fd4bcec28ccca5aa");
+//        PlatformConfig.setQQZone("100424468", "c7394704798a158208a74ab60104f0ba");  //还未获取到
+//
+//    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+//        UMConfigure.init(this, UMConfigure.DEVICE_TYPE_PHONE, "5a940df18f4a9d7d7b000197");
        /* UMConfigure.init(this,UMConfigure.DEVICE_TYPE_PHONE,"5a940df18f4a9d7d7b000197");
         UMConfigure.setLogEnabled(true);
         PlatformConfig.setWeixin("wx634128d6db8c15cd", "75bf85878994d867fd4bcec28ccca5aa");
         PlatformConfig.setQQZone("100424468", "c7394704798a158208a74ab60104f0ba");  //还未获取到
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);*/
+//        UMShareAPI.get(this);
         mApp = this;
         mAccount = getCache().getAcount(this);
         addressNameMap = getCache().getAddressNameMap(this);
@@ -55,12 +62,17 @@ public class MyApplication extends MultiDexApplication {
         initImageLoader(getApplicationContext());
         UmengHelper.getInstance().init();
         String carrier = android.os.Build.MANUFACTURER;
-        if (carrier != null && carrier.equals("Xiaomi"))
+        LOG.d("-----------carrier------" + carrier);
+        if (carrier != null && carrier.equals("Xiaomi")) {
+            LOG.d("-------------Xiaomi-------");
             MiPushRegistar.register(getInstance(), "2882303761517755809", "5341775518809");
-        else if (carrier != null && carrier.equals("Huawei"))
+        } else if (carrier != null && carrier.equals("HUAWEI")) {
+            LOG.d("-------------HUAWEI-------");
             HuaWeiRegister.register(getInstance());
-        else if (carrier != null && carrier.equals("Meizu"))
+        } else if (carrier != null && carrier.equals("Meizu")) {
+            LOG.d("-------------Meizu-------");
             MeizuRegister.register(getInstance(), "", "");
+        }
     }
 
     private void initImageLoader(Context applicationContext) {

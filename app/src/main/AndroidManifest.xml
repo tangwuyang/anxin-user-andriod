@@ -7,6 +7,7 @@
     <uses-sdk android:minSdkVersion="21" />
 
     <supports-screens android:anyDensity="true" />
+
     <uses-permission android:name="android.permission.MOUNT_FORMAT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -16,7 +17,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     //定位包、导航包需要的额外权限（注：基础权限也需要）
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -75,13 +75,15 @@
                 <!-- 兼容低版本Flyme3推送服务配置 -->
                 <action android:name="com.meizu.c2dm.intent.REGISTRATION" />
                 <action android:name="com.meizu.c2dm.intent.RECEIVE" />
+
                 <category android:name="${applicationId}"></category>
             </intent-filter>
         </receiver>
 
         <activity
             android:name="com.anxin.kitchen.activity.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.MyAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -142,7 +144,8 @@
         <activity android:name="com.anxin.kitchen.activity.GroupMemberActivity" />
         <activity android:name="com.anxin.kitchen.activity.ContactsActivity" />
         <activity android:name="com.anxin.kitchen.activity.ClipHeaderActivity" />
-        <activity android:name="com.anxin.kitchen.activity.EnsureOrderActivity"/>
+        <activity android:name="com.anxin.kitchen.activity.EnsureOrderActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.anxin.kitchen.fileprovider"
@@ -152,11 +155,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <activity
             android:name="com.anxin.kitchen.activity.MipushActivity"
             android:exported="true"
             android:launchMode="singleTask" />
-
         <activity android:name="com.anxin.kitchen.activity.ChoseTablewareActivity"></activity>
     </application>
 
