@@ -11,7 +11,10 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.PrefrenceUtil;
+import com.anxin.kitchen.utils.SystemUtility;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -42,6 +45,10 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     public static final String PREFERENCE_NAME = "ANXIN_ANDROID";
     public Gson mGson;
     public ImageLoader imageLoader = ImageLoader.getInstance();
+    private String mToken;
+    private Cache mCache;
+    private int kitchenId;
+    private boolean login;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +62,22 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
         titleTv =  findViewById(R.id.title_tv);
         titleTv.setText(title);
 
+    }
+
+    public boolean isLogin() {
+        if (null == mToken){
+            mCache = new Cache(BaseActivity.this);
+            mToken =mCache.getAMToken();
+            kitchenId = new PrefrenceUtil(BaseActivity.this).getKitchenId();
+        }
+        if (mToken==null){
+            login = false;
+            SystemUtility.startLoginUser(BaseActivity.this);
+            return login;
+        }else {
+            login = true;
+        }
+        return login;
     }
 
     //调试打印

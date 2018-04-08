@@ -42,6 +42,7 @@ import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.MyListView;
 import com.anxin.kitchen.view.RefreshLayout;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,6 +89,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
     private View mPopupView;  //购物车视图
     private static View mBottom;
     private static PopupWindow mPop;
+    public List<RecorverMenuBean.Data> carhMenuList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,22 +99,49 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         mCache = new Cache(this);
         mGson = new Gson();
         prefrenceUtil = new PrefrenceUtil(RecoveryMealActivity.this);
-        Map<String, Object> dataMap = new HashMap<>();
-        mToken = mCache.getAMToken();
-        kichtchenId = prefrenceUtil.getKitchenId();
-        dataMap.put(Constant.KITCHEN_ID, kichtchenId);
-        dataMap.put("page",page);
-        dataMap.put("token",mToken);
-        dataMap.put("dietId",-1);
-        Map<String,Object> menuData = new HashMap<>();
-        menuData.put("token",mToken);
-        requestNet(SystemUtility.getRecoverMenuUrl(),menuData,GET_MENU_);
-        requestNet(SystemUtility.getRecoverList(), dataMap, GET_MENU_MEAL);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (isLogin()){
+            Map<String, Object> dataMap = new HashMap<>();
+            mToken = mCache.getAMToken();
+            kichtchenId = prefrenceUtil.getKitchenId();
+            dataMap.put(Constant.KITCHEN_ID, kichtchenId);
+            dataMap.put("page",page);
+            dataMap.put("token",mToken);
+            dataMap.put("dietId",-1);
+            Map<String,Object> menuData = new HashMap<>();
+            menuData.put("token",mToken);
+            String recoverSt = new PrefrenceUtil(this).getRecoverList();
+            String cachMenuSt = new PrefrenceUtil(this).getRecoverMenu();
+            myLog("------------>re" + recoverSt);
+            if (null!=recoverSt&&(!recoverSt.equals("null"))&&recoverSt.length()>10) {
+                mChosedMeals = mGson.fromJson(recoverSt, new TypeToken<LinkedHashMap<String ,RecoverBean.Data>>() {}.getType());
+            }
+
+            if (null!=cachMenuSt && (!cachMenuSt.equals("null"))&& cachMenuSt.length()>10){
+                carhMenuList=mGson.fromJson(cachMenuSt,new TypeToken<List<RecorverMenuBean.Data>>(){}.getType());
+            }
+            requestNet(SystemUtility.getRecoverMenuUrl(),menuData,GET_MENU_);
+            requestNet(SystemUtility.getRecoverList(), dataMap, GET_MENU_MEAL);
+
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mChosedMeals.size()>0){
+            String choseMealsSt = mGson.toJson(mChosedMeals);
+            new PrefrenceUtil(this).setRecoverList(choseMealsSt);
+            myLog("------------------>" + choseMealsSt);
+            carhMenuList = mCatalogAdapter.menuList;
+            String cachMenuList = mGson.toJson(carhMenuList);
+            new PrefrenceUtil(this).setRecoverMenuList(cachMenuList);
+        }
     }
 
     private void setContentAdapter() {
@@ -188,6 +217,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                 RecoverBean bean = mGson.fromJson(responseBody,RecoverBean.class);
                 mealList = bean.getData();
                 setContentAdapter();
+
             }
             return;
         }
@@ -197,6 +227,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)){
                 RecorverMenuBean bean = mGson.fromJson(responseBody,RecorverMenuBean.class);
                 setCatalogAdapter(bean);
+                setBottom();
             }
             return;
         }
@@ -266,7 +297,10 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                 hidenHoverScreen();
                 break;
             case R.id.close_account_tv:
-                startNewActivity(EnsureOrderActivity.class);
+                Intent intent = new Intent(this,EnsureOrderActivity.class);
+                String chosedMeal = mGson.toJson(mChosedMeals);
+                intent.putExtra("chosedMeal",chosedMeal);
+                startActivity(intent);
                 break;
         }
     }
@@ -300,9 +334,6 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         clearLl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChosedMeals.clear();
-
-                mCatalogList.clear();
                 for (RecorverMenuBean.Data date:
                 mCatalogAdapter.menuList) {
                     date.setCounts(0);
@@ -501,6 +532,8 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
             }
             holder.titleTv.setText(meal.getPackageName());
             String contents = "";
+
+            //设置食疗内容
             for (int i1 = 0; i1<meal.getFoodList().size();i1++) {
                // myLog("------------>"+meal.getFoodList().get(i1).getDishName());
                 if (i1<meal.getFoodList().size()-1){
@@ -510,7 +543,9 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                 }
             }
             holder.contentTv.setText(contents);
-            holder.priceTv.setText((meal.getPrice()*meal.getNums())+".00");
+            //设置价格
+            holder.priceTv.setText("￥"+(meal.getPrice()*meal.getNums())+".00");
+            //设置数量
             holder.numsTv.setText(meal.getNums()+"");
 
             final ViewHolder finalHolder = holder;
@@ -521,6 +556,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                     nums = nums+1;
                     finalHolder.numsTv.setText(nums+"");
                     int type = meal.getDietId();
+                    //先将总数加1
                     mCatalogAdapter.menuList.get(0).setCounts(mCatalogAdapter.menuList.get(0).getCounts()+1);
                     for (int i = 0;i<mCatalogAdapter.menuList.size();i++){
                         if (type == mCatalogAdapter.menuList.get(i).getId()){
@@ -538,11 +574,12 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                         transMeal.setNums(1);
                         mChosedMeals.put(String.valueOf(meal.getPackageId()),transMeal);
                     }
-                    finalHolder.priceTv.setText(meal.getNums()*meal.getPrice()+".00");
+                    finalHolder.priceTv.setText("￥"+meal.getNums()*meal.getPrice()+".00");
                     if (mChosedMeals.containsKey(String.valueOf(meal.getPackageId()))) {
                         if (null != mChosedMeals.get(String.valueOf(meal.getPackageId())) && 0 != mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()) {
                             mChosedMeals.get(String.valueOf(meal.getPackageId())).setNums(meal.getNums());
-                            mContentAdapter.notifyDataSetChanged();
+                            myLog("----------num---->" + meal.getNums() + "   " + String.valueOf(meal.getPackageId()) + "  " + mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums());
+                          /*  mContentAdapter.notifyDataSetChanged();*/
                         }
                     }
                     mContentAdapter.notifyDataSetChanged();
@@ -557,18 +594,16 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                 public void onClick(View view) {
                     int nums = Integer.valueOf(finalHolder.numsTv.getText().toString());
                     if (nums>1){
-                        deleteMeal(nums, finalHolder, meal);
+                        deleteMeal1(nums, finalHolder, meal);
                         meal.setNums(nums-1);
                         finalHolder1.numsTv.setText(meal.getNums()+"");
-                        finalHolder.priceTv.setText(meal.getNums()*meal.getPrice()+".00");
+                        finalHolder.priceTv.setText("￥"+meal.getNums()*meal.getPrice()+".00");
                     }else if (nums>0){
                         //如果只有一件货 则删除该商品
                         deleteMeal(nums, finalHolder, meal);
                         meal.setNums(nums-1);
                         mChosedList.remove(i);
-
                         mChosedMeals.remove(String.valueOf(meal.getPackageId()));
-                        mContentLv.setAdapter(new ContentAdapter());
                         if (mChosedList.size()==0){
                             mPop.dismiss();
                         }else {
@@ -576,7 +611,8 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                         }
                     }
 
-
+                   mContentAdapter.notifyDataSetChanged();
+                    mCatalogAdapter.notifyDataSetChanged();
                    /* if (mChosedMeals.containsKey(String.valueOf(meal.getPackageId()))) {
                         if (null != mChosedMeals.get(String.valueOf(meal.getPackageId())) && 0 != mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()) {
                             mChosedMeals.get(String.valueOf(meal.getPackageId())).setNums(meal.getNums());
@@ -588,7 +624,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
             return view;
         }
 
-        private void deleteMeal(int nums, ViewHolder finalHolder, RecoverBean.Data meal) {
+        private void deleteMeal1(int nums, ViewHolder finalHolder, RecoverBean.Data meal) {
             nums = nums-1;
             finalHolder.numsTv.setText(nums+"");
             mCatalogAdapter.menuList.get(0).setCounts(mCatalogAdapter.menuList.get(0).getCounts()-1);
@@ -596,6 +632,27 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
             myLog("---------type"+type);
             for (int i = 0;i<mCatalogAdapter.menuList.size();i++){
                 myLog("-----------菜系" + mCatalogAdapter.menuList.get(i).getId());
+                if (type == mCatalogAdapter.menuList.get(i).getId()){
+                    mCatalogAdapter.menuList.get(i).setCounts(mCatalogAdapter.menuList.get(i).getCounts()-1);
+                    break;
+                }
+            }
+
+            String name = String.valueOf(meal.getPackageId());
+            if (mChosedMeals.containsKey(name)){
+                mChosedMeals.get(name).setNums(mChosedMeals.get(name).getNums()-1);
+            }
+            setBottom();
+        }
+
+        private void deleteMeal(int nums, ViewHolder finalHolder, RecoverBean.Data meal) {
+            nums = nums-1;
+            finalHolder.numsTv.setText(nums+"");
+            mCatalogAdapter.menuList.get(0).setCounts(mCatalogAdapter.menuList.get(0).getCounts()-1);
+            int type = meal.getDietId();
+            myLog("---------type"+type);
+            for (int i = 0;i<mCatalogAdapter.menuList.size();i++){
+                myLog("-----------菜  系" + mCatalogAdapter.menuList.get(i).getId());
                 if (type == mCatalogAdapter.menuList.get(i).getId()){
                     mCatalogAdapter.menuList.get(i).setCounts(mCatalogAdapter.menuList.get(i).getCounts()-1);
                     break;
@@ -648,6 +705,19 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                 } else {
                     markList.add(false);
                 }
+            }
+
+            //恢复菜单缓存
+            if (carhMenuList != null){
+                for (int i = 0; i<menuList.size();i++){
+                    for (int j = 0; j<carhMenuList.size();j++){
+                        if(menuList.get(i).getDietName().equals(carhMenuList.get(j).getDietName())){
+                            menuList.get(i).setCounts(carhMenuList.get(j).getCounts());
+                            break;
+                        }
+                    }
+                }
+
             }
         }
 
@@ -738,6 +808,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
             final RecoverBean.Data meal = mealList.get(position);
+            myLog("-----重新刷新了-------------");
             ViewHolder holder = null;
             if (null == view){
                 view = LayoutInflater.from(RecoveryMealActivity.this).inflate(R.layout.expression_meal_item,viewGroup,false);
@@ -762,6 +833,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
 
             if (mChosedMeals.containsKey(String.valueOf(meal.getPackageId()))) {
                 if (null != mChosedMeals.get(String.valueOf(meal.getPackageId())) && 0 != mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()) {
+                    myLog("name--------------包含");
                     holder.numTv.setText(mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()+"");
                 }
             }else {
@@ -808,6 +880,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
 
                         String name = String.valueOf(meal.getPackageId());
                         if (mChosedMeals.containsKey(name)){
+                            myLog("------------减少了-----" + mChosedMeals.get(name).getNums());
                             mChosedMeals.get(name).setNums(mChosedMeals.get(name).getNums()-1);
                         }
                         mCatalogAdapter.notifyDataSetChanged();

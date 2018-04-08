@@ -5,8 +5,8 @@
     android:background="@color/white"
     android:orientation="horizontal"
     android:gravity="center"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -17,12 +17,13 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/select_img"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginRight="5dp"
-            android:src="@drawable/selected_drawable" />
+            android:src="@drawable/unselected_drawable" />
         <TextView
-            android:id="@+id/meal_title_tv"
+            android:id="@+id/tableware_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="铁牌保温餐具"
@@ -30,7 +31,7 @@
             android:textSize="@dimen/mid_text_size" />
 
         <TextView
-            android:id="@+id/meal_content_tv"
+            android:id="@+id/tableware_content_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="（押金23.00元/份）"

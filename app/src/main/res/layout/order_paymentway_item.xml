@@ -5,8 +5,8 @@
     android:background="@color/white"
     android:orientation="horizontal"
     android:gravity="center"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -18,12 +18,13 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/pay_img"
             android:layout_marginRight="5dp"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/weixin_pay" />
         <TextView
-            android:id="@+id/meal_title_tv"
+            android:id="@+id/pay_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="微信支付"
@@ -35,6 +36,7 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/pay_select_img"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:src="@drawable/unselected_drawable"

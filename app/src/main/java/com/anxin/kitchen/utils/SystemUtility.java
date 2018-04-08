@@ -113,6 +113,13 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
     }
 
+    //get_kitchen_setting 获取厨房配置消息
+    //获取送餐地址
+    public static String get_kitchen_settingUrl() {
+        return AMUAC_IP + "/v1.0/system/tableware_list";
+    }
+
+
     //添加地址
     public static String sendAddAddress() {
         return AMUAC_IP + "/v1.0/user/add_address";

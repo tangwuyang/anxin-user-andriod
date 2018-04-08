@@ -21,4 +21,6 @@ public class Constant {
     public static final String REQUEST_STATUS="message";
     public static final int ADD_FRIEND_CODE = 300;
     public static final String NULL = "null";
+    public static final String RECAVOR = "recover";
+    public static final String RECAVOR_MENU = "RECAVOR_MENU";
 }

@@ -56,4 +56,30 @@ public class PrefrenceUtil {
         String groupSt = preferences.getString(Constant.GROUPSSTRING,"null");
         return groupSt;
     }
+
+
+    //康复食疗缓存
+    public void setRecoverList(String recoverBeanListSt){
+        SharedPreferences.Editor editor = getPreference().edit();
+        editor.putString(Constant.RECAVOR,recoverBeanListSt);
+        editor.commit();
+    }
+
+    public String getRecoverList(){
+        SharedPreferences preferences =  getPreference();
+        String groupSt = preferences.getString(Constant.RECAVOR,"null");
+        return groupSt;
+    }
+
+    public void setRecoverMenuList(String recoverBeanListSt){
+        SharedPreferences.Editor editor = getPreference().edit();
+        editor.putString(Constant.RECAVOR_MENU,recoverBeanListSt);
+        editor.commit();
+    }
+
+    public String getRecoverMenu(){
+        SharedPreferences preferences =  getPreference();
+        String groupSt = preferences.getString(Constant.RECAVOR_MENU,"null");
+        return groupSt;
+    }
 }
