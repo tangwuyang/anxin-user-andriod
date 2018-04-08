@@ -36,7 +36,6 @@
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-
     <!-- 写联系人权限 -->
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <!-- 拨号权限 -->
@@ -145,11 +144,11 @@
         <activity android:name="com.anxin.kitchen.activity.EnsureOrderActivity"/>
         <activity android:name="com.anxin.kitchen.activity.order.OrderActivity"/>
         <activity android:name="com.anxin.kitchen.activity.order.OrderDetailActivity"/>
-
+        <activity android:name="com.anxin.kitchen.activity.ClipPictureActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.anxin.kitchen.fileprovider"
+            android:authorities="com.anxin.kitchen.user.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

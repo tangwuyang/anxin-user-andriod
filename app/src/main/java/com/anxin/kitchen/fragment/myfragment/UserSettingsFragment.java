@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.ClipHeaderActivity;
+import com.anxin.kitchen.activity.ClipPictureActivity;
 import com.anxin.kitchen.activity.UserNameActivity;
 import com.anxin.kitchen.custom.view.CustomDatePicker;
 import com.anxin.kitchen.custom.view.SelectGenderPopupWindow;
@@ -31,6 +33,7 @@ import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.DateUtils;
+import com.anxin.kitchen.utils.GetImagePath;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.SystemUtility;
@@ -87,15 +90,19 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private static final int OUTPUT_Y = 80;
     private File fileUri;
     private File fileCropUri;
+    private File headClipFile;// 裁剪后的头像
     private Uri imageUri;
     private Uri cropImageUri;
-
+    public static final String HEAD_ICON_DIC = Environment
+            .getExternalStorageDirectory()
+            + File.separator + "anxin";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fileUri = new File(getActivity().getExternalCacheDir().getPath() + "anxin/photo.jpg");
-        fileCropUri = new File(getActivity().getExternalCacheDir().getPath() + "anxin/crop_photo.jpg");
+        fileUri = new File(HEAD_ICON_DIC, "photo.jpg");
+        fileCropUri = new File(HEAD_ICON_DIC, "crop_photo.jpg");
+        headClipFile = new File(HEAD_ICON_DIC, "clipIcon.jpg");
         hideMainBottom();
     }
 
@@ -185,6 +192,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     @Override
     public void onResume() {
         // TODO Auto-generated method stub
+        initHeadIconFile();
         super.onResume();
     }
 
@@ -326,23 +334,23 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     }
 
     private void takePicture(Uri imageUri, int requestCode) {
-        //调用系统相机
-        Intent intentCamera = new Intent();
-        intentCamera.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-        //将拍照结果保存至photo_file的Uri中，不保留在相册中
-        intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(intentCamera, requestCode);
-
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//设置Action为拍照
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        this.startActivityForResult(intent, requestCode);
     }
 
     /**
      * @param requestCode 打开相册的请求码
      */
     private void openPic(int requestCode) {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-//        photoPickerIntent.setType("image/*");
-        photoPickerIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-        startActivityForResult(photoPickerIntent, requestCode);
+//        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+////        photoPickerIntent.setType("image/*");
+//        photoPickerIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+//        startActivityForResult(photoPickerIntent, requestCode);
+        Intent openAlbumIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        openAlbumIntent.setType("image/*");
+        startActivityForResult(openAlbumIntent, requestCode);
     }
 
     private View.OnClickListener itemsGenderOnClick = new View.OnClickListener() {
@@ -377,26 +385,43 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         switch (requestCode) {
             //相机返回
             case CODE_CAMERA_REQUEST:
-                cropImageUri = Uri.fromFile(fileCropUri);
+//                cropImageUri = Uri.fromFile(fileUri);
 //                starCropPhoto(cropImageUri);
-                cropImageUri(imageUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CROP_PHOTO);
+//                cropImageUri(imageUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CROP_PHOTO);
+                clipPhotoBySelf(fileUri.getAbsolutePath());
                 break;
             //相册返回
             case CODE_GALLERY_REQUEST:
                 if (hasSdcard()) {
-                    cropImageUri = Uri.fromFile(fileCropUri);
-                    Uri newUri = Uri.parse(SystemUtility.getPath(getActivity(), data.getData()));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        newUri = FileProvider.getUriForFile(getActivity(), "com.anxin.kitchen.user.fileprovider", new File(newUri.getPath()));
-                    }
-                    cropImageUri(newUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CROP_PHOTO);
+//                    cropImageUri = Uri.fromFile(fileCropUri);
+//                    Uri newUri = Uri.parse(SystemUtility.getPath(getActivity(), data.getData()));
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        newUri = FileProvider.getUriForFile(getActivity(), "com.anxin.kitchen.user.fileprovider", new File(newUri.getPath()));
+//                    }
+//                    cropImageUri(newUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CROP_PHOTO);
 //                    starCropPhoto(newUri);
+                    if (data != null) {
+                        String filePath = "";
+                        Uri originalUri = data.getData(); // 获得图片的uri
+//                        Log.i(TAG, "originalUri : " + originalUri);
+                        if (originalUri != null) {
+                            filePath = GetImagePath.getPath(getActivity(), originalUri);
+                        }
+//                        Log.i(TAG, "filePath : " + filePath);
+                        if (filePath != null && filePath.length() > 0) {
+                            //clipPhotoBySystem(originalUri);
+                            //调用自定义裁剪
+                            clipPhotoBySelf(filePath);
+                        }
+                    }
                 } else {
                     ToastUtil.showToast("设备没有SD卡！");
                 }
                 break;
             case CROP_PHOTO:
                 if (data != null) {
+//                    Bitmap bm = BitmapFactory.decodeFile(headClipFile.getAbsolutePath());
+                    cropImageUri = Uri.fromFile(headClipFile);
 //                    Bitmap bitmap = SystemUtility.getBitmapFromUri(cropImageUri, getActivity());
                     setPicToView(cropImageUri);
                 }
@@ -412,6 +437,31 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 break;
 
         }
+    }
+
+    private void initHeadIconFile() {
+        headClipFile = new File(HEAD_ICON_DIC);
+        if (!headClipFile.exists()) {
+            boolean mkdirs = headClipFile.mkdirs();
+        }
+        fileUri = new File(HEAD_ICON_DIC, "photo.jpg");
+        fileCropUri = new File(HEAD_ICON_DIC, "crop_photo.jpg");
+        headClipFile = new File(HEAD_ICON_DIC, "clipIcon.jpg");
+    }
+
+    /**
+     * 调用自定义切图方法
+     *
+     * @param filePath
+     */
+    protected void clipPhotoBySelf(String filePath) {
+        //进入裁剪页面,此处用的是自定义的裁剪页面而不是调用系统裁剪
+        Intent intent = new Intent(getActivity(), ClipPictureActivity.class);
+        intent.putExtra(ClipPictureActivity.IMAGE_PATH_ORIGINAL, filePath);
+        intent.putExtra(ClipPictureActivity.IMAGE_PATH_AFTER_CROP,
+                headClipFile.getAbsolutePath());
+        startActivityForResult(intent, CROP_PHOTO);
+
     }
 
     @Override

@@ -78,7 +78,10 @@ public class MyService extends Service {
 //                LOG.e("-------------?onResponse----");
                 byte[] bytes = response.body().bytes();
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                onSaveBitmap(bitmap, context, userPhone);
+                String fileName = context.getExternalCacheDir().getPath()+"anxin/" + userPhone + "logo.png";
+                onSaveBitmap(bitmap, context, fileName);
+                MyApplication.mApp.getCache().setAccountImageURI(userPhone,fileName);
+                EventBusFactory.postEvent(new ViewUpdateHeadIconEvent());
             }
         });
     }
@@ -86,10 +89,9 @@ public class MyService extends Service {
     /*
     *Android保存图片到系统
     */
-    public static void onSaveBitmap(Bitmap mBitmap, final Context context, String userPhone) {
+    public static void onSaveBitmap(Bitmap mBitmap, final Context context, String fileName) {
         // 第一步：首先保存图片
         //将Bitmap保存图片到指定的路径/sdcard/Boohee/下，文件名以当前系统时间命名,但是这种方法保存的图片没有加入到系统图库中
-        String fileName = context.getExternalCacheDir().getPath()+"anxin/" + userPhone + "logo.png";
         File file = new File(fileName);
         if (!file.exists()) {
             //先得到文件的上级目录，并创建上级目录，在创建文件
@@ -106,8 +108,6 @@ public class MyService extends Service {
             mBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.flush();
             fos.close();
-            MyApplication.mApp.getCache().setAccountImageURI(userPhone, file.getPath());
-            EventBusFactory.postEvent(new ViewUpdateHeadIconEvent());
         } catch (IOException e) {
             e.printStackTrace();
         }
