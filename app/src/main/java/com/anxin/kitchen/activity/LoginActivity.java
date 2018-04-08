@@ -1,29 +1,20 @@
 package com.anxin.kitchen.activity;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
-import com.anxin.kitchen.event.OnSaveBitmapEvent;
-import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.anxin.kitchen.fragment.loginfragment.AddUserDataFragment;
-import com.anxin.kitchen.fragment.myfragment.UserWalletSetFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.user.wxapi.WXEntryActivity;
 import com.anxin.kitchen.utils.EventBusFactory;
@@ -31,35 +22,22 @@ import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.anxin.kitchen.utils.UmengHelper;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 
 /**
  * 登陆界面
  */
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends FragmentActivity implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private ImageView WXloginBtn;//微信登陆按钮
     private IWXAPI mApi;//微信登陆API
@@ -71,7 +49,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private int number = 60;
     private MyCountDownTimer mc;//验证码倒计时
     private Button loginBtn;//登陆按钮
-    private String loginData = null;//用户是否注册判断
+    private String loginData = "1";//用户是否注册判断
     private String userPhone;//用户号码
     private String phoneCode;//验证码
     private MyApplication mApp;//
@@ -155,6 +133,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 mc.start();//开启倒计时
                 break;
             case R.id.loginBtn:
+                userPhone = userPhoneEdit.getText().toString();
+                if (userPhone == null || userPhone.length() <= 0) {
+                    ToastUtil.showToast("请输入手机号码");
+                    return;
+                }
                 phoneCode = phoneCodeEdit.getText().toString();
                 if (phoneCode == null || phoneCode.length() <= 0) {
                     ToastUtil.showToast("请输入验证码");
@@ -212,7 +195,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     String data = StringUtils.parserMessage(responseMsg, "data");
                     if (code != null && code.equals("1")) {
                         if (data != null && !data.equals("null"))
+                            ToastUtil.showToast("发送成功");
                             loginData = data;
+                    }else if(code.equals("321")){
+                        ToastUtil.showToast("请求次数超限");
                     }
                 }
                 break;
@@ -257,10 +243,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         if (code != null && code.equals("1")) {
             //解析验证码返回
             Account account = SystemUtility.loginAnalysisJason(Msg);
-            LOG.d("--------sendPhoneLogin--Account--" + account.toString());
+            LOG.e("--------sendPhoneLogin--Account--" + account.toString());
 //            LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
             if (account != null) {
                 String trueName = account.getUserTrueName();
+                String userId = account.getUserID();
+                sendBindPhoneReport();
+                if (userId != null && userId.length() != 0)
+                    UmengHelper.getInstance().setUserAlias(userId);
                 if (null != trueName && !trueName.equals("暂无") && !trueName.equals("null")) {//登陆成功且用户信息不为空
                     ToastUtil.showToast("登陆成功");
                     finish();
@@ -278,6 +268,31 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
+    private void sendBindPhoneReport() {
+        String model = android.os.Build.MODEL;
+        String carrier = android.os.Build.MANUFACTURER;
+        String deviceID = UmengHelper.dToken;
+        if (deviceID == null)
+            return;
+//        String ANDROID_ID = Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID);
+//        LOG.e("-------手机唯一标识符------" + ANDROID_ID);
+//        LOG.e("-------手机型号------" + model);
+//        LOG.e("-------手机厂商------" + carrier);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("os", "android");
+            jsonObject.put("model", carrier + " " + model);
+            jsonObject.put("deviceId", deviceID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String urlPath = SystemUtility.sendPhoneReportDevice();
+        Map<String, Object> dataMap = new HashMap();
+        dataMap.put("token", SystemUtility.AMToken);
+        dataMap.put("formData", jsonObject.toString());
+        SystemUtility.requestNetPost(urlPath, dataMap, "");
+    }
+
     /**
      * 发送验证码
      *
@@ -285,6 +300,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      * @param type
      */
     private void sendPhoneCode(final String userPhone, final String type) {
+//        LOG.e("-----------sendPhoneCode-----------");
         String urlPath = SystemUtility.sendUserPhoneCode(userPhone, type);
         SystemUtility.requestNetGet(urlPath, sendUserPhoneCode_http);
     }
@@ -309,9 +325,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void sendPhoneLogin(final String userPhone, final String code, String loginData) {
         String urlPath = "";
         if (loginData.equals("1")) {
+            LOG.e("--------------sendUserPhoneLogin------------");
             urlPath = SystemUtility.sendUserPhoneLogin(userPhone, code);
             SystemUtility.requestNetGet(urlPath, sendUserPhoneLogin_http);
         } else if (loginData.equals("0")) {
+            LOG.e("--------------sendUserPhoneregister------------");
             urlPath = SystemUtility.sendUserPhoneregister(userPhone, code);
             SystemUtility.requestNetGet(urlPath, sendUserPhoneRegister_http);
         }
@@ -324,7 +342,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      * @param code
      */
     private void sendUserPhoneLocking(final String userPhone, final String code) {
-        LOG.e("------------sendUserPhoneLocking------------");
+//        LOG.e("------------sendUserPhoneLocking------------");
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("phone", userPhone);

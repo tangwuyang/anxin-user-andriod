@@ -13,6 +13,7 @@ import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.utils.UmengHelper;
 
 /**
  * 设置界面
@@ -83,6 +84,9 @@ public class SettingFragment extends HomeBaseFragment implements View.OnClickLis
                 ft2.commit();
                 break;
             case R.id.logout_user:
+                String userId = mApp.getAccount().getUserID();
+                if (userId != null)
+                    UmengHelper.getInstance().deleteUserAlias(userId);
                 mApp.setAccount(null);
                 SystemUtility.AMToken = "";
                 getFragmentManager().popBackStack();

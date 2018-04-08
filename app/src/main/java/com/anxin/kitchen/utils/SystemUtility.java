@@ -61,6 +61,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.conn.ssl.SSLSocketFactory;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -95,6 +97,11 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/auto_register_login";
     }
 
+    //上传手机信息
+    public static String sendPhoneReportDevice() {
+        return AMUAC_IP + "/v1.0/user/report_device";
+    }
+
     //注册用户
     public static String sendUserPhoneLogin(String phone, String code) {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
@@ -108,6 +115,11 @@ public class SystemUtility {
     //获取送餐地址
     public static String sendGetAddress() {
         return AMUAC_IP + "/v1.0/user/address_list?token=" + AMToken;
+    }
+
+    //获取送餐地址
+    public static String getTablewareListUrl() {
+        return AMUAC_IP + "/v1.0/system/tableware_list";
     }
 
     /**
@@ -151,10 +163,10 @@ public class SystemUtility {
 
                 if (response.isSuccessful()) {
                     String str = response.body().string();
-                    Log.e("lfq", response.message() + " , body " + str);
+                    LOG.e( response.message() + " , body " + str);
 
                 } else {
-                    Log.e("lfq", response.message() + " error : body " + response.body().string());
+                    LOG.e( response.message() + " error : body " + response.body().string());
                 }
             }
         });
@@ -179,17 +191,17 @@ public class SystemUtility {
         }
     }
 
-    //淇®鏀圭敤鎴蜂俊鎭
+    //修改用户信息
     public static String sendUpdateUser() {
         return AMUAC_IP + "/v1.0/user/update";
     }
 
-    //淇®鏀瑰湴鍧€
+    //修改地址
     public static String sendUpdateAddress() {
         return AMUAC_IP + "/v1.0/user/update_address";
     }
 
-    //鍒犻櫎鍦板潃
+    //删除地址
     public static String sendDeleteAddress() {
         return AMUAC_IP + "/v1.0/user/del_address";
     }
@@ -237,6 +249,10 @@ public class SystemUtility {
      */
     public static String getBannerListUrl() {
         return AMUAC_IP + "/v1.0/system/banner_list";
+    }
+
+    public static String getFoodURL() {
+        return AMUAC_IP + "/v1.0/food/package_list";
     }
 
 
@@ -357,23 +373,21 @@ public class SystemUtility {
 //            Log.e("", "------requestNetPost----------" + params.toString());
             client.post(urlPath, params, new AsyncHttpResponseHandler() {
                 @Override
-                public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
+//                        LOG.e("------requestNetPost----------" + result);
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
                 }
 
                 @Override
-                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                    {
-                        String result = "";
-                        if (bytes != null) {
-                            result = new String(bytes);
-                            EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
-                        }
-
+                public void onFailure(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes, Throwable throwable) {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                        EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
                     }
                 }
             });
@@ -392,25 +406,25 @@ public class SystemUtility {
         if (null != urlPath && urlPath.length() > 0) {
 
             AsyncHttpClient client = new AsyncHttpClient();
+            LOG.d( "------requestNetGet------urlPath----" + urlPath);
             client.get(urlPath, new AsyncHttpResponseHandler() {
                 @Override
-                public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
+                        LOG.d( "------requestNetGet---onSuccess-------" + result);
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
                 }
 
                 @Override
-                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                    {
-                        String result = "";
-                        if (bytes != null) {
-                            result = new String(bytes);
-                            EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
-                        }
-
+                public void onFailure(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes, Throwable throwable) {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                        LOG.d("------requestNetGet---onFailure-------" + result);
+                        EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
                     }
                 }
             });
@@ -925,5 +939,6 @@ public class SystemUtility {
     private static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
+
 
 }

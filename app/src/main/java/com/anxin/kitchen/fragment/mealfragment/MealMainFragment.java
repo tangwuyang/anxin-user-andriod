@@ -78,7 +78,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (MainActivity) MainActivity.context;
-        mWaitingDialog = new WaitingDialog(activity);
+        mWaitingDialog = new WaitingDialog(getActivity());
     }
 
 

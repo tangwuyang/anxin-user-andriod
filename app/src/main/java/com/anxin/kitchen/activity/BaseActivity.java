@@ -1,49 +1,40 @@
 package com.anxin.kitchen.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
-import com.anxin.kitchen.utils.Log;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.umeng.message.PushAgent;
 
-import org.apache.http.Header;
-
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import cz.msebera.android.httpclient.Header;
 
 
-public class BaseActivity extends FragmentActivity implements RequestNetListener{
+public class BaseActivity extends FragmentActivity implements RequestNetListener {
+
     private TextView titleTv;  //标题
     private boolean isDebug = true;  //是否是调试模式
     public static final String PREFERENCE_NAME = "ANXIN_ANDROID";
     public Gson mGson;
-    private ImageLoader imageLoader = ImageLoader.getInstance();
+    public ImageLoader imageLoader = ImageLoader.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PushAgent.getInstance(this).onAppStart();
         mGson = new Gson();
     }
 
@@ -89,24 +80,21 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
             client.post(urlPath,params, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int i, Header[] headers, byte[] bytes) {
-                        String result = "";
-                        String head = "";
-                        if (bytes != null){
-                            result = new String(bytes);
-                            myLog(requestCode+"----------->请求成功" + result);
-                            requestSuccess(result,requestCode);
-                        }
+                    String result = "";
+                    String head = "";
+                    if (bytes != null){
+                        result = new String(bytes);
+                        myLog(requestCode+"----------->请求成功" + result);
+                        requestSuccess(result,requestCode);
+                    }
                 }
 
                 @Override
-                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                    {
-                        String result = "";
-                        if (bytes != null) {
-                            result = new String(bytes);
-                            myLog("--------->请求失败" +result);
-                        }
-
+                public void onFailure(int i,Header[] headers, byte[] bytes, Throwable throwable) {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                        myLog("--------->请求失败" +result);
                     }
                 }
             });

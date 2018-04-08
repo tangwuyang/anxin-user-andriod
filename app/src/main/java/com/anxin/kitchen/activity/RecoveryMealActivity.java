@@ -254,8 +254,11 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                     hidenHoverScreen();
                 }else {
                    // openShoppingCart();
-                    propetyAnim(mHoverScreen);
-                    mPopupWindow = showPopWindow(view, mPopupView, this, mHoverScreen);
+                    int num = mCatalogAdapter.menuList.get(0).getCounts();
+                    if (num>0) {
+                        propetyAnim(mHoverScreen);
+                        showPopWindow(view, mPopupView, this, mHoverScreen);
+                    }
                 }
                 break;
             case R.id.hover_screen:
@@ -279,19 +282,38 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
     public  PopupWindow showPopWindow(View parent, View view, Context context, final ImageView iv_all) {
         mPop = new PopupWindow(view,
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-       /* view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int popWidth = view.getMeasuredWidth();
         int popHeight = view.getMeasuredHeight();
+        mShoppingCartLv  = view.findViewById(R.id.shopping_cart_lv);
+        mShoppingCartLv.setAdapter(new ShoppingCartAdatpter());
         int loaction[] = new int[2];
-        parent.getLocationOnScreen(loaction);*/
+        parent.getLocationOnScreen(loaction);
         mPop.setOutsideTouchable(true);
         mPop.setFocusable(true);
         //mPop.setBackgroundDrawable(new ColorDrawable(0));
-        mPop.setAnimationStyle(R.style.AnimBottom);
-        mPop.showAtLocation(parent, Gravity.CENTER,0,0);
+        //mPop.setAnimationStyle(R.style.AnimBottom);
+        //mPop.showAtLocation(parent, Gravity.TOP,(loaction[0]+parent.getWidth()/2)-popWidth/2,loaction[1]-popHeight);
+        mPop.showAtLocation(parent, Gravity.BOTTOM,(loaction[0]+parent.getWidth()/2)-popWidth/2,222);
 
-        mShoppingCartLv  = view.findViewById(R.id.shopping_cart_lv);
-        mShoppingCartLv.setAdapter(new ShoppingCartAdatpter());
+        LinearLayout clearLl = view.findViewById(R.id.clear_ll);
+        clearLl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mChosedMeals.clear();
+
+                mCatalogList.clear();
+                for (RecorverMenuBean.Data date:
+                mCatalogAdapter.menuList) {
+                    date.setCounts(0);
+                }
+                mChosedMeals.clear();
+                mCatalogAdapter.notifyDataSetChanged();
+                mContentAdapter.notifyDataSetChanged();
+                setBottom();
+                mPop.dismiss();
+            }
+        });
         //mPop.showAsDropDown(v,0,0);
         view.setFocusable(true); // 这个很重要
         view.setFocusableInTouchMode(true);
@@ -434,10 +456,20 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
 
     //购物车适配器
     private class ShoppingCartAdatpter extends BaseAdapter{
+        private LinkedList<RecoverBean.Data> mChosedList = new LinkedList<>();
+
+        public ShoppingCartAdatpter() {
+            for (String mealName:mChosedMeals.keySet()
+                    ) {
+                RecoverBean.Data meal = mChosedMeals.get(mealName);
+                mChosedList.add(meal);
+            }
+            myLog("--------------n--->"+mChosedList.size());
+        }
 
         @Override
         public int getCount() {
-            return 2;
+            return mChosedList.size();
         }
 
         @Override
@@ -451,13 +483,141 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
+        public View getView(final int i, View view, ViewGroup viewGroup) {
+            final RecoverBean.Data meal = mChosedList.get(i);
+            ViewHolder holder = null;
             if (null == view){
+                holder = new ViewHolder();
                 view = LayoutInflater.from(RecoveryMealActivity.this).inflate(R.layout.shopping_cart_item,viewGroup,false);
+                holder.titleTv = view.findViewById(R.id.food_name);
+                holder.contentTv = view.findViewById(R.id.food_content);
+                holder.priceTv = view.findViewById(R.id.meal_price_tv);
+                holder.addTv = view.findViewById(R.id.add_img);
+                holder.reduceTv = view.findViewById(R.id.reduce_img);
+                holder.numsTv = view.findViewById(R.id.nums_tv);
+                view.setTag(holder);
             }else {
-
+                holder = (ViewHolder) view.getTag();
             }
+            holder.titleTv.setText(meal.getPackageName());
+            String contents = "";
+            for (int i1 = 0; i1<meal.getFoodList().size();i1++) {
+               // myLog("------------>"+meal.getFoodList().get(i1).getDishName());
+                if (i1<meal.getFoodList().size()-1){
+                contents = contents + meal.getFoodList().get(i1).getDishName()+"\r\n";
+                }else {
+                    contents = contents + meal.getFoodList().get(i1).getDishName();
+                }
+            }
+            holder.contentTv.setText(contents);
+            holder.priceTv.setText((meal.getPrice()*meal.getNums())+".00");
+            holder.numsTv.setText(meal.getNums()+"");
+
+            final ViewHolder finalHolder = holder;
+            holder.addTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int nums = Integer.valueOf(finalHolder.numsTv.getText().toString());
+                    nums = nums+1;
+                    finalHolder.numsTv.setText(nums+"");
+                    int type = meal.getDietId();
+                    mCatalogAdapter.menuList.get(0).setCounts(mCatalogAdapter.menuList.get(0).getCounts()+1);
+                    for (int i = 0;i<mCatalogAdapter.menuList.size();i++){
+                        if (type == mCatalogAdapter.menuList.get(i).getId()){
+                            mCatalogAdapter.menuList.get(i).setCounts(mCatalogAdapter.menuList.get(i).getCounts()+1);
+                            break;
+                        }
+                    }
+                    String name = String.valueOf(meal.getPackageId());
+                    RecoverBean.Data transMeal = meal;
+                    if (mChosedMeals.containsKey(name)){
+                        mChosedMeals.get(name).setNums(mChosedMeals.get(name).getNums()+1);
+                        myLog("-------加一个-" +mChosedMeals.get(name).getNums());
+                    }else {
+                        myLog("-------放进了一个-" );
+                        transMeal.setNums(1);
+                        mChosedMeals.put(String.valueOf(meal.getPackageId()),transMeal);
+                    }
+                    finalHolder.priceTv.setText(meal.getNums()*meal.getPrice()+".00");
+                    if (mChosedMeals.containsKey(String.valueOf(meal.getPackageId()))) {
+                        if (null != mChosedMeals.get(String.valueOf(meal.getPackageId())) && 0 != mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()) {
+                            mChosedMeals.get(String.valueOf(meal.getPackageId())).setNums(meal.getNums());
+                            mContentAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    mContentAdapter.notifyDataSetChanged();
+                    mCatalogAdapter.notifyDataSetChanged();
+                    setBottom();
+                }
+            });
+
+            final ViewHolder finalHolder1 = holder;
+            holder.reduceTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int nums = Integer.valueOf(finalHolder.numsTv.getText().toString());
+                    if (nums>1){
+                        deleteMeal(nums, finalHolder, meal);
+                        meal.setNums(nums-1);
+                        finalHolder1.numsTv.setText(meal.getNums()+"");
+                        finalHolder.priceTv.setText(meal.getNums()*meal.getPrice()+".00");
+                    }else if (nums>0){
+                        //如果只有一件货 则删除该商品
+                        deleteMeal(nums, finalHolder, meal);
+                        meal.setNums(nums-1);
+                        mChosedList.remove(i);
+
+                        mChosedMeals.remove(String.valueOf(meal.getPackageId()));
+                        mContentLv.setAdapter(new ContentAdapter());
+                        if (mChosedList.size()==0){
+                            mPop.dismiss();
+                        }else {
+                            ShoppingCartAdatpter.this.notifyDataSetChanged();
+                        }
+                    }
+
+
+                   /* if (mChosedMeals.containsKey(String.valueOf(meal.getPackageId()))) {
+                        if (null != mChosedMeals.get(String.valueOf(meal.getPackageId())) && 0 != mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()) {
+                            mChosedMeals.get(String.valueOf(meal.getPackageId())).setNums(meal.getNums());
+                            mContentAdapter.notifyDataSetChanged();
+                        }
+                    }*/
+                }
+            });
             return view;
+        }
+
+        private void deleteMeal(int nums, ViewHolder finalHolder, RecoverBean.Data meal) {
+            nums = nums-1;
+            finalHolder.numsTv.setText(nums+"");
+            mCatalogAdapter.menuList.get(0).setCounts(mCatalogAdapter.menuList.get(0).getCounts()-1);
+            int type = meal.getDietId();
+            myLog("---------type"+type);
+            for (int i = 0;i<mCatalogAdapter.menuList.size();i++){
+                myLog("-----------菜系" + mCatalogAdapter.menuList.get(i).getId());
+                if (type == mCatalogAdapter.menuList.get(i).getId()){
+                    mCatalogAdapter.menuList.get(i).setCounts(mCatalogAdapter.menuList.get(i).getCounts()-1);
+                    break;
+                }
+            }
+
+            String name = String.valueOf(meal.getPackageId());
+            if (mChosedMeals.containsKey(name)){
+                mChosedMeals.get(name).setNums(mChosedMeals.get(name).getNums()-1);
+            }
+            mCatalogAdapter.notifyDataSetChanged();
+            mContentAdapter.notifyDataSetChanged();
+            setBottom();
+        }
+
+        class ViewHolder{
+            private ImageView addTv;
+            private ImageView reduceTv;
+            private TextView titleTv;
+            private TextView contentTv;
+            private TextView priceTv;
+            private TextView numsTv;
         }
     }
 
@@ -479,6 +639,8 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
             allMenu.setId(-1);
             menuList.add(0, allMenu);
             //初始化的时候去内存中加载是否有上次点击的菜
+
+
             setCounts(menuList);
             for (int i = 0; i < data.size(); i++) {
                 if (i == 0) {
@@ -599,17 +761,21 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
             }
 
             if (mChosedMeals.containsKey(String.valueOf(meal.getPackageId()))) {
-
                 if (null != mChosedMeals.get(String.valueOf(meal.getPackageId())) && 0 != mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()) {
                     holder.numTv.setText(mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()+"");
                 }
+            }else {
+                holder.numTv.setText("0");
             }
+
             StringBuffer buffer = new StringBuffer();
             for (int i = 0;i<meal.getFoodList().size();i++
                  ) {
                 RecoverBean.FoodList food = meal.getFoodList().get(i);
                 if (i != meal.getFoodList().size()-1) {
                     buffer.append(food.getDishName() + "\r\n");
+                }else {
+                    buffer.append(food.getDishName());
                 }
             }
             holder.contentTv.setText(buffer.toString());
@@ -625,6 +791,9 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                     int nums = Integer.valueOf(finalHolder.numTv.getText().toString());
                     if (nums>0){
                         nums = nums-1;
+                        if (nums == 0){
+                            mChosedMeals.remove(String.valueOf(meal.getPackageId()));
+                        }
                         finalHolder.numTv.setText(nums+"");
                         mCatalogAdapter.menuList.get(0).setCounts(mCatalogAdapter.menuList.get(0).getCounts()-1);
                         int type = meal.getDietId();
@@ -685,6 +854,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
             mShoppingCartImg.setImageDrawable(getResources().getDrawable(R.drawable.shoppint_cart_1));
             mCloseAccountTv.setText("去结算");
             mCloseAccountTv.setClickable(true);
+            mCloseAccountTv.setEnabled(true);
             mCloseAccountTv.setBackgroundColor(getResources().getColor(R.color.red));
             mBottomNum.setVisibility(View.VISIBLE);
             mBottomNum.setText(num+"");
@@ -698,6 +868,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
             mShoppingCartImg.setImageDrawable(getResources().getDrawable(R.drawable.shopping_cart_0));
             mCloseAccountTv.setText("20元起送");
             mCloseAccountTv.setClickable(false);
+            mCloseAccountTv.setEnabled(false);
             mCloseAccountTv.setBackgroundColor(getResources().getColor(R.color.color_desc));
             mBottomNum.setVisibility(View.GONE);
             mBottomNum.setText("");

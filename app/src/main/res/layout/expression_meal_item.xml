@@ -5,6 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <ImageView
+
         android:background="@color/main_bg_color"
         android:id="@+id/food_img"
         android:layout_width="106dp"
@@ -31,9 +32,9 @@
             android:id="@+id/food_content"
             android:textColor="@color/shallow_text_color"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:textSize="@dimen/small_text_size"
-            android:layout_weight="1"
+
             android:text="三丝炒肉丝"
             />
 
@@ -41,6 +42,8 @@
             android:id="@+id/meal_price_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="bottom"
             android:textSize="@dimen/big_text_size"
             android:layout_marginTop="5dp"
             android:textColor="@color/red"

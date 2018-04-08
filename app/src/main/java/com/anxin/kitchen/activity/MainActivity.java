@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
@@ -74,7 +73,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     // 定义FragmentManager对象管理器
     private FragmentManager fragmentManager;
     //欢迎页面
-    private RelativeLayout welcome_rlt;
     public static final String GET_KITCHEN_ID = "GET_KITCHEN_ID";
 
     public static final String GET_BANNER_LIST = "GET_BANNER_LIST";
@@ -98,12 +96,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             SystemUtility.sendGetAddressList();
         initView();//初始化界面控件
         setChioceItem(0);//初始化页面加载是显示点餐界面
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                welcome_rlt.setVisibility(View.GONE);
-            }
-        }, 2000);
     }
 
     private void requestLocationPermission() {
@@ -147,7 +139,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private Handler handler = new Handler();
 
     private void initView() {
-        welcome_rlt = (RelativeLayout) findViewById(R.id.welcome_bg);
         //初始化底部导航栏的控件
         myButtom_Lyt = (LinearLayout) findViewById(R.id.main_bottom_group);
         myButtomGroup = (RadioGroup) findViewById(R.id.bottom_radiogroup);
