@@ -15,7 +15,6 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -30,29 +29,20 @@ import com.anxin.kitchen.event.AddressListEvent;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.event.OnSaveBitmapEvent;
 import com.anxin.kitchen.event.OnUserAcountEvent;
-import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
 import com.loopj.android.http.RequestParams;
 
-import org.apache.http.Header;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -69,6 +59,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.conn.ssl.SSLSocketFactory;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -176,10 +168,10 @@ public class SystemUtility {
 
                 if (response.isSuccessful()) {
                     String str = response.body().string();
-                    Log.e("lfq", response.message() + " , body " + str);
+                    LOG.e( response.message() + " , body " + str);
 
                 } else {
-                    Log.e("lfq", response.message() + " error : body " + response.body().string());
+                    LOG.e( response.message() + " error : body " + response.body().string());
                 }
             }
         });
@@ -362,24 +354,21 @@ public class SystemUtility {
 //            Log.e("", "------requestNetPost----------" + params.toString());
             client.post(urlPath, params, new AsyncHttpResponseHandler() {
                 @Override
-                public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
-                        Log.e("", "------requestNetPost----------" + result);
+//                        LOG.e("------requestNetPost----------" + result);
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
                 }
 
                 @Override
-                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                    {
-                        String result = "";
-                        if (bytes != null) {
-                            result = new String(bytes);
-                            EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
-                        }
-
+                public void onFailure(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes, Throwable throwable) {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                        EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
                     }
                 }
             });
@@ -398,26 +387,25 @@ public class SystemUtility {
         if (null != urlPath && urlPath.length() > 0) {
 
             AsyncHttpClient client = new AsyncHttpClient();
+            LOG.d( "------requestNetGet------urlPath----" + urlPath);
             client.get(urlPath, new AsyncHttpResponseHandler() {
                 @Override
-                public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
-                        Log.e("", "------requestNetPost----------" + result);
+                        LOG.d( "------requestNetGet---onSuccess-------" + result);
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
                 }
 
                 @Override
-                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                    {
-                        String result = "";
-                        if (bytes != null) {
-                            result = new String(bytes);
-                            EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
-                        }
-
+                public void onFailure(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes, Throwable throwable) {
+                    String result = "";
+                    if (bytes != null) {
+                        result = new String(bytes);
+                        LOG.d("------requestNetGet---onFailure-------" + result);
+                        EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestFailure));
                     }
                 }
             });

@@ -1,5 +1,6 @@
 package com.anxin.kitchen.user.wxapi;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -19,9 +20,10 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.socialize.weixin.view.WXCallbackActivity;
 
 
-import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * 微信登录页面
@@ -29,7 +31,7 @@ import org.json.JSONObject;
  * @author kevin_chen 2016-12-10 下午19:03:45
  * @version v1.0
  */
-public class WXEntryActivity extends WXCallbackActivity implements IWXAPIEventHandler {
+public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     private Log LOG = Log.getLog();
     private static final String APP_SECRET = "75bf85878994d867fd4bcec28ccca5aa";
     private IWXAPI mWeixinAPI;

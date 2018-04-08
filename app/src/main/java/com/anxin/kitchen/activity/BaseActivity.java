@@ -1,19 +1,15 @@
 package com.anxin.kitchen.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Cache;
-import com.anxin.kitchen.utils.Log;
-import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -21,21 +17,10 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.umeng.message.PushAgent;
 
-import org.apache.http.Header;
-
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 
 public class BaseActivity extends FragmentActivity implements RequestNetListener{
@@ -45,10 +30,6 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     public static final String PREFERENCE_NAME = "ANXIN_ANDROID";
     public Gson mGson;
     public ImageLoader imageLoader = ImageLoader.getInstance();
-    private String mToken;
-    private Cache mCache;
-    private int kitchenId;
-    private boolean login;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,22 +44,17 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
         titleTv.setText(title);
 
     }
-
-    public boolean isLogin() {
+    public String mToken;
+    public boolean isLogin(){
         if (null == mToken){
-            mCache = new Cache(BaseActivity.this);
-            mToken =mCache.getAMToken();
-            kitchenId = new PrefrenceUtil(BaseActivity.this).getKitchenId();
+            mToken = new Cache(this).getAMToken();
         }
         if (mToken==null){
-            login = false;
-            SystemUtility.startLoginUser(BaseActivity.this);
-            return login;
-        }else {
-            login = true;
+            SystemUtility.startLoginUser(this);
         }
-        return login;
+        return true;
     }
+
 
     //调试打印
     public void myLog(String msg){
@@ -114,18 +90,18 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
             }
             client.post(urlPath,params, new AsyncHttpResponseHandler() {
                 @Override
-                public void onSuccess(int i, Header[] headers, byte[] bytes) {
-                        String result = "";
-                        String head = "";
-                        if (bytes != null){
-                            result = new String(bytes);
-                            myLog(requestCode+"----------->请求成功" + result);
-                            requestSuccess(result,requestCode);
-                        }
+                public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
+                    String result = "";
+                    String head = "";
+                    if (bytes != null){
+                        result = new String(bytes);
+                        myLog(requestCode+"----------->请求成功" + result);
+                        requestSuccess(result,requestCode);
+                    }
                 }
 
                 @Override
-                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                public void onFailure(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes, Throwable throwable) {
                     {
                         String result = "";
                         if (bytes != null) {
@@ -135,6 +111,10 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
 
                     }
                 }
+
+
+
+
             });
 
 
