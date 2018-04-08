@@ -36,4 +36,14 @@
     <color name="color_gold">#ffda53</color>
     <color name="shallow_yellow">#f9ecb5</color>
     <color name="pay_grey">#f8f8f8</color>
+    <color name="bg_body">#F0F0F0</color>
+    <color name="bg_hint">#f9ecb5</color>
+    <color name="tv_gray">#888888</color>
+    <color name="tv_green">#53ce78</color>
+    <color name="tv_member_name">#333333</color>
+    <color name="tv_member_pay_green">#cccccc</color>
+
+    //订单 滑动
+    <color name="background_tab_pressed">#6633B5E5</color>
+    <color name="slidingtab_indicatorcolor">#85B850</color>
 </resources>

@@ -7,12 +7,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -36,23 +33,15 @@ import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.PrefrenceUtil;
+import com.anxin.kitchen.utils.SharedPreferencesUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RequestLocationPermissionDialog;
-import com.anxin.kitchen.view.WaitingDialog;
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * 主界面
@@ -65,6 +54,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public static final String DELETE_GROUP = "DELETE_GROUP";
     private static final String RE_GET_GROUP = "再次请求团";
     public static final String DELETE_FRIEND = "DELETE_FRIEND";
+    public static final String NET_GET_RECENCT_ORDERS ="getRecentOrders";
+    public static final String NET_GET_ORDERS_NUM ="getOrdersNum";
     private PrefrenceUtil prefrenceUtil;
     public static Context context;
     // 定义4个Fragment对象
@@ -393,6 +384,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 groupMainFragment.setDataChanged();
             }
         }
+
+        if(requestCode != null && requestCode.equals(NET_GET_RECENCT_ORDERS)){
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                orderMainFragment.setGroup(responseBody);
+                return;
+            }
+        }
+
+        if(requestCode != null && requestCode.equals(NET_GET_ORDERS_NUM)){
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                SharedPreferencesUtil.getInstance(this).putSP("getOrderNumTime",System.currentTimeMillis()+"");
+                orderMainFragment.setNum(responseBody);
+                return;
+            }
+        }
+
+
     }
 
     @Override

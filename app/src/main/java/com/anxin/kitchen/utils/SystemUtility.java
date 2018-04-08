@@ -15,7 +15,6 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -30,29 +29,22 @@ import com.anxin.kitchen.event.AddressListEvent;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.event.OnSaveBitmapEvent;
 import com.anxin.kitchen.event.OnUserAcountEvent;
-import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
 import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -79,7 +71,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.anxin.kitchen.MyApplication.mApp;
-import static com.umeng.socialize.bean.RequestType.API;
 
 public class SystemUtility {
     private static final Log LOG = Log.getLog();
@@ -268,6 +259,30 @@ public class SystemUtility {
      */
     public static String searchGroupUrl() {
         return AMUAC_IP + "/v1.0/group/list";
+    }
+    /**
+     * 查询订单列表url
+     */
+    public static String getOrderListUrl() {
+        return AMUAC_IP + "/v1.0/order/list";
+    }
+    /**
+     * 查询订单详情url
+     */
+    public static String getOrderDetailUrl() {
+        return AMUAC_IP + "/v1.0/order/info";
+    }
+    /**
+     * 查询最近订单url
+     */
+    public static String getRecenctOrdersUrl() {
+        return AMUAC_IP + "/v1.0/order/recent";
+    }
+    /**
+     * 查询订单数量url
+     */
+    public static String getOrdersNumUrl() {
+        return AMUAC_IP + "/v1.0/order/subscript";
     }
 
 
