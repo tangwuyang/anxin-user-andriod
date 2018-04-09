@@ -6,6 +6,7 @@ import android.support.multidex.MultiDexApplication;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.AddressListBean;
+import com.anxin.kitchen.bean.MessageBean;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.UmengHelper;
@@ -34,6 +35,7 @@ public class MyApplication extends MultiDexApplication {
     public static MyApplication mApp;
     private Cache mCache;
     private Account mAccount = null;//用户信息
+    private MessageBean mMessagebean = null;//用户消息
     private Map<String, AddressListBean> addressNameMap = new HashMap<>();//跟据名称获取地址信息
     private Map<String, AddressListBean> addressIDMap = new HashMap<>();//根据ID获取地址信息
     private List<AddressBean> addressBeanList = new ArrayList<>();//送餐地址信息
@@ -110,6 +112,21 @@ public class MyApplication extends MultiDexApplication {
 
     public final synchronized Account getAccount() {
         return mAccount;
+    }
+
+    /**
+     * 缓存用户信息
+     *
+     * @param messageList
+     */
+    public final synchronized void setMessageList(MessageBean messageList) {
+        this.mMessagebean = messageList;
+        mCache.setMessage(this, mMessagebean);
+    }
+
+    public final synchronized MessageBean getMessageList() {
+        mMessagebean = getCache().getMessageBean(this);
+        return mMessagebean;
     }
 
     /**

@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.AddressListBean;
+import com.anxin.kitchen.bean.MessageBean;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,6 +43,7 @@ public class Cache {
      * Preferences ID Account.
      **/
     private static final String SAVED_ACCOUNT = "SAVED_ACCOUNT";
+
     /**
      * Preferences ID AddressID_NameMap.
      **/
@@ -70,6 +72,7 @@ public class Cache {
     private static final String SAVED_AMTOKEN = "SAVED_AMTOKEN";
 
     private final Context mContext;
+    private static final String SAVED_MESSAGE = "SAVED_MESSAGE";
 
     public Cache(final Context context) {
         mContext = context;
@@ -111,6 +114,25 @@ public class Cache {
      */
     public final void setAcount(Context context, final Account acount) {
         saveObject(context, SAVED_ACCOUNT, acount);
+    }
+
+    /***
+     * @return user Account.
+     */
+    public final MessageBean getMessageBean(Context context) {
+        MessageBean messageBean = (MessageBean) readObject(context, SAVED_MESSAGE);
+//        Log.e("--------------", "-------getAcount---------" + account);
+        if (null == messageBean)
+            return null;
+        return messageBean;
+    }
+
+    /***
+     * @param messageBean
+     *            Acount
+     */
+    public final void setMessage(Context context, final MessageBean messageBean) {
+        saveObject(context, SAVED_MESSAGE, messageBean);
     }
 
     public final Map<String, AddressListBean> getAddressNameMap(Context context) {

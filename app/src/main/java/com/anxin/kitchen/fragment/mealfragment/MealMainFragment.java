@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,17 +20,26 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.activity.MessageCenterActivity;
 import com.anxin.kitchen.activity.PreserveActivity;
 import com.anxin.kitchen.activity.RecoveryMealActivity;
 import com.anxin.kitchen.activity.SendMealLocationActivity;
+import com.anxin.kitchen.bean.AddressBean;
+import com.anxin.kitchen.bean.AddressListBean;
 import com.anxin.kitchen.bean.BannerListBean;
 import com.anxin.kitchen.bean.MealBean;
+import com.anxin.kitchen.bean.Message;
+import com.anxin.kitchen.bean.MessageBean;
+import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.CustomGridView;
 import com.anxin.kitchen.view.WaitingDialog;
 import com.bumptech.glide.Glide;
@@ -37,12 +48,21 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.youth.banner.Banner;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static com.anxin.kitchen.MyApplication.mApp;
 
 /**
  * 点餐主界面
@@ -68,21 +88,23 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     private MealBean mealBean;
     private ImageLoader imageLoader = ImageLoader.getInstance();
     private WaitingDialog mWaitingDialog;
-    String[] mealTypeImgs= new String[] {
+    private TextView messagePaymentNumber;
+    String[] mealTypeImgs = new String[]{
             "drawable://" + R.drawable.lunch_icon,
             "drawable://" + R.drawable.diner_icon,
     };
+    private static final String sendGetMessageList_http = "sendGetMessageList";
     //设置图片标题:自动对应
-    String[] titles=new String[]{"十大星级品牌联盟，全场2折起","全场2折起","十大星级品牌联盟","嗨购5折不要停","12趁现在","嗨购5折不要停，12.12趁现在","实打实大顶顶顶顶"};
+    String[] titles = new String[]{"十大星级品牌联盟，全场2折起", "全场2折起", "十大星级品牌联盟", "嗨购5折不要停", "12趁现在", "嗨购5折不要停，12.12趁现在", "实打实大顶顶顶顶"};
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBusFactory.getInstance().register(this);
         activity = (MainActivity) MainActivity.context;
         mWaitingDialog = new WaitingDialog(getActivity());
+        sendMessageList();
     }
-
-
-
 
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
@@ -112,7 +134,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                     lon = amapLocation.getLongitude();
                     android.util.Log.v("pcw", "lat : " + lat + " lon : " + lon);
                     android.util.Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
-                    mLocationTv.setText(amapLocation.getCity()+amapLocation.getDistrict()+amapLocation.getStreet()+amapLocation.getStreetNum());
+                    mLocationTv.setText(amapLocation.getCity() + amapLocation.getDistrict() + amapLocation.getStreet() + amapLocation.getStreetNum());
                     //获取到位置信息 再去获取kitchenId
                     getKitchenId();
                 } else {
@@ -125,7 +147,22 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         }
     };
 
-    public void setBanner(List<BannerListBean.Data> dataList){
+    /**
+     * 发送未读消息获取
+     */
+    private void sendMessageList() {
+//        LOG.e("-----------sendPhoneCode-----------");
+        MessageBean messageBean = MyApplication.getInstance().getMessageList();
+        String publishTime = "0";
+        if (messageBean != null) {
+            publishTime = messageBean.getPublishTime();
+        }
+        String urlPath = SystemUtility.sendGetMessageList(publishTime);
+//        LOG.e("-----------sendMessageList-----------" + urlPath);
+        SystemUtility.requestNetGet(urlPath, sendGetMessageList_http);
+    }
+
+    public void setBanner(List<BannerListBean.Data> dataList) {
         //设置样式,默认为:Banner.NOT_INDICATOR(不显示指示器和标题)
         //可选样式如下:
         //1. Banner.CIRCLE_INDICATOR    显示圆形指示器
@@ -134,7 +171,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         //4. Banner.CIRCLE_INDICATOR_TITLE  显示圆形指示器和标题
         String[] bannerTitles = new String[dataList.size()];
         String[] bannerUrls = new String[dataList.size()];
-        for (int i = 0; i<dataList.size();i++){
+        for (int i = 0; i < dataList.size(); i++) {
             bannerTitles[i] = dataList.get(i).getBannerName();
             bannerUrls[i] = dataList.get(i).getImg();
         }
@@ -174,21 +211,43 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         });
     }
 
+    /**
+     * 监听网络请求返回
+     *
+     * @param asyncHttpRequestMessage
+     */
+    public void onEventMainThread(AsyncHttpRequestMessage asyncHttpRequestMessage) {
+        String requestCode = asyncHttpRequestMessage.getRequestCode();
+        String responseMsg = asyncHttpRequestMessage.getResponseMsg();
+        String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+//        LOG.e("----------requestCode------" + requestCode);
+//        LOG.e("----------responseMsg------" + responseMsg);
+//        LOG.e("----------requestStatus------" + requestStatus);
+        switch (requestCode) {
+            //验证码发送
+            case sendGetMessageList_http:
+                if (requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    MessageJason(responseMsg);
+                }
+                break;
+        }
+    }
+
     private void getKitchenId() {
-        if (null != activity){
+        if (null != activity) {
             mWaitingDialog.show();
             mWaitingDialog.startAnimation();
-            Map<String,Object> dataMap = new HashMap();
-            dataMap.put("longitude",lon);
-            dataMap.put("latitude",lat);
-            activity.myLog("------------->开始请求" + lon + "  " +lat);
-            activity.requestNet(SystemUtility.getNearKitchenId(),dataMap,activity.GET_KITCHEN_ID);
+            Map<String, Object> dataMap = new HashMap();
+            dataMap.put("longitude", lon);
+            dataMap.put("latitude", lat);
+            activity.myLog("------------->开始请求" + lon + "  " + lat);
+            activity.requestNet(SystemUtility.getNearKitchenId(), dataMap, activity.GET_KITCHEN_ID);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.meal_main_fragment, container,false);
+        view = inflater.inflate(R.layout.meal_main_fragment, container, false);
         mPreserverRv = view.findViewById(R.id.preserver_rv);
         mPreserverRv.setNestedScrollingEnabled(false);
         mPreserverRv.setFocusable(false);
@@ -197,6 +256,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         mPreserverMealImg = view.findViewById(R.id.preserver_meal_img);
         mLocationTv = view.findViewById(R.id.location_tv);
         mBanner = view.findViewById(R.id.broadcast_banner);
+        messagePaymentNumber = view.findViewById(R.id.message_payment_number);
         setMyLocation();
         return view;
     }
@@ -228,6 +288,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         //启动定位
         mLocationClient.startLocation();
     }
+
     private void initView() {
         mPreserverRv = getView().findViewById(R.id.preserver_rv);
     }
@@ -246,14 +307,14 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         mLocationTv.setOnClickListener(this);
     }
 
-    public void closeWaitingDialog(){
+    public void closeWaitingDialog() {
         mWaitingDialog.stopAnimation();
         mWaitingDialog.dismiss();
     }
 
     //设置点餐适配器
     private void setAdapter(List<List<MealBean.Data>> dataList) {
-        mLiearManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
+        mLiearManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         PreserverAdapter adapter = new PreserverAdapter(dataList);
         mPreserverRv.setLayoutManager(mLiearManager);
         mPreserverRv.setAdapter(adapter);
@@ -264,32 +325,33 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         switch (v.getId()) {
             case R.id.message_img:
                 startNewActivity(MessageCenterActivity.class);
+                messagePaymentNumber.setVisibility(View.GONE);
                 break;
             case R.id.preserver_meal_img:
-                Intent intent1 = new Intent(activity,PreserveActivity.class);
+                Intent intent1 = new Intent(activity, PreserveActivity.class);
                 Gson gson = new Gson();
                 String mealBeanSt = null;
-                if (null != mealBean){
+                if (null != mealBean) {
                     mealBeanSt = gson.toJson(mealBean);
                 }
-                intent1.putExtra("mealListSt",mealBeanSt);
+                intent1.putExtra("mealListSt", mealBeanSt);
                 startActivity(intent1);
                 break;
             case R.id.recovery_meal_img:
-                Intent intent2 = new Intent(activity,RecoveryMealActivity.class);
+                Intent intent2 = new Intent(activity, RecoveryMealActivity.class);
                 Gson gson2 = new Gson();
                 String mealBeanSt2 = null;
-                if (null != mealBean){
+                if (null != mealBean) {
                     mealBeanSt2 = gson2.toJson(mealBean);
                 }
-                intent2.putExtra("mealListSt",mealBeanSt2);
+                intent2.putExtra("mealListSt", mealBeanSt2);
                 startActivity(intent2);
                 break;
             case R.id.location_tv:
                 //startNewActivity(SendMealLocationActivity.class);
-                Intent intent = new Intent(activity,SendMealLocationActivity.class);
+                Intent intent = new Intent(activity, SendMealLocationActivity.class);
                 startActivity(intent);
-                activity.overridePendingTransition(R.anim.activity_open,R.anim.activity_close);
+                activity.overridePendingTransition(R.anim.activity_open, R.anim.activity_close);
                 //送餐地址活动
             default:
                 break;
@@ -301,6 +363,101 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         startActivity(intent);
     }
 
+    /**
+     * 解析消息返回
+     *
+     * @param jason
+     */
+    private void MessageJason(String jason) {
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(jason);
+            String data = jsonObject.getString("data");
+            JSONArray jsonArrayResult2 = new JSONArray(data);
+            int MessageCount = jsonArrayResult2.length();
+            if (MessageCount == 0)
+                return;
+            messagePaymentNumber.setVisibility(View.VISIBLE);
+            messagePaymentNumber.setText(MessageCount + "");
+            String publishTime = "0";
+            MessageBean messageBean = MyApplication.getInstance().getMessageList();
+            if (messageBean == null)
+                messageBean = new MessageBean();
+            List<Message> orderMessageList = messageBean.getOrderMessageList();//订单通知列表
+            List<Message> updateMessageList = messageBean.getUpdateMessageList();//订单通知列表
+            List<Message> activityMessageList = messageBean.getActivityMessageList();//活动通知列表
+            for (int j = 0; j < MessageCount; j++) {
+                String alarmMsg2 = jsonArrayResult2.getString(j);
+                JSONObject jsonAlarm2 = new JSONObject(alarmMsg2);
+                Iterator<?> it2 = jsonAlarm2.keys();
+                String resultKey2 = "";
+                String resultValue2 = null;
+                Message message = new Message();
+                while (it2.hasNext()) {
+                    resultKey2 = (String) it2.next().toString();
+                    resultValue2 = jsonAlarm2.getString(resultKey2).trim();
+                    if (resultKey2 == null) {
+                        resultKey2 = "";
+                    }
+                    if (resultValue2 == null) {
+                        resultValue2 = "";
+                    }
+                    resultValue2 = resultValue2.trim();
+                    if (resultKey2.equals("id")) {
+                        message.setMsID(resultValue2);
+                    } else if (resultKey2.equals("userId")) {
+                        message.setUserID(resultValue2);
+                    } else if (resultKey2.equals("content")) {
+                        message.setMsContent(resultValue2);
+                    } else if (resultKey2.equals("publishTime")) {
+                        message.setMsPublishTime(resultValue2);
+                        if (Integer.valueOf(publishTime) < Integer.valueOf(resultValue2))
+                            publishTime = resultValue2;
+                    } else if (resultKey2.equals("title")) {
+                        message.setMsTitle(resultValue2);
+                    } else if (resultKey2.equals("link")) {
+                        message.setMsLink(resultValue2);
+                    } else if (resultKey2.equals("type")) {
+                        message.setMsType(resultValue2);
+                    } else if (resultKey2.equals("createTime")) {
+                        message.setMsCreateTime(resultValue2);
+                    }
+                }
+                if (message.getMsType().equals("1")) {
+                    updateMessageList.add(message);
+                } else if (message.getMsType().equals("50")) {
+                    activityMessageList.add(message);
+                } else if (message.getMsType().equals("2")) {
+                    orderMessageList.add(message);
+                }
+            }
+            if (updateMessageList.size() != 0) {
+                Collections.sort(updateMessageList, comparator);
+                messageBean.setUpdateMessageList(updateMessageList);
+            }
+            if (orderMessageList.size() != 0) {
+                Collections.sort(orderMessageList, comparator);
+                messageBean.setOrderMessageList(updateMessageList);
+            }
+            if (activityMessageList.size() != 0) {
+                Collections.sort(activityMessageList, comparator);
+                messageBean.setActivityMessageList(activityMessageList);
+            }
+            messageBean.setPublishTime(publishTime);
+            MyApplication.getInstance().setMessageList(messageBean);
+//            LOG.e("----------------------" + messageBean.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Comparator<Message> comparator = new Comparator<Message>() {
+        public int compare(Message s1, Message s2) {
+            return s2.getMsCreateTime().compareTo(s1.getMsCreateTime());
+        }
+    };
+
     public void setMeal(MealBean mealBean) {
         //更新首页菜品
         this.mealBean = mealBean;
@@ -311,12 +468,12 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         for (MealBean.Data mel :
                 mealList) {
             long thisDay = mel.getMenuDay();
-            if (thisDay!=lastDay){
+            if (thisDay != lastDay) {
                 lastDay = thisDay;
                 thisDayData = new ArrayList<>();
                 thisDayData.add(mel);
                 dataList.add(thisDayData);
-            }else {
+            } else {
                 thisDayData.add(mel);
             }
         }
@@ -324,16 +481,17 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     }
 
 
-    private class PreserverAdapter extends RecyclerView.Adapter<PreserverAdapter.ViewHolderw>{
+    private class PreserverAdapter extends RecyclerView.Adapter<PreserverAdapter.ViewHolderw> {
 
         List<List<MealBean.Data>> dataList;
+
         public PreserverAdapter(List<List<MealBean.Data>> dataList) {
             this.dataList = dataList;
         }
 
         @Override
         public ViewHolderw onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_item,parent,false);
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_item, parent, false);
             ViewHolderw holder = new ViewHolderw(view);
             holder.mPreserverDayRv = view.findViewById(R.id.preserver_rv);
             holder.dateTv = view.findViewById(R.id.date_tv);
@@ -347,9 +505,9 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             // holder.mPreserverDayRv.setLayoutManager(layoutManage);
             String dataSt = String.valueOf(dataList.get(position).get(0).getMenuDay());
             StringBuffer dateBf = new StringBuffer();
-            dateBf.append(dataSt.substring(0,4));
+            dateBf.append(dataSt.substring(0, 4));
             dateBf.append(".");
-            dateBf.append(dataSt.substring(4,6));
+            dateBf.append(dataSt.substring(4, 6));
             dateBf.append(".");
             dateBf.append(dataSt.substring(6));
             holder.dateTv.setText(dateBf);
@@ -364,6 +522,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         public class ViewHolderw extends RecyclerView.ViewHolder {
             private TextView dateTv;
             private CustomGridView mPreserverDayRv;
+
             public ViewHolderw(View itemView) {
                 super(itemView);
 
@@ -371,11 +530,11 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         }
     }
 
-    private class PreserverFoodAdapter extends RecyclerView.Adapter<PreserverFoodAdapter.ViewHolder>{
+    private class PreserverFoodAdapter extends RecyclerView.Adapter<PreserverFoodAdapter.ViewHolder> {
 
         @Override
         public PreserverFoodAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_food_item,parent,false);
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_food_item, parent, false);
             ViewHolder holder = new ViewHolder(view);
             return holder;
         }
@@ -398,8 +557,9 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         }
     }
 
-    private class PreserverGridAdapter extends BaseAdapter{
+    private class PreserverGridAdapter extends BaseAdapter {
         List<MealBean.Data> dataList;
+
         public PreserverGridAdapter(List<MealBean.Data> data) {
             this.dataList = data;
         }
@@ -430,7 +590,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 holder.titleTv = view.findViewById(R.id.meal_title_tv);
                 holder.contextTv = view.findViewById(R.id.meal_content_tv);
                 view.setTag(holder);
-            }else {
+            } else {
                 holder = (MealViewHolder) view.getTag();
             }
             DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -441,32 +601,37 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                     .build();
             // holder.BackgroundImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             String imgSrc = dataList.get(i).getImg();
-            activity.myLog("----------->"+imgSrc);
-            imageLoader.displayImage(dataList.get(i).getImg(),holder.BackgroundImg,options);
+            activity.myLog("----------->" + imgSrc);
+            imageLoader.displayImage(dataList.get(i).getImg(), holder.BackgroundImg, options);
             int type = dataList.get(i).getEatType();
-            if (type ==1){
-                imageLoader.displayImage(mealTypeImgs[0],holder.iconImg,options);
-            }else if (type == 2){
-                imageLoader.displayImage(mealTypeImgs[1],holder.iconImg,options);
-            }else if (type == 3){
+            if (type == 1) {
+                imageLoader.displayImage(mealTypeImgs[0], holder.iconImg, options);
+            } else if (type == 2) {
+                imageLoader.displayImage(mealTypeImgs[1], holder.iconImg, options);
+            } else if (type == 3) {
             }
             holder.titleTv.setText(dataList.get(i).getPackageName());
             List<MealBean.FoodList> foodLists = dataList.get(i).getFoodList();
             StringBuffer foodBf = new StringBuffer();
-            for (MealBean.FoodList foodList:
+            for (MealBean.FoodList foodList :
                     foodLists) {
-                foodBf.append(foodList.getDishName()+"\r\n");
+                foodBf.append(foodList.getDishName() + "\r\n");
             }
             holder.contextTv.setText(foodBf.toString());
             return view;
         }
     }
 
-    private class MealViewHolder{
+    private class MealViewHolder {
         private ImageView BackgroundImg;
         private ImageView iconImg;
         private TextView titleTv;
         private TextView contextTv;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBusFactory.getInstance().unregister(this);
+    }
 }
