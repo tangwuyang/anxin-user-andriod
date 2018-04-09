@@ -109,7 +109,7 @@ public class RecoverBean {
         private int packageId;
         private int dietId;
         private int cuisineId;
-        private int price;
+        private double price;
         private String dashPrice;
         private String packageName;
         private String img;
@@ -160,10 +160,10 @@ public class RecoverBean {
             return cuisineId;
         }
 
-        public void setPrice(int price) {
+        public void setPrice(double price) {
             this.price = price;
         }
-        public int getPrice() {
+        public double getPrice() {
             return price;
         }
 

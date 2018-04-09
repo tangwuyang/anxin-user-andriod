@@ -37,6 +37,9 @@
             android:background="@color/item_divider"
             />
     <ListView
+        android:id="@+id/group_lv"
+        android:dividerHeight="0.5dp"
+        android:divider="@color/item_divider"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"></ListView>

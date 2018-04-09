@@ -193,6 +193,7 @@
 
     </LinearLayout>
     <TextView
+        android:id="@+id/ensure_pay_tv"
         android:layout_width="0dp"
         android:layout_weight="5"
         android:background="@color/red"

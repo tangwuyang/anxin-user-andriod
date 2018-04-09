@@ -96,6 +96,16 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/auto_register_login";
     }
 
+ /**
+  * 创建食疗订单
+  * /v1.0/order/create_diet
+  */
+//上传手机信息
+ public static String createRecoverDiet() {
+     return AMUAC_IP + "/v1.0/order/create_diet";
+ }
+
+
     //上传手机信息
     public static String sendPhoneReportDevice() {
         return AMUAC_IP + "/v1.0/user/report_device";

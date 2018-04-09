@@ -159,7 +159,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
     //下拉刷新
     private void setRefresh() {
-     mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mRefreshLayout.setRefreshing(true);
@@ -276,26 +276,28 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     }
 
     public void setFriend(FriendsBean bean) {
-       List<FriendsBean.Data> friendList =  bean.getData();
-       activity.myLog("---------------"+friendList.size());
-       if (null!=Friendslist) {
-           Friendslist.clear();
-       }else {
-           Friendslist = new ArrayList<>();
-       }
+        List<FriendsBean.Data> friendList =  bean.getData();
+        activity.myLog("---------------"+friendList.size());
+        if (null!=Friendslist) {
+            Friendslist.clear();
+        }else {
+            Friendslist = new ArrayList<>();
+        }
         if(null != Friendslist && friendList.size()>0){
-           for (int i = 0;i<friendList.size();i++){
-               ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),
-                       friendList.get(i).getPhone(),friendList.get(i).getGroupId(),
-                       friendList.get(i).getUserLogo(),friendList.get(i).getId());
-               Friendslist.add(contactEntity);
-           }
-       }else {
+            for (int i = 0;i<friendList.size();i++){
+                ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),
+                        friendList.get(i).getPhone(),friendList.get(i).getGroupId(),
+                        friendList.get(i).getUserLogo(),friendList.get(i).getId());
+                if (!contactEntity.getName().equals("暂无")){
+                    Friendslist.add(contactEntity);
+                }
+            }
+        }else {
             Friendslist.add(new ContactEntity("暂无好友",""));
         }
         mAdapter = new MyIndexStickyViewAdapter(Friendslist);
         mIndexStickyView.setAdapter(mAdapter);
-       // mAdapter.notifyDataSetChanged();
+        // mAdapter.notifyDataSetChanged();
         mIndexStickyView.addItemDecoration(new IndexStickyViewDecoration(getContext()));
         //添加饭团组
         // addFanGroup();
