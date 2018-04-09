@@ -169,25 +169,64 @@ public class SystemUtility {
 
                 if (response.isSuccessful()) {
                     String str = response.body().string();
-                    LOG.e( response.message() + " , body " + str);
+                    LOG.e(response.message() + " , body " + str);
 
                 } else {
-                    LOG.e( response.message() + " error : body " + response.body().string());
+                    LOG.e(response.message() + " error : body " + response.body().string());
                 }
             }
         });
+
+//       MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+//        //1.定义一个OkhttpClient
+//        OkHttpClient client = new OkHttpClient();
+//        JSONObject jsonObject = new JSONObject();
+//        try {
+//            jsonObject.put("path","user_logo");
+//            jsonObject.put("relation","");
+//            jsonObject.put("token",AMToken);
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        //建立body，然后设置这个body里面放的数据类型是什么。
+//        RequestBody body = RequestBody.create(JSON,jsonObject.toString());
+//        //建立请求
+//        Request request = new Request.Builder().post(body).url(url).build();
+//        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+//
+//        builder.addFormDataPart("user_logo", "user_logo.jpg", RequestBody.create(MediaType.parse("image/jpg"), file));
+//
+//        body = builder.build();
+//        //定义Call
+//        Call call = client.newCall(request);
+//        //执行Call
+//        call.enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                httpResponseCallBack.error(e);
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                httpResponseCallBack.response(response.body().string());
+//            }
+//        });
     }
 
     public static void compressBmpToFile(Bitmap bmp, File file) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int options = 60;
+        int options = 80;
         bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
-        while (baos.toByteArray().length / 1024 > 50) {
-            baos.reset();
-            options -= 10;
-            bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
-        }
+//        while (baos.toByteArray().length / 1024 > 50) {
+//            baos.reset();
+//            options -= 10;
+//            LOG.e("-------------baos.toByteArray().length-----" + baos.toByteArray().length);
+//            bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+//        }
         try {
+            LOG.e("-------------bmp.toByteArray().length-----" + bmp.getByteCount() / 1024);
+            LOG.e("-------------baos.toByteArray().length-----" + baos.toByteArray().length / 1024);
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(baos.toByteArray());
             fos.flush();
@@ -412,14 +451,14 @@ public class SystemUtility {
         if (null != urlPath && urlPath.length() > 0) {
 
             AsyncHttpClient client = new AsyncHttpClient();
-            LOG.d( "------requestNetGet------urlPath----" + urlPath);
+            LOG.d("------requestNetGet------urlPath----" + urlPath);
             client.get(urlPath, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
-                        LOG.d( "------requestNetGet---onSuccess-------" + result);
+                        LOG.d("------requestNetGet---onSuccess-------" + result);
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
                 }

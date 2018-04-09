@@ -176,7 +176,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
+        public View getView(final int i, View view, ViewGroup viewGroup) {
             TablewareBean.Data data = tablewareBean.getData().get(i);
             myLog("----------------->"+data.getName());
             view = LayoutInflater.from(EnsureOrderActivity.this).inflate(R.layout.order_tablemare_item,viewGroup,false);
@@ -242,7 +242,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
+        public View getView(final int i, View view, ViewGroup viewGroup) {
             view = LayoutInflater.from(EnsureOrderActivity.this).inflate(R.layout.order_paymentway_item,viewGroup,false);
             ImageView payImg = view.findViewById(R.id.pay_img);
             ImageView paySelectImg = view.findViewById(R.id.pay_select_img);

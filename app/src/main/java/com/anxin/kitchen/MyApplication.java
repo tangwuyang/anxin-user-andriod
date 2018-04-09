@@ -63,13 +63,13 @@ public class MyApplication extends MultiDexApplication {
         UmengHelper.getInstance().init();
         String carrier = android.os.Build.MANUFACTURER;
         LOG.d("-----------carrier------" + carrier);
-        if (carrier != null && carrier.equals("Xiaomi")) {
+        if (carrier != null && carrier.equals("Xiaomi")) {//小米推送
             LOG.d("-------------Xiaomi-------");
             MiPushRegistar.register(getInstance(), "2882303761517755809", "5341775518809");
-        } else if (carrier != null && carrier.equals("HUAWEI")) {
+        } else if (carrier != null && carrier.equals("HUAWEI")) {//华为推送
             LOG.d("-------------HUAWEI-------");
             HuaWeiRegister.register(getInstance());
-        } else if (carrier != null && carrier.equals("Meizu")) {
+        } else if (carrier != null && carrier.equals("Meizu")) {//魅族推送
             LOG.d("-------------Meizu-------");
             MeizuRegister.register(getInstance(), "", "");
         }
