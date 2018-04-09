@@ -34,6 +34,8 @@ public abstract class BaseFragment extends Fragment implements RequestNetListene
         mActivity = getActivity();
     }
 
+
+
     //请求网络异步方法
 
     /**
@@ -80,12 +82,7 @@ public abstract class BaseFragment extends Fragment implements RequestNetListene
                         }
                     }
                 }
-
             });
-
-
         }
     }
-
-
 }
