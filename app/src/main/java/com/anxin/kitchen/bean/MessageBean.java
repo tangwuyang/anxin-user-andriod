@@ -13,6 +13,8 @@ public class MessageBean implements Serializable {
     private List<Message> OrderMessageList = new ArrayList<>();//订单通知列表
     private List<Message> UpdateMessageList = new ArrayList<>();//订单通知列表
     private List<Message> ActivityMessageList = new ArrayList<>();//订单通知列表
+    private List<Message> SystemMessageList = new ArrayList<>();//系统通知列表
+    private List<Message> OtherMessageList = new ArrayList<>();//其他通知列表
 
     public MessageBean() {
 
@@ -48,6 +50,22 @@ public class MessageBean implements Serializable {
 
     public void setActivityMessageList(List<Message> activityMessageList) {
         ActivityMessageList = activityMessageList;
+    }
+
+    public List<Message> getSystemMessageList() {
+        return SystemMessageList;
+    }
+
+    public void setSystemMessageList(List<Message> systemMessageList) {
+        SystemMessageList = systemMessageList;
+    }
+
+    public List<Message> getOtherMessageList() {
+        return OtherMessageList;
+    }
+
+    public void setOtherMessageList(List<Message> otherMessageList) {
+        OtherMessageList = otherMessageList;
     }
 
     @Override

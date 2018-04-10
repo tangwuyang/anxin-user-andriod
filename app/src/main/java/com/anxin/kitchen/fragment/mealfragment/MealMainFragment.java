@@ -424,12 +424,16 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                         message.setMsCreateTime(resultValue2);
                     }
                 }
-                if (message.getMsType().equals("1")) {
+                if (message.getMsType().equals("4")) {//更新通知
                     updateMessageList.add(message);
-                } else if (message.getMsType().equals("50")) {
+                } else if (message.getMsType().equals("2")) {//活动通知
                     activityMessageList.add(message);
-                } else if (message.getMsType().equals("2")) {
+                } else if (message.getMsType().equals("3")) {//订单通知
                     orderMessageList.add(message);
+//                } else if (message.getMsType().equals("1")) {//系统通知
+//                    orderMessageList.add(message);
+//                } else if (message.getMsType().equals("50")) {//其他通知
+//                    orderMessageList.add(message);
                 }
             }
             if (updateMessageList.size() != 0) {

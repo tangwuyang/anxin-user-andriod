@@ -182,9 +182,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         String responseMsg = asyncHttpRequestMessage.getResponseMsg();
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
         String codeToKen = StringUtils.parserMessage(responseMsg, "code");
-        LOG.d("----------requestCode------" + requestCode);
-        LOG.d("----------responseMsg------" + responseMsg);
-        LOG.d("----------requestStatus------" + requestStatus);
+//        LOG.d("----------requestCode------" + requestCode);
+//        LOG.d("----------responseMsg------" + responseMsg);
+//        LOG.d("----------requestStatus------" + requestStatus);
         switch (requestCode) {
             //验证码发送
             case sendUserPhoneCode_http:
@@ -243,7 +243,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         if (code != null && code.equals("1")) {
             //解析验证码返回
             Account account = SystemUtility.loginAnalysisJason(Msg);
-            LOG.e("--------sendPhoneLogin--Account--" + account.toString());
+//            LOG.e("--------sendPhoneLogin--Account--" + account.toString());
 //            LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
             if (account != null) {
                 String trueName = account.getUserTrueName();
@@ -325,11 +325,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private void sendPhoneLogin(final String userPhone, final String code, String loginData) {
         String urlPath = "";
         if (loginData.equals("1")) {
-            LOG.e("--------------sendUserPhoneLogin------------");
+//            LOG.e("--------------sendUserPhoneLogin------------");
             urlPath = SystemUtility.sendUserPhoneLogin(userPhone, code);
             SystemUtility.requestNetGet(urlPath, sendUserPhoneLogin_http);
         } else if (loginData.equals("0")) {
-            LOG.e("--------------sendUserPhoneregister------------");
+//            LOG.e("--------------sendUserPhoneregister------------");
             urlPath = SystemUtility.sendUserPhoneregister(userPhone, code);
             SystemUtility.requestNetGet(urlPath, sendUserPhoneRegister_http);
         }

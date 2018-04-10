@@ -44,7 +44,7 @@ import butterknife.OnTouch;
 /**
  * 自定义裁剪activity
  */
-public class ClipPictureActivity extends AppCompatActivity {
+public class ClipPictureActivity extends BaseActivity {
 
     public static final String TAG = "ClipPictureActivity";
     public static final String IMAGE_PATH_ORIGINAL = "image_path_original";
