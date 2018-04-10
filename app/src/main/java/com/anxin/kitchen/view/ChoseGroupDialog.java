@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.anxin.kitchen.activity.CreateGroupActivity;
 import com.anxin.kitchen.activity.PreserveActivity;
 import com.anxin.kitchen.activity.SetCountActivity;
-import com.anxin.kitchen.bean.GroupBean;
 import com.anxin.kitchen.bean.SearchGroupBean;
 import com.anxin.kitchen.interface_.OnGivedPermissionListener;
 import com.anxin.kitchen.user.R;
@@ -35,10 +34,14 @@ public class ChoseGroupDialog extends Dialog{
     private PrefrenceUtil prefrenceUtil;
     private String mGroupList;
     private SearchGroupBean bean;
-    public ChoseGroupDialog(Context context, View.OnClickListener setCountListener) {
+    private long day;
+    private String type;
+    public ChoseGroupDialog(Context context, View.OnClickListener setCountListener, String tag) {
         super(context);
         mContext = context;
         this.setCountListener = setCountListener;
+        day = Long.valueOf(tag.substring(0,tag.indexOf("-")));
+        type = tag.substring(tag.indexOf("-")+1);
     }
 
 
@@ -107,12 +110,29 @@ public class ChoseGroupDialog extends Dialog{
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            SearchGroupBean.Data group = groupList.get(i);
             view = LayoutInflater.from(mContext).inflate(R.layout.group_simple_item,viewGroup,false);
+            final SearchGroupBean.Data group = groupList.get(i);
+            int groupMembersNum = group.getGroupNum();
             TextView groupnameTv = view.findViewById(R.id.group_name_tv);
             TextView groupNumTv = view.findViewById(R.id.group_nums_tv);
+            if (groupMembersNum>=10){
+                view.setEnabled(true);
+                groupnameTv.setTextColor(mContext.getResources().getColor(R.color.black));
+                groupnameTv.setTextColor(mContext.getResources().getColor(R.color.black));
+            }else {
+                groupnameTv.setTextColor(mContext.getResources().getColor(R.color.shallow_text_color));
+                groupnameTv.setTextColor(mContext.getResources().getColor(R.color.shallow_text_color));
+            }
             groupnameTv.setText(group.getGroupName());
             groupNumTv.setText(group.getGroupNum()+"人");
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((PreserveActivity)mContext).choseGroup(day,type,group.getId(),group.getGroupName());
+                    ChoseGroupDialog.this.dismiss();
+                }
+            });
             return view;
         }
     }

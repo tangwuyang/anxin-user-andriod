@@ -125,9 +125,44 @@ public class MealBean {
         private String packageName;
         private String img;
         private int eatType;
-        private int nums ; //选择的份数
+        private int nums ; //设置的份数
         private List<FoodList> foodList;
+        private boolean grouporderTag;  //选择团下的单标志位
+        private boolean setNumsTag;   //设置数量的单标志位
+        private int relativeGroupId;  //假如选择的团 则有广联的团
+        private String relatedGroupName; //关联的团的名字
 
+        public int getRelativeGroupId() {
+            return relativeGroupId;
+        }
+
+        public String getRelatedGroupName() {
+            return relatedGroupName;
+        }
+
+        public void setRelatedGroupName(String relatedGroupName) {
+            this.relatedGroupName = relatedGroupName;
+        }
+
+        public void setRelativeGroupId(int relativeGroupId) {
+            this.relativeGroupId = relativeGroupId;
+        }
+
+        public boolean isGrouporderTag() {
+            return grouporderTag;
+        }
+
+        public void setGrouporderTag(boolean grouporderTag) {
+            this.grouporderTag = grouporderTag;
+        }
+
+        public boolean isSetNumsTag() {
+            return setNumsTag;
+        }
+
+        public void setSetNumsTag(boolean setNumsTag) {
+            this.setNumsTag = setNumsTag;
+        }
 
         public int getNums() {
             return nums;

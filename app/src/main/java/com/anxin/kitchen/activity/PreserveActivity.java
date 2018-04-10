@@ -1,10 +1,8 @@
 package com.anxin.kitchen.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,17 +10,15 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.anxin.kitchen.bean.FoodsBean;
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.MealBean.FoodList;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Constant;
-import com.anxin.kitchen.utils.Log;
-import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.view.ChoseGroupDialog;
 import com.anxin.kitchen.view.OrderingRuleDialog;
 import com.google.gson.reflect.TypeToken;
@@ -51,6 +47,9 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     List<Long> days ; //未来一周的长整型集合
     ChoseGroupDialog dialog = null;
     private TextView mCloseAcountTv;  //去结算
+    private boolean hasMeal = false; //是否有选择餐
+    private boolean isChosedGroup = false;   //是否全部选择的是团选择团
+    private boolean isChosedBySetNums = false; //是否选择输入数量
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -274,11 +273,67 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 startNewActivity(ViewKitchenActivity.class);
                 break;
             case R.id.close_account_tv:
-                startNewActivity(ChoseTablewareActivity.class);
+                String status = annylyDateValue();
+                if (null==status) {
+                    startNewActivity(ChoseTablewareActivity.class);
+                }else {
+                    Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
+                }
             default:
                 break;
         }
     }
+
+
+
+    public String annylyDateValue(){
+        boolean mark = true;
+        for (Long mealDay:preserverAdapter.preMealMaps.keySet()){
+            Map<String, MealBean.Data> dayData = preserverAdapter.preMealMaps.get(mealDay);
+                if (dayData.containsKey("午餐")){
+                    hasMeal = true;
+                    if ((dayData.get("午餐").getNums()==0)&&(!dayData.get("午餐").isGrouporderTag())){
+                        return "还有套餐没有选择数量";
+                    }else {
+                        if (mark){
+                            mark = false;
+                            isChosedBySetNums = dayData.get("午餐").isSetNumsTag();  //是否按数量设置
+                            isChosedGroup = dayData.get("午餐").isGrouporderTag();  //是否按团选择
+                        }else {
+                            if (!(isChosedGroup == dayData.get("午餐").isGrouporderTag())){
+                                myLog("------------->午餐"+isChosedGroup+  "   " + dayData.get("午餐").isGrouporderTag());
+                                return "请按照同一种方式选择数量";
+                            } //比较前后是不是都是按照团选择
+                        }
+                    }
+                }
+
+            if (dayData.containsKey("晚餐")){
+                hasMeal = true;
+                if (dayData.get("晚餐").getNums()==0&&(!dayData.get("晚餐").isGrouporderTag())){
+                    return "还有套餐没有选择数量";
+                }else {
+                    if (mark){
+                        mark = false;
+                        isChosedBySetNums = dayData.get("晚餐").isSetNumsTag();  //是否按数量设置
+                        isChosedGroup = dayData.get("晚餐").isGrouporderTag();  //是否按团选择  以第一个为基准
+                    }else {
+                        if (!(isChosedGroup == dayData.get("晚餐").isGrouporderTag())){
+                            myLog("------------->晚餐"+isChosedGroup+  "   " + dayData.get("晚餐").isGrouporderTag());
+                            return "请按照同一种方式选择数量";
+                        } //比较前后是不是都是按照团选择
+                    }
+                }
+            }
+
+        }
+
+        if (!hasMeal){
+            return "还没有选择套餐";
+        }
+        return null;
+    }
+
 
     private class PreserverAdapter extends BaseAdapter {
         private List<Long> days;
@@ -332,6 +387,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
             //操作午餐
             if (preMealMaps.get(day).containsKey("午餐")){
+                lunchItem.setTag(day+"-午餐");
                 MealBean.Data lunch = preMealMaps.get(day).get("午餐");
                 TextView mealTitle = lunchItem.findViewById(R.id.meal_title_tv);
                 TextView mealContext = lunchItem.findViewById(R.id.meal_content_tv);
@@ -373,16 +429,21 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 //显示数量
                 myLog("-------------->"+lunch.getNums()+"份");
                 TextView numTv = lunchItem.findViewById(R.id.nums_tv);
-                if (lunch.getNums()>0){
-                    numTv.setText(lunch.getNums()+"份");
+                if (lunch.isGrouporderTag()){
+                    numTv.setText(lunch.getRelatedGroupName());
                 }
 
+                if (lunch.isSetNumsTag()) {
+                    if (lunch.getNums() > 0) {
+                        numTv.setText(lunch.getNums() + "份");
+                    }
+                }
                 //午餐设置数量
                 LinearLayout setCountLl = lunchItem.findViewById(R.id.set_count_ll);
                 setCountLl.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                       dialog = new ChoseGroupDialog(PreserveActivity.this, new View.OnClickListener() {
+                        dialog = new ChoseGroupDialog(PreserveActivity.this, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 lunchItem.setTag(day+"-午餐");
@@ -391,7 +452,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                                 startActivityForResult(intent,SET_NUMS);
                                 dialog.dismiss();
                             }
-                        });
+                        },(String)lunchItem.getTag());
                         dialog.show();
                     }
                 });
@@ -413,7 +474,8 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
             //操作晚餐
             if (preMealMaps.get(day).containsKey("晚餐")){
-                {
+
+                    dinnerItem.setTag(day+"-晚餐");
                     MealBean.Data lunch = preMealMaps.get(day).get("晚餐");
                     TextView mealTitle = dinnerItem.findViewById(R.id.meal_title_tv);
                     TextView mealContext = dinnerItem.findViewById(R.id.meal_content_tv);
@@ -459,7 +521,17 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                             PreserverAdapter.this.notifyDataSetChanged();
                         }
                     });
+
+                if (lunch.isGrouporderTag()){
+                    numTv.setText(lunch.getRelatedGroupName());
                 }
+
+                if (lunch.isSetNumsTag()) {
+                    if (lunch.getNums() > 0) {
+                        numTv.setText(lunch.getNums() + "份");
+                    }
+                }
+
                 //设置数量
                 LinearLayout setCountLl = dinnerItem.findViewById(R.id.set_count_ll);
                 setCountLl.setOnClickListener(new View.OnClickListener() {
@@ -474,7 +546,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                                 startActivityForResult(intent,SET_NUMS);
                                 dialog.dismiss();
                             }
-                        });
+                        }, (String) dinnerItem.getTag());
                         dialog.show();
                     }
                 });
@@ -529,10 +601,28 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
             myLog("-------------" + isContain);
             if (isContain){
-                    preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(nums);
-                    myLog("--------------->fen:" +  preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
+                preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setSetNumsTag(true);
+                preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(nums);
+                preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setGrouporderTag(false);
+                preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelativeGroupId(0);
+                preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelatedGroupName(null);
+                myLog("--------------->fen:" +  preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
             }
             preserverAdapter.notifyDataSetChanged();
         }
     }
+
+    public void choseGroup(long day,String type,int groupId,String groupName){
+        boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
+        if (isContain){
+            preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setSetNumsTag(false);
+            preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(0);
+            preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setGrouporderTag(true);
+            preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelativeGroupId(groupId);
+            preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelatedGroupName(groupName);
+            myLog("--------------->fen:" +  preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
+        }
+        preserverAdapter.notifyDataSetChanged();
+    };
+
 }
