@@ -11,16 +11,21 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.bean.Message;
 import com.anxin.kitchen.bean.MessageBean;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageCenterActivity extends AppCompatActivity {
+public class MessageCenterActivity extends BaseActivity {
     private ListView mMessageLv;
     private MessageAdapter mMessageAdapter;
     private List<MessageBean> messageBeanList = new ArrayList<>();
+    private MessageBean messageBean = new MessageBean();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,15 +41,13 @@ public class MessageCenterActivity extends AppCompatActivity {
         }
     }
 
-    private void getData(){
-        MessageBean bean1 = new MessageBean("",0,"订单已发货","您的订单预计30分钟后送达");
-        MessageBean bean2 = new MessageBean("",1,"新版本v11.2.2已更新",
-                "修复了部分bug，用户体验优化，点击了解详情...");
-        MessageBean bean3 = new MessageBean("",2,"每月1号优惠日活动",
-                "每月1号大家瓜分1000万，人人可得！");
-        messageBeanList.add(bean1);
-        messageBeanList.add(bean2);
-        messageBeanList.add(bean3);
+    private void getData() {
+        messageBean = MyApplication.getInstance().getMessageList();
+        if (null == messageBean)
+            messageBean = new MessageBean();
+        messageBeanList.add(new MessageBean());
+        messageBeanList.add(new MessageBean());
+        messageBeanList.add(new MessageBean());
     }
 
     private void initView() {
@@ -59,11 +62,11 @@ public class MessageCenterActivity extends AppCompatActivity {
         });
     }
 
-    private class MessageAdapter extends BaseAdapter{
+    private class MessageAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            if (messageBeanList!= null){
+            if (messageBeanList != null) {
                 return messageBeanList.size();
             }
             return 0;
@@ -82,40 +85,63 @@ public class MessageCenterActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
             ViewHolder holder = null;
-            MessageBean bean = messageBeanList.get(position);
-            if (null==null) {
+            if (null == null) {
                 view = LayoutInflater.from(MessageCenterActivity.this).inflate(R.layout.message_item, viewGroup, false);
                 holder = new ViewHolder();
                 holder.messageTypeTv = view.findViewById(R.id.message_type_tv);
                 holder.messageImg = view.findViewById(R.id.message_img);
-                holder.messageTimeTv = view.findViewById(R.id.message_title_tv);
+                holder.messageTimeTv = view.findViewById(R.id.message_time_tv);
                 holder.messageTitleTv = view.findViewById(R.id.message_title_tv);
                 holder.messageContenTv = view.findViewById(R.id.message_content_tv);
                 holder.enterMessageImg = view.findViewById(R.id.enter_message_img);
                 view.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) view.getTag();
             }
-            switch (bean.getMessageType()){
+            Message messageItem = null;
+            switch (position) {
                 case 0:
                     holder.messageTypeTv.setText("订单通知");
+                    holder.messageImg.setImageDrawable(getResources().getDrawable(R.drawable.message_order_icon));
+                    List<Message> orderMessageList = messageBean.getOrderMessageList();
+                    if (orderMessageList.size() != 0)
+                        messageItem = orderMessageList.get(0);
                     break;
                 case 1:
                     holder.messageTypeTv.setText("更新通知");
+                    holder.messageImg.setImageDrawable(getResources().getDrawable(R.drawable.update_message_icon));
+                    List<Message> updateMessageList = messageBean.getUpdateMessageList();
+                    if (updateMessageList.size() != 0)
+                        messageItem = updateMessageList.get(0);
                     break;
                 case 2:
                     holder.messageTypeTv.setText("活动通知");
+                    holder.messageImg.setImageDrawable(getResources().getDrawable(R.drawable.message_activity_icon));
+                    List<Message> activityMessageList = messageBean.getActivityMessageList();
+                    if (activityMessageList.size() != 0)
+                        messageItem = activityMessageList.get(0);
                     break;
                 default:
                     break;
             }
-            holder.messageTitleTv.setText(bean.getMessageTitle());
-            holder.messageContenTv.setText(bean.getMessageContent());
+            if (messageItem == null)
+                return view;
+            String title = messageItem.getMsTitle();
+            if (title != null && title.length() != 0)
+                holder.messageTitleTv.setText(title);
+            String content = messageItem.getMsContent();
+            if (content != null && content.length() != 0)
+                holder.messageContenTv.setText(content);
+            String time = messageItem.getMsCreateTime();
+            if (time != null && time.length() != 0) {
+                String date = DateUtils.stampToDate(time, "MM-dd HH:mm");
+                holder.messageTimeTv.setText(date);
+            }
             return view;
         }
     }
 
-    private class ViewHolder{
+    private class ViewHolder {
         private ImageView messageImg;
         private TextView messageTypeTv;
         private TextView messageTimeTv;

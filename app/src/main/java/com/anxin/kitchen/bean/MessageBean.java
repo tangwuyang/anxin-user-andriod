@@ -1,56 +1,62 @@
 package com.anxin.kitchen.bean;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by 唐午阳 on 2018/2/10.
  */
 
-public class MessageBean {
-    private String imgUrl;
-    private int messageType;
-    private String messageTitle;
-    private String messageContent;
-    private String messageTime;
+public class MessageBean implements Serializable {
+    private String publishTime = "0";//最近一次获取时间
+    private List<Message> OrderMessageList = new ArrayList<>();//订单通知列表
+    private List<Message> UpdateMessageList = new ArrayList<>();//订单通知列表
+    private List<Message> ActivityMessageList = new ArrayList<>();//订单通知列表
 
     public MessageBean() {
 
     }
 
-    public MessageBean(String imgUrl, int messageType, String messageTitle, String messageContent) {
-        this.imgUrl = imgUrl;
-        this.messageType = messageType;
-        this.messageTitle = messageTitle;
-        this.messageContent = messageContent;
+    public String getPublishTime() {
+        return publishTime;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
+    public void setPublishTime(String publishTime) {
+        this.publishTime = publishTime;
     }
 
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
+    public List<Message> getOrderMessageList() {
+        return OrderMessageList;
     }
 
-    public int getMessageType() {
-        return messageType;
+    public void setOrderMessageList(List<Message> orderMessageList) {
+        OrderMessageList = orderMessageList;
     }
 
-    public void setMessageType(int messageType) {
-        messageType = messageType;
+    public List<Message> getUpdateMessageList() {
+        return UpdateMessageList;
     }
 
-    public String getMessageTitle() {
-        return messageTitle;
+    public void setUpdateMessageList(List<Message> updateMessageList) {
+        UpdateMessageList = updateMessageList;
     }
 
-    public void setMessageTitle(String messageTitle) {
-        this.messageTitle = messageTitle;
+    public List<Message> getActivityMessageList() {
+        return ActivityMessageList;
     }
 
-    public String getMessageContent() {
-        return messageContent;
+    public void setActivityMessageList(List<Message> activityMessageList) {
+        ActivityMessageList = activityMessageList;
     }
 
-    public void setMessageContent(String messageContent) {
-        this.messageContent = messageContent;
+    @Override
+    public String toString() {
+        return "MessageBean{" +
+                "publishTime='" + publishTime + '\'' +
+                ", OrderMessageList=" + OrderMessageList.toString() +
+                ", UpdateMessageList=" + UpdateMessageList.toString() +
+                ", ActivityMessageList=" + ActivityMessageList.toString() +
+                '}';
     }
 }

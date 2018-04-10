@@ -116,6 +116,11 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
     }
 
+    //获取未读消息
+    public static String sendGetMessageList(String publishTime) {
+        return AMUAC_IP + "/v1.0/system/message_list?publishTime="+publishTime;
+    }
+
     //get_kitchen_setting 获取厨房配置消息
     //获取送餐地址
     public static String get_kitchen_settingUrl() {
@@ -331,24 +336,28 @@ public class SystemUtility {
     public static String searchGroupUrl() {
         return AMUAC_IP + "/v1.0/group/list";
     }
+
     /**
      * 查询订单列表url
      */
     public static String getOrderListUrl() {
         return AMUAC_IP + "/v1.0/order/list";
     }
+
     /**
      * 查询订单详情url
      */
     public static String getOrderDetailUrl() {
         return AMUAC_IP + "/v1.0/order/info";
     }
+
     /**
      * 查询最近订单url
      */
     public static String getRecenctOrdersUrl() {
         return AMUAC_IP + "/v1.0/order/recent";
     }
+
     /**
      * 查询订单数量url
      */
