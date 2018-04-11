@@ -96,14 +96,14 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/auto_register_login";
     }
 
- /**
-  * 创建食疗订单
-  * /v1.0/order/create_diet
-  */
+    /**
+     * 创建食疗订单
+     * /v1.0/order/create_diet
+     */
 //上传手机信息
- public static String createRecoverDiet() {
-     return AMUAC_IP + "/v1.0/order/create_diet";
- }
+    public static String createRecoverDiet() {
+        return AMUAC_IP + "/v1.0/order/create_diet";
+    }
 
 
     //上传手机信息
@@ -118,7 +118,7 @@ public class SystemUtility {
 
     //获取未读消息
     public static String sendGetMessageList(String publishTime) {
-        return AMUAC_IP + "/v1.0/system/message_list?publishTime="+publishTime;
+        return AMUAC_IP + "/v1.0/system/message_list?publishTime=" + publishTime;
     }
 
     //get_kitchen_setting 获取厨房配置消息
@@ -166,7 +166,7 @@ public class SystemUtility {
             RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
             String filename = mApp.getCache().getUserPhone();
             // 参数分别为， 请求key ，文件名称 ， RequestBody
-            requestBody.addFormDataPart("file", filename, body).addFormDataPart("path", "user_logo")
+            requestBody.addFormDataPart("user_logo", filename + ".jpg", body).addFormDataPart("path", "user_logo")
                     .addFormDataPart("relation", "").addFormDataPart("token", AMToken);
         }
 
@@ -175,7 +175,7 @@ public class SystemUtility {
         client.newBuilder().readTimeout(5000, TimeUnit.MILLISECONDS).build().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                LOG.e("-------------------------------");
             }
 
             @Override
@@ -184,7 +184,6 @@ public class SystemUtility {
                 if (response.isSuccessful()) {
                     String str = response.body().string();
                     LOG.e(response.message() + " , body " + str);
-
                 } else {
                     LOG.e(response.message() + " error : body " + response.body().string());
                 }
@@ -232,12 +231,12 @@ public class SystemUtility {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int options = 80;
         bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
-//        while (baos.toByteArray().length / 1024 > 50) {
-//            baos.reset();
-//            options -= 10;
-//            LOG.e("-------------baos.toByteArray().length-----" + baos.toByteArray().length);
-//            bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
-//        }
+        while (baos.toByteArray().length / 1024 > 50) {
+            baos.reset();
+            options -= 10;
+            LOG.e("-------------baos.toByteArray().length-----" + baos.toByteArray().length);
+            bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+        }
         try {
             LOG.e("-------------bmp.toByteArray().length-----" + bmp.getByteCount() / 1024);
             LOG.e("-------------baos.toByteArray().length-----" + baos.toByteArray().length / 1024);
