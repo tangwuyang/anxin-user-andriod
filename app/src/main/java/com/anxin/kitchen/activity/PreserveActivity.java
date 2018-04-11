@@ -275,7 +275,12 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             case R.id.close_account_tv:
                 String status = annylyDateValue();
                 if (null==status) {
-                    startNewActivity(ChoseTablewareActivity.class);
+                    Intent intent = new Intent(PreserveActivity.this,ChoseTablewareActivity.class);
+                    String data = mGson.toJson(preserverAdapter.preMealMaps);
+                    intent.putExtra("meals",data);
+                    intent.putExtra("groupTag",isChosedGroup);
+                    intent.putExtra("inputNumsTag",isChosedBySetNums);
+                    startActivity(intent);
                 }else {
                     Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
                 }
@@ -612,7 +617,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    public void choseGroup(long day,String type,int groupId,String groupName){
+    public void choseGroup(long day,String type,int groupId,String groupName,int nums){
         boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
         if (isContain){
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setSetNumsTag(false);
@@ -620,6 +625,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setGrouporderTag(true);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelativeGroupId(groupId);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelatedGroupName(groupName);
+            preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(nums);
             myLog("--------------->fen:" +  preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
         }
         preserverAdapter.notifyDataSetChanged();

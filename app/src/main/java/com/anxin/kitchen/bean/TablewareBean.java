@@ -59,7 +59,7 @@ public class TablewareBean {
         private String model;
         private int cost;
         private int usePrice;
-        private int deposit;
+        private double deposit;
         private String img;
         private long createTime;
         public void setId(int id) {
@@ -125,10 +125,10 @@ public class TablewareBean {
             return usePrice;
         }
 
-        public void setDeposit(int deposit) {
+        public void setDeposit(double deposit) {
             this.deposit = deposit;
         }
-        public int getDeposit() {
+        public double getDeposit() {
             return deposit;
         }
 

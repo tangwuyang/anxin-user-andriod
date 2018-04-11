@@ -122,9 +122,8 @@ public class SystemUtility {
     }
 
     //get_kitchen_setting 获取厨房配置消息
-    //获取送餐地址
     public static String get_kitchen_settingUrl() {
-        return AMUAC_IP + "/v1.0/system/tableware_list";
+        return AMUAC_IP + "/v1.0/system/get_kitchen_setting";
     }
 
 

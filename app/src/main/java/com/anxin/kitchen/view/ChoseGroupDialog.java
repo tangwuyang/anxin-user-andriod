@@ -129,7 +129,7 @@ public class ChoseGroupDialog extends Dialog{
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((PreserveActivity)mContext).choseGroup(day,type,group.getId(),group.getGroupName());
+                    ((PreserveActivity)mContext).choseGroup(day,type,group.getId(),group.getGroupName(),group.getGroupNum());
                     ChoseGroupDialog.this.dismiss();
                 }
             });
