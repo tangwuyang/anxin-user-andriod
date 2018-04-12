@@ -1,24 +1,36 @@
 package com.anxin.kitchen.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.bean.FoodsBean;
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.MealBean.FoodList;
+import com.anxin.kitchen.bean.TablewareBean;
+import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.PrefrenceUtil;
+import com.anxin.kitchen.utils.StringUtils;
+import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.ChoseGroupDialog;
 import com.anxin.kitchen.view.OrderingRuleDialog;
 import com.google.gson.reflect.TypeToken;
@@ -34,7 +46,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PreserveActivity extends BaseActivity implements View.OnClickListener{
+public class PreserveActivity extends BaseActivity implements View.OnClickListener,RequestNetListener{
+    private static final String GET_TABLEWARE = "GET_TABLEWARE";
+    private static final String GET_SEND_COST = "GET_SEND_COST";
     private static final int CHOSE_MEAL = 100;
     private static final int SET_NUMS = 102;   //设置套餐数量
     private ListView mAddPreserveLv;
@@ -50,11 +64,16 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private boolean hasMeal = false; //是否有选择餐
     private boolean isChosedGroup = false;   //是否全部选择的是团选择团
     private boolean isChosedBySetNums = false; //是否选择输入数量
+    private PopupWindow popupWindow;
+    private TablewareBean tablewareBean;
+    private int allNums = 0;  //总数量
+    private long tablewareId; //选择餐具id
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preserve);
         tellRule();
+        getTableWare();
         initView();
         getNextDayOfWeek();
         initData();
@@ -123,7 +142,31 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
     }
 
+    //获取配送费
+    private void getSendCost() {
+        Map<String,Object> dataMap = new HashMap<>();
+        dataMap.put("kitchenId",new PrefrenceUtil(this).getKitchenId());
+        requestNet(SystemUtility.get_kitchen_settingUrl(),dataMap,GET_SEND_COST);
+    }
 
+    @Override
+    public void requestSuccess(String responseString, String requestCode) {
+        super.requestSuccess(responseString, requestCode);
+        String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
+        if (requestCode==GET_TABLEWARE && status.equals(Constant.REQUEST_SUCCESS)){
+            String tempSt = responseString.substring(responseString.indexOf("\"data\":"),responseString.lastIndexOf("}"));
+            String tablewareSt = tempSt.substring(tempSt.indexOf(":",0)+1);
+            tablewareBean = mGson.fromJson(tablewareSt,TablewareBean.class);
+
+        }
+    }
+
+    //获取所有餐具
+    private void getTableWare() {
+        Map<String,Object> dataMap = new HashMap<>();
+        dataMap.put("page",-1);
+        requestNet(SystemUtility.getTablewareListUrl(),dataMap,GET_TABLEWARE);
+    }
     //获取明天是星期几
     private String getNextDayOfWeek(){
         days = new ArrayList<>();
@@ -275,12 +318,8 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             case R.id.close_account_tv:
                 String status = annylyDateValue();
                 if (null==status) {
-                    Intent intent = new Intent(PreserveActivity.this,ChoseTablewareActivity.class);
-                    String data = mGson.toJson(preserverAdapter.preMealMaps);
-                    intent.putExtra("meals",data);
-                    intent.putExtra("groupTag",isChosedGroup);
-                    intent.putExtra("inputNumsTag",isChosedBySetNums);
-                    startActivity(intent);
+                    //closeOrder();
+                    tablewareWindow(view);
                 }else {
                     Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
                 }
@@ -289,6 +328,154 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
+    private void tablewareWindow(View view) {
+        if (popupWindow != null && popupWindow.isShowing()) {
+            return;
+        }
+        RelativeLayout layout = (RelativeLayout) getLayoutInflater().inflate(R.layout.tableware_popup, null);
+        ListView mTablewareLv = layout.findViewById(R.id.chose_tableware_lv);
+        getAllnums();
+
+        popupWindow = new PopupWindow(layout,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        int popWidth = view.getMeasuredWidth();
+        int popHeight = view.getMeasuredHeight();
+        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        popupWindow.setHeight(display.getHeight() * 7 / 10);
+        //点击空白处时，隐藏掉pop窗口
+        popupWindow.setFocusable(true);
+        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        //添加弹出、弹入的动画
+        popupWindow.setAnimationStyle(R.style.Popupwindow);
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        popupWindow.showAtLocation(view,  Gravity.BOTTOM, 0,0);
+        //添加按键事件监听
+        setButtonListeners(layout);
+        //添加pop窗口关闭事件，主要是实现关闭时改变背景的透明度
+        popupWindow.setOnDismissListener(new poponDismissListener());
+        mTablewareLv.setAdapter(new TablewareAdapter(tablewareBean));
+        backgroundAlpha(0.5f);
+        TextView unifyPayTv = layout.findViewById(R.id.unify_pay_tv);
+        unifyPayTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startNewActivity(UnifyPayActivity.class);
+            }
+        });
+    }
+
+
+    private void getAllnums(){
+
+            for (Long day :
+                    preserverAdapter.preMealMaps.keySet()) {
+                myLog("-----------day---->"+day);
+                Map<String, MealBean.Data> dayData = preserverAdapter.preMealMaps.get(day);
+                if (dayData.containsKey("午餐")){
+                    allNums = allNums + dayData.get("午餐").getNums();
+                }else if (dayData.containsKey("晚餐")){
+                    allNums = allNums + dayData.get("晚餐").getNums();
+                }
+            }
+        }
+
+
+
+    class TablewareAdapter extends BaseAdapter{
+        private TablewareBean tablewareBean = null;
+        List<Boolean> selectMark = new ArrayList<>();
+        public TablewareAdapter(TablewareBean tablewareBean) {
+            this.tablewareBean = tablewareBean;
+            for (int i = 0;i<tablewareBean.getData().size();i++){
+                if (i==0){
+                    selectMark.add(i,true);
+                }else {
+                    selectMark.add(i,false);
+                }
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return tablewareBean.getData().size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(final int i, View view, ViewGroup viewGroup) {
+            TablewareBean.Data tableware = tablewareBean.getData().get(i);
+            view = LayoutInflater.from(PreserveActivity.this).inflate(R.layout.chose_tablemare_item,viewGroup,false);
+            TextView tablewareNameTv = view.findViewById(R.id.tableware_title_tv);
+            TextView tablewareGmTv = view.findViewById(R.id.tablew_g_m_tv);
+            TextView tablewareNumsTv = view.findViewById(R.id.tableware_nums_tv);
+            TextView tableMoney = view.findViewById(R.id.tableware_money_tv);
+            tablewareNameTv.setText(tableware.getName());
+            tablewareGmTv.setText("(押金"+tableware.getDeposit()+"元/份)");
+            tableMoney.setText("￥"+tableware.getUsePrice());
+            ImageView selectImg = view.findViewById(R.id.tableware_select_img);
+            tablewareNumsTv.setText("✘"+allNums);
+            if (selectMark.get(i)){
+                tablewareId = tableware.getId();
+                selectImg.setImageDrawable(getResources().getDrawable(R.drawable.selected_drawable));
+            }else {
+                selectImg.setImageDrawable(getResources().getDrawable(R.drawable.unselected_drawable));
+            }
+
+            selectImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int j = 0; j<selectMark.size();j++){
+                        if (i!=j){
+                            selectMark.set(j,false);
+                        }else {
+                            selectMark.set(j,true);
+                        }
+                    }
+                    TablewareAdapter.this.notifyDataSetChanged();
+                }
+            });
+            return view;
+        }
+    }
+
+    /**
+     * 设置添加屏幕的背景透明度
+     * @param bgAlpha
+     */
+    public void backgroundAlpha(float bgAlpha)
+    {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = bgAlpha; //0.0-1.0
+        getWindow().setAttributes(lp);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    }
+    private void setButtonListeners(RelativeLayout layout) {
+
+    }
+
+    /**
+     * 跳转去结算界面
+     * */
+    private void closeOrder() {
+        Intent intent = new Intent(PreserveActivity.this,ChoseTablewareActivity.class);
+        String data = mGson.toJson(preserverAdapter.preMealMaps);
+        intent.putExtra("meals",data);
+        intent.putExtra("groupTag",isChosedGroup);
+        intent.putExtra("inputNumsTag",isChosedBySetNums);
+        startActivity(intent);
+    }
 
 
     public String annylyDateValue(){
@@ -304,11 +491,20 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                             mark = false;
                             isChosedBySetNums = dayData.get("午餐").isSetNumsTag();  //是否按数量设置
                             isChosedGroup = dayData.get("午餐").isGrouporderTag();  //是否按团选择
+                            int nums = dayData.get("午餐").getNums();
+                            if (nums<10){
+                                return "套餐数量未达到配送数量";
+                            }
                         }else {
                             if (!(isChosedGroup == dayData.get("午餐").isGrouporderTag())){
                                 myLog("------------->午餐"+isChosedGroup+  "   " + dayData.get("午餐").isGrouporderTag());
                                 return "请按照同一种方式选择数量";
                             } //比较前后是不是都是按照团选择
+
+                            int nums = dayData.get("午餐").getNums();
+                            if (nums<10){
+                                return "套餐数量未达到配送数量";
+                            }
                         }
                     }
                 }
@@ -322,11 +518,20 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                         mark = false;
                         isChosedBySetNums = dayData.get("晚餐").isSetNumsTag();  //是否按数量设置
                         isChosedGroup = dayData.get("晚餐").isGrouporderTag();  //是否按团选择  以第一个为基准
+                        int nums = dayData.get("晚餐").getNums();
+                        if (nums<10){
+                            return "套餐数量未达到配送数量";
+                        }
                     }else {
                         if (!(isChosedGroup == dayData.get("晚餐").isGrouporderTag())){
                             myLog("------------->晚餐"+isChosedGroup+  "   " + dayData.get("晚餐").isGrouporderTag());
                             return "请按照同一种方式选择数量";
+
                         } //比较前后是不是都是按照团选择
+                        int nums = dayData.get("午餐").getNums();
+                        if (nums<10){
+                            return "套餐数量未达到配送数量";
+                        }
                     }
                 }
             }
@@ -630,5 +835,12 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         }
         preserverAdapter.notifyDataSetChanged();
     };
+
+    private class poponDismissListener implements PopupWindow.OnDismissListener {
+        @Override
+        public void onDismiss() {
+            allNums = 0;
+        }
+    }
 
 }

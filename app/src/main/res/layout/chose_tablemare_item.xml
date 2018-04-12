@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:paddingLeft="@dimen/bar_left_right_padding"
     android:paddingRight="@dimen/bar_left_right_padding"
     android:background="@color/white"
     android:orientation="horizontal"

@@ -147,7 +147,7 @@
         <activity android:name="com.anxin.kitchen.activity.order.OrderActivity" />
         <activity android:name="com.anxin.kitchen.activity.order.OrderDetailActivity" />
         <activity android:name="com.anxin.kitchen.activity.ClipPictureActivity" />
-
+        <activity android:name="com.anxin.kitchen.activity.UnifyPayActivity"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.anxin.kitchen.user.fileprovider"

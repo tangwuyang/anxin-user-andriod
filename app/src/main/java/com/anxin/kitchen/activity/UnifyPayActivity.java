@@ -1,0 +1,303 @@
+package com.anxin.kitchen.activity;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.anxin.kitchen.bean.RecoverBean;
+import com.anxin.kitchen.bean.TablewareBean;
+import com.anxin.kitchen.interface_.RequestNetListener;
+import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Cache;
+import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.PrefrenceUtil;
+import com.anxin.kitchen.utils.StringUtils;
+import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.view.MyListView;
+import com.google.gson.reflect.TypeToken;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+public class UnifyPayActivity extends BaseActivity implements View.OnClickListener ,RequestNetListener{
+    private static final String CREATE_DIET = "CREATE_DIET";
+    private ImageView mBackImg;
+    private TextView mTitleTv;
+    private ImageView mTransmitImg;
+    private MyListView mMealLv;
+    private MyListView mTablemareLv;
+    private MyListView mPayWayLv;
+    private TextView mAllMoneyTv;
+    private TextView mTablewareMoneyTv;
+    private TextView mEnsurePayTv;
+    TablewareBean tablewareBean;
+    private double mealMoney = 0;
+    private double tablewareMoeny = 0;
+    private static final String GET_TABLEWARE = "GET_TABLEWARE";
+    private Cache mCache;
+    private PrefrenceUtil mPrefrenceUtil;
+    private LinkedHashMap<String ,RecoverBean.Data> mChosedMeals = new LinkedHashMap<>();
+    private long tablewareId;
+    private int payType;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_unify_pay);
+        setTitle("统一支付");
+        initView();
+       // getTableWare();
+    }
+
+    private void initView() {
+        mBackImg = findViewById(R.id.back_img);
+        mTitleTv = findViewById(R.id.title_tv);
+        mMealLv = findViewById(R.id.meal_lv);
+        mPayWayLv = findViewById(R.id.payment_lv);
+        mTablemareLv = findViewById(R.id.tableware_lv);
+        mTransmitImg = findViewById(R.id.transmit_img);
+        mAllMoneyTv = findViewById(R.id.all_money_tv);
+        mTablewareMoneyTv  = findViewById(R.id.tableware_money_tv);
+        mEnsurePayTv = findViewById(R.id.ensure_pay_tv);
+        mMealLv.setAdapter(new MealAdapter());
+        mPayWayLv.setAdapter(new PaymentAdapter());
+        mTitleTv.setText("确认订单");
+        mCache = new Cache(this);
+        mPrefrenceUtil = new PrefrenceUtil(this);
+        mTransmitImg.setVisibility(View.VISIBLE);
+        mBackImg.setOnClickListener(this);
+        mEnsurePayTv.setOnClickListener(this);
+    }
+
+    @Override
+    public void requestSuccess(String responseString, String requestCode) {
+        super.requestSuccess(responseString, requestCode);
+        String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
+        if (requestCode==GET_TABLEWARE && status.equals(Constant.REQUEST_SUCCESS)){
+            String tempSt = responseString.substring(responseString.indexOf("\"data\":"),responseString.lastIndexOf("}"));
+            String tablewareSt = tempSt.substring(tempSt.indexOf(":",0)+1);
+            myLog("---------------->"+ tablewareSt);
+            tablewareBean = mGson.fromJson(tablewareSt,TablewareBean.class);
+            //mTablemareLv.setAdapter(new TablewareAdapter());
+        }
+
+        if (requestCode ==  CREATE_DIET && status.equals(Constant.REQUEST_SUCCESS)){
+            Toast.makeText(this, "创建订单成功", Toast.LENGTH_SHORT).show();
+            PrefrenceUtil prefrenceUtil = new PrefrenceUtil(this);
+            prefrenceUtil.setRecoverList("");
+            prefrenceUtil.setRecoverMenuList("");
+            startNewActivity(MainActivity.class);
+        }
+    }
+
+    //获取所有餐具
+    private void getTableWare() {
+        Map<String,Object> dataMap = new HashMap<>();
+        dataMap.put("page",1);
+        requestNet(SystemUtility.getTablewareListUrl(),dataMap,GET_TABLEWARE);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.back_img:
+                this.finish();
+                break;
+            case R.id.transmit_img:
+                break;
+            case R.id.ensure_pay_tv:
+                //createOrder();
+                break;
+        }
+    }
+
+    private void createOrder() {
+        Map<String ,Object> dataMap = new HashMap<>();
+        dataMap.put("kitchenId",mPrefrenceUtil.getKitchenId());
+        dataMap.put("tablewareId",tablewareId);
+
+        //获取所有套餐信息
+        String tempPackages = "";
+        for (String key : mChosedMeals.keySet()) {
+            double littlePrice = mChosedMeals.get(key).getPrice()*mChosedMeals.get(key).getNums();
+            BigDecimal b = new BigDecimal(littlePrice);
+            double price = b.setScale(2, BigDecimal.ROUND_UP).doubleValue();
+            tempPackages = tempPackages +mChosedMeals.get(key).getPackageId()+"*"
+                        +mChosedMeals.get(key).getNums()+"*"+price+"0,";
+        }
+        String packages = tempPackages.substring(0,tempPackages.lastIndexOf(","));
+        dataMap.put("packages",packages);
+        dataMap.put("payType",payType);
+        dataMap.put("contactPhone",mCache.getUserPhone());
+        dataMap.put("contactName",mCache.getNickName());
+        dataMap.put("address","深圳金展大厦28楼");
+        dataMap.put("token",mCache.getAMToken());
+
+        requestNet(SystemUtility.createRecoverDiet(),dataMap,CREATE_DIET);
+    }
+
+
+    class MealAdapter extends BaseAdapter{
+        private LinkedList<RecoverBean.Data> mChosedList = new LinkedList<>();
+
+        public MealAdapter() {
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            view = LayoutInflater.from(UnifyPayActivity.this).inflate(R.layout.pre_order_meal_item,viewGroup,false);
+
+            return view;
+        }
+    }
+    class TablewareAdapter extends BaseAdapter{
+        List<Boolean> selectMark = new ArrayList<>();
+
+        public TablewareAdapter() {
+            selectMark.add(true);
+            selectMark.add(false);
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(final int i, View view, ViewGroup viewGroup) {
+            TablewareBean.Data data = tablewareBean.getData().get(i);
+            myLog("----------------->"+data.getName());
+            view = LayoutInflater.from(UnifyPayActivity.this).inflate(R.layout.order_tablemare_item,viewGroup,false);
+            TextView tablewareTitle = view.findViewById(R.id.tableware_title_tv);
+            TextView tablewareContent = view.findViewById(R.id.tableware_content_tv);
+            TextView numsTv = view.findViewById(R.id.nums_tv);
+            TextView moneyTv = view.findViewById(R.id.money_tv);
+            ImageView selectImg = view.findViewById(R.id.select_img);
+            tablewareTitle.setText(data.getName());
+            tablewareContent.setText("(押金"+data.getDeposit()+"元/份)");
+            int num = 0;
+            for (String key :
+                    mChosedMeals.keySet()) {
+                num = num + mChosedMeals.get(key).getNums();
+            }
+            numsTv.setText("✘"+num);
+            moneyTv.setText("￥"+num*data.getUsePrice()+".00");
+            if (selectMark.get(i)){
+                tablewareId = data.getId();
+                tablewareMoeny = num*data.getUsePrice();
+                mAllMoneyTv.setText("￥"+(mealMoney+tablewareMoeny));
+                mTablewareMoneyTv.setText("其中餐具押金"+tablewareMoeny+"元");
+                selectImg.setImageDrawable(getResources().getDrawable(R.drawable.selected_drawable));
+            }else {
+                selectImg.setImageDrawable(getResources().getDrawable(R.drawable.unselected_drawable));
+            }
+
+            selectImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int j = 0; j<selectMark.size();j++){
+                        if (i!=j){
+                            selectMark.set(j,false);
+                        }else {
+                            selectMark.set(j,true);
+                        }
+                    }
+                    TablewareAdapter.this.notifyDataSetChanged();
+                }
+            });
+            return view;
+        }
+    }
+    class PaymentAdapter extends BaseAdapter{
+        List<Boolean> selectMark = new ArrayList<>();
+
+        public PaymentAdapter() {
+            selectMark.add(true);
+            selectMark.add(false);
+        }
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(final int i, View view, ViewGroup viewGroup) {
+            view = LayoutInflater.from(UnifyPayActivity.this).inflate(R.layout.order_paymentway_item,viewGroup,false);
+            ImageView payImg = view.findViewById(R.id.pay_img);
+            ImageView paySelectImg = view.findViewById(R.id.pay_select_img);
+            TextView payTitleTv = view.findViewById(R.id.pay_title_tv);
+            if (i == 0){
+                payImg.setImageDrawable(getResources().getDrawable(R.drawable.weixin_pay));
+                payTitleTv.setText("微信支付");
+            }else {
+                payImg.setImageDrawable(getResources().getDrawable(R.drawable.zhifubao_pay));
+                payTitleTv.setText("支付宝支付");
+            }
+            if (selectMark.get(i)){
+                payType = i+1;
+                paySelectImg.setImageDrawable(getResources().getDrawable(R.drawable.selected_drawable));
+            }else {
+                paySelectImg.setImageDrawable(getResources().getDrawable(R.drawable.unselected_drawable));
+            }
+
+            paySelectImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int j = 0; j<selectMark.size();j++){
+                        if (i!=j){
+                            selectMark.set(j,false);
+                        }else {
+                            selectMark.set(j,true);
+                        }
+                    }
+                    PaymentAdapter.this.notifyDataSetChanged();
+                }
+            });
+            return view;
+        }
+    }
+}
