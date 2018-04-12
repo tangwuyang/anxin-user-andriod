@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,17 +20,22 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.bean.AddressBean;
+import com.anxin.kitchen.event.AddressListEvent;
+import com.anxin.kitchen.fragment.myfragment.UserAddressFragment;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.EventBusFactory;
+import com.anxin.kitchen.utils.SystemUtility;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SendMealLocationActivity extends BaseActivity implements View.OnClickListener{
+public class SendMealLocationActivity extends BaseActivity implements View.OnClickListener {
     private ListView mLocationsLv;
-    private List<String> mLocationList = new ArrayList<String>();
-    private List<String> mContactList = new ArrayList<>();
+    private List<AddressBean> addressBeanList = new ArrayList<>();
     private ImageView mBackImg;
     private LinearLayout mRelocationLl;
     private TextView mAddBt;
@@ -41,13 +48,17 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     private boolean isFirstLoc = true;
+    private SendMealLocationAdapter myAdaped;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBusFactory.getInstance().register(this);
         setContentView(R.layout.activity_send_meal_location);
         initView();
-        getData();
         setMyLocation();
+        setListeners();
+        setAdapter();
     }
 
     private void setMyLocation() {
@@ -138,13 +149,28 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
         mAddBt = findViewById(R.id.add_bt);
         mLocationTv = findViewById(R.id.location_tv);
         mRelocationImg = findViewById(R.id.re_location_img);
+        mLocationsLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                finish();
+            }
+        });
+    }
+
+    /**
+     * 监听网络请求返回
+     *
+     * @param addressListEvent
+     */
+    public void onEventMainThread(AddressListEvent addressListEvent) {
+//        LOG.e("----------------------------" + MyApplication.getInstance().getCache().getAddressList(getActivity()).toString());
+        addressBeanList = MyApplication.getInstance().getAddressBeanList();
+        myAdaped.notifyDataSetChanged();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setListeners();
-        setAdapter();
     }
 
     private void setListeners() {
@@ -154,28 +180,20 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
     }
 
     private void setAdapter() {
-        SendMealLocationAdapter adapter = new SendMealLocationAdapter();
-        mLocationsLv.setAdapter(adapter);
-    }
-
-    private void getData() {
-        mLocationList.add("地址:深圳市南山区，西丽大学城");
-        mLocationList.add("地址:深圳市南山区，科信科技园");
-        mContactList.add("黄先生   138*****4567");
-        mContactList.add("胡小姐   138*****4567");
+        addressBeanList = MyApplication.getInstance().getAddressBeanList();
+        myAdaped = new SendMealLocationAdapter();
+        mLocationsLv.setAdapter(myAdaped);
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.re_location_ll:
-                Animation anim =new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                Animation anim = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 anim.setFillAfter(false); // 设置保持动画最后的状态
                 anim.setDuration(3000); // 设置动画时间
                 anim.setInterpolator(new AccelerateInterpolator()); // 设置插入器
                 mRelocationImg.startAnimation(anim);
-
-
                 break;
             case R.id.back_img:
                 onBackPressed();
@@ -187,16 +205,17 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
     }
 
 
-    private class SendMealLocationAdapter extends BaseAdapter{
+    private class SendMealLocationAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return mContactList.size();
+            return addressBeanList.size();
         }
 
         @Override
-        public Object getItem(int i) {
-            return null;
+        public AddressBean getItem(int position) {
+            // TODO Auto-generated method stub
+            return addressBeanList.get(position);
         }
 
         @Override
@@ -205,13 +224,38 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
         }
 
         @Override
-        public View getView(int position, View view, ViewGroup viewGroup) {
-            view = LayoutInflater.from(SendMealLocationActivity.this).inflate(R.layout.send_meal_location_item,viewGroup,false);
-            TextView locationTv = view.findViewById(R.id.location_tv);
-            TextView contactTv = view.findViewById(R.id.contact_tv);
-            locationTv.setText(mLocationList.get(position));
-            contactTv.setText(mContactList.get(position));
+        public View getView(int position, View convertView, ViewGroup viewGroup) {
+            View view = convertView;
+            final ViewHolder holder;
+            if (view == null) {
+                holder = new ViewHolder();
+                view = LayoutInflater.from(SendMealLocationActivity.this).inflate(R.layout.send_meal_location_item, null);
+                holder.addressTitle = view.findViewById(R.id.location_tv);
+                holder.addressPhone = view.findViewById(R.id.contact_tv);
+                view.setTag(holder);
+            } else {
+                holder = (ViewHolder) view.getTag();
+            }
+            final AddressBean addressBean = addressBeanList.get(position);
+            if (addressBean == null)
+                return view;
+            String phoneNumber = addressBean.getPhoneNumber();
+            String contactName = addressBean.getContactName();
+            String streetName = addressBean.getStreetName();
+            holder.addressPhone.setText(contactName + "  " + phoneNumber);
+            String addressTitle = streetName;
+            holder.addressTitle.setText(addressTitle);
             return view;
         }
+
+        class ViewHolder {
+            private TextView addressTitle, addressPhone;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBusFactory.getInstance().unregister(this);
     }
 }

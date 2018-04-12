@@ -1,36 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:background="@color/white"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="77.3dp">
-<ImageView
-    android:id="@+id/select_status_img"
-    android:layout_centerVertical="true"
-    android:layout_width="16dp"
-    android:layout_height="16dp"
-    android:scaleType="centerCrop"
-    android:src="@drawable/unselected_drawable"
-    android:layout_margin="@dimen/bar_left_right_padding"
-    />
+    android:layout_height="wrap_content"
+    android:background="@color/white">
 
-    <TextView
-        android:id="@+id/location_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/select_status_img"
-        android:text="@string/loacation"
-        android:textColor="@color/black"
-        android:layout_marginTop="20.7dp"
-        />
-    <TextView
-        android:id="@+id/contact_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/select_status_img"
-        android:text="@string/loacation"
-        android:textColor="@color/shallow_black"
-        android:textSize="@dimen/normal_text_size"
-        android:layout_below="@id/location_tv"
-        />
-</RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <ImageView
+            android:id="@+id/select_status_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/bar_left_right_padding"
+            android:scaleType="centerCrop"
+            android:src="@drawable/unselected_drawable" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/select_status_img"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/location_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/loacation"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/contact_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/loacation"
+                android:textColor="@color/shallow_black"
+                android:textSize="@dimen/normal_text_size" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="0.1dp"
+            android:background="@color/item_divider" />
+    </RelativeLayout>
+</LinearLayout>

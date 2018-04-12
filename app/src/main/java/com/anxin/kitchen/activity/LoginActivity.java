@@ -263,6 +263,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                     ft.addToBackStack(null);
                     ft.commit();
+                    if (mc != null)
+                        mc.cancel();
                 }
             }
         }
