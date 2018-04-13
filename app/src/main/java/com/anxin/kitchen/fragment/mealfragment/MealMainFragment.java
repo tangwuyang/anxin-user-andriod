@@ -20,6 +20,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.amap.api.maps2d.AMapUtils;
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.activity.MessageCenterActivity;
@@ -104,6 +105,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         activity = (MainActivity) MainActivity.context;
         mWaitingDialog = new WaitingDialog(getActivity());
         sendMessageList();
+        SystemUtility.sendGetAddressHttp();
     }
 
     //声明定位回调监听器
@@ -144,6 +146,15 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                             + amapLocation.getErrorInfo());
                 }
             }
+
+//            float distance = AMapUtils.calculateLineDistance(,latLng2);
+//            //1.将两个经纬度点转成投影点
+//            MAMapPoint point1 = MAMapPointForCoordinate(CLLocationCoordinate2DMake(39.989612, 116.480972));
+//            MAMapPoint point2 = MAMapPointForCoordinate(CLLocationCoordinate2DMake(39.990347, 116.480441));
+////2.计算距离
+//            CLLocationDistance distance = MAMetersBetweenMapPoints(point1, point2);
+
+
         }
     };
 
