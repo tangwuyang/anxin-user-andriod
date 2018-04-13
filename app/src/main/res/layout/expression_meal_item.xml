@@ -1,87 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:paddingBottom="10dp"
-    android:paddingTop="10dp"
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <ImageView
 
-        android:background="@color/main_bg_color"
-        android:id="@+id/food_img"
-        android:layout_width="106dp"
-        android:layout_height="96dp"
-        android:src="@drawable/food1"
-        android:scaleType="centerInside"
-        />
-
-    <LinearLayout
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/food_img"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/food_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/big_text_size"
-            android:text="清蒸狮子头"
-            android:textColor="@color/black"
-            />
-        <TextView
-            android:id="@+id/food_content"
-            android:textColor="@color/shallow_text_color"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:textSize="@dimen/small_text_size"
-
-            android:text="三丝炒肉丝"
-            />
-
-        <TextView
-            android:id="@+id/meal_price_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:textSize="@dimen/big_text_size"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/red"
-            android:text="￥33"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/add_lv"
-        android:layout_marginRight="5dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="24dp">
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp">
 
         <ImageView
-            android:id="@+id/reduce_img"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:src="@drawable/reduce_drawable" />
 
-        <TextView
-            android:id="@+id/nums_tv"
+            android:id="@+id/food_img"
+            android:layout_width="106dp"
+            android:layout_height="96dp"
+            android:background="@color/main_bg_color"
+            android:scaleType="centerInside"
+            android:src="@drawable/food1" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/food_img"
+            android:orientation="vertical">
 
-            android:text="0"
-            android:gravity="center"
-            android:textColor="@color/red"
-            android:textSize="@dimen/big_text_size" />
-        <ImageView
-            android:id="@+id/add_img"
-            android:layout_width="24dp"
+            <TextView
+                android:id="@+id/food_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="清蒸狮子头"
+                android:textColor="@color/black"
+                android:textSize="@dimen/big_text_size" />
+
+            <TextView
+                android:id="@+id/food_content"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:text="三丝炒肉丝"
+                android:textColor="@color/shallow_text_color"
+
+                android:textSize="@dimen/small_text_size" />
+
+            <TextView
+                android:id="@+id/meal_price_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:text="￥33"
+                android:textColor="@color/red"
+                android:textSize="@dimen/big_text_size" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/add_lv"
+            android:layout_width="wrap_content"
             android:layout_height="24dp"
-            android:src="@drawable/add_drawable"
-            />
-    </LinearLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp">
+
+            <ImageView
+                android:id="@+id/reduce_img"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:src="@drawable/reduce_drawable" />
+
+            <TextView
+                android:id="@+id/nums_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/red"
+                android:textSize="@dimen/big_text_size" />
+
+            <ImageView
+                android:id="@+id/add_img"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/add_drawable" />
+        </LinearLayout>
+
+    </RelativeLayout>
 </RelativeLayout>

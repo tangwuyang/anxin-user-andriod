@@ -5,185 +5,222 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.anxin.kitchen.activity.RecoveryMealActivity">
-    <include layout="@layout/title_bar"
+
+    <include
         android:id="@+id/title_bar"
-        />
+        layout="@layout/title_bar" />
 
     <LinearLayout
         android:id="@+id/content_ll"
-        android:orientation="horizontal"
-        android:layout_below="@id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/bottom_rl"
-        >
+        android:layout_below="@id/title_bar"
+        android:orientation="horizontal">
+
         <ListView
             android:id="@+id/meal_catalog_lv"
             android:layout_width="92dp"
-            android:background="@color/main_bg_color"
             android:layout_height="match_parent"
-            android:scrollbars="none"
-            >
-        </ListView>
+            android:background="@color/main_bg_color"
+            android:divider="@color/white"
+            android:scrollbars="none"></ListView>
+
+
         <com.anxin.kitchen.view.RefreshLayout
             android:id="@+id/refresh_ll"
-            android:background="@color/white"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@color/white"
             android:orientation="vertical"
             android:paddingLeft="10dp">
 
-           <!-- <TextView
-                android:id="@+id/catalog_tv"
+            <!-- <TextView
+                 android:id="@+id/catalog_tv"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentEnd="true"
+                 android:layout_below="@+id/title_bar"
+                 android:text="全  部"
+                 android:background="@color/white"
+                 android:paddingTop="@dimen/bar_left_right_padding"
+                 android:paddingBottom="@dimen/bar_left_right_padding"
+                 android:textColor="@color/black"
+                 android:textSize="@dimen/normal_text_size" />
+                 <TextView
+                     android:layout_width="match_parent"
+                     android:layout_height="1dp"
+                     android:background="@color/main_bg_color"
+                     />-->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/title_bar"
-                android:text="全  部"
-                android:background="@color/white"
-                android:paddingTop="@dimen/bar_left_right_padding"
-                android:paddingBottom="@dimen/bar_left_right_padding"
-                android:textColor="@color/black"
-                android:textSize="@dimen/normal_text_size" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
                 <TextView
+                    android:id="@+id/content_title_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="10dp"
+                    android:text="全部"
+                    android:textColor="@color/shallow_text_color"
+                    android:textSize="10sp" />
+
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/main_bg_color"
-                    />-->
+                    android:layout_height="0.5dp"
+                    android:layout_marginLeft="5dp"
+                    android:background="@color/item_divider" />
+
                 <ListView
-                    android:background="@color/white"
                     android:id="@+id/content_lv"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:layout_marginTop="1dp"
                     android:layout_weight="1"
-                    android:layout_marginTop="1dp"></ListView>
+                    android:background="@color/white"
+                    android:divider="@color/white" />
+            </LinearLayout>
         </com.anxin.kitchen.view.RefreshLayout>
     </LinearLayout>
+
     <ImageView
         android:id="@+id/hover_screen"
-        android:visibility="gone"
-        android:background="#44000000"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/shopcart_ll"
-        />
+        android:background="#44000000"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/shopcart_ll"
-        android:visibility="visible"
-        android:layout_alignTop="@id/bottom_rl"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/bottom_rl"
         android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:visibility="visible">
+
         <LinearLayout
-            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/main_bg_color"
+            android:gravity="center"
+            android:orientation="horizontal"
             android:paddingBottom="10dp"
-            android:paddingTop="10dp"
             android:paddingLeft="@dimen/bar_left_right_padding"
             android:paddingRight="@dimen/bar_left_right_padding"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:paddingTop="10dp">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/shallow_text_color"
                 android:text="已选菜单"
-                />
+                android:textColor="@color/shallow_text_color" />
 
             <LinearLayout
-                android:gravity="center"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
                 <ImageView
-                    android:src="@drawable/delete_drawable"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/delete_drawable" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="清空"
                     android:textColor="@color/shallow_text_color"
-                    android:textSize="@dimen/normal_text_size"
-                    />
+                    android:textSize="@dimen/normal_text_size" />
             </LinearLayout>
         </LinearLayout>
+
         <com.anxin.kitchen.view.MyListView
             android:id="@+id/shopping_cart_lv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></com.anxin.kitchen.view.MyListView>
     </LinearLayout>
+
     <RelativeLayout
-        android:background="@color/white"
         android:id="@+id/bottom_rl"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="74dp">
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+
+        <View
+            android:layout_width="92dp"
+            android:layout_height="30dp"
+            android:background="@color/main_bg_color"
+            />
         <TextView
-            android:layout_alignParentBottom="true"
-            android:background="@color/shallow_black"
             android:layout_width="match_parent"
-            android:layout_height="64dp" />
+            android:layout_height="64dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/shallow_black" />
+
         <ImageView
             android:id="@+id/shopping_cart_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/bar_left_right_padding"
-            android:src="@drawable/shopping_cart_0"
-            />
+            android:src="@drawable/shopping_cart_0" />
+
         <TextView
-            android:visibility="gone"
             android:id="@+id/nums_tv"
             android:layout_width="13.3dp"
             android:layout_height="13.3dp"
-            android:textColor="@color/white"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/nums_bg_drawabl"
             android:gravity="center"
-            android:layout_marginLeft="70dp"
+            android:text="1"
+            android:textColor="@color/white"
             android:textSize="@dimen/super_small_text_size"
-            android:layout_marginTop="5dp"
-            android:text="1"/>
+            android:visibility="gone" />
 
         <LinearLayout
-                android:layout_marginTop="15dp"
-                android:layout_marginLeft="5dp"
-                android:orientation="vertical"
-                android:layout_toRightOf="@+id/shopping_cart_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@+id/shopping_cart_img"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/money_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/money_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="未选购商品"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/super_big_text_size"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="上述价格不含餐具、配送费"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/small_text_size"
-                    />
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:text="未选购商品"
+                android:textColor="@color/white"
+                android:textSize="@dimen/super_big_text_size" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上述价格不含餐具、配送费"
+                android:textColor="@color/white"
+                android:textSize="@dimen/small_text_size" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/close_account_tv"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
             android:layout_width="133dp"
             android:layout_height="64dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
             android:background="@color/color_desc"
-            android:text="20元起送"
             android:clickable="false"
             android:enabled="false"
             android:gravity="center"
+            android:text="20元起送"
             android:textColor="@color/white"
-            android:textSize="@dimen/title_text_size"
-            />
+            android:textSize="@dimen/title_text_size" />
     </RelativeLayout>
 
 

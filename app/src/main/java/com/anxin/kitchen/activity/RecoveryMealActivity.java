@@ -63,6 +63,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
     private ListView mMealCatalogLv;
     private ImageView mShoppingCartImg;
     private TextView mBottomNum;
+    private TextView contentTitle_tv;
     private TextView mMoneyTv;
     private TextView mCloseAccountTv;
     private List<String> mCatalogList = new ArrayList<>();
@@ -179,6 +180,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         mCloseAccountTv = findViewById(R.id.close_account_tv);
         mShopCartLl = findViewById(R.id.shopcart_ll);
         mHoverScreen = findViewById(R.id.hover_screen);
+        contentTitle_tv = findViewById(R.id.content_title_tv);
 
         //获取得到PopupWindow的布局文件
         mPopupView = View.inflate(this, R.layout.shoping_cart_view, null);
@@ -770,7 +772,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                         }
                     }
                     CatalogAdapter.this.notifyDataSetChanged();
-
+                    contentTitle_tv.setText(menuList.get(position).getDietName());
                     Map<String, Object> dataMap = new HashMap<>();
 
                     dataMap.put(Constant.KITCHEN_ID, kichtchenId);
