@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.anxin.kitchen.bean.FoodsBean;
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.MealBean.FoodList;
+import com.anxin.kitchen.bean.SendBean;
 import com.anxin.kitchen.bean.TablewareBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
@@ -68,6 +69,10 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private TablewareBean tablewareBean;
     private int allNums = 0;  //总数量
     private long tablewareId; //选择餐具id
+    private double tablewareDepositeMoney; //使用押金
+    private double tablewareUseMoney;  //使用费用
+    private String tablewareName;    //餐具名
+    private double sendCost;   // 配送费
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +82,10 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         initView();
         getNextDayOfWeek();
         initData();
+        getSendCost();
     }
+
+
 
     //告知订餐规则
     private void tellRule() {
@@ -157,7 +165,11 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             String tempSt = responseString.substring(responseString.indexOf("\"data\":"),responseString.lastIndexOf("}"));
             String tablewareSt = tempSt.substring(tempSt.indexOf(":",0)+1);
             tablewareBean = mGson.fromJson(tablewareSt,TablewareBean.class);
+        }
 
+        if (requestCode==GET_SEND_COST && status.equals(Constant.REQUEST_SUCCESS)){
+            SendBean bean = mGson.fromJson(responseString,SendBean.class);
+            sendCost = bean.getData().getDeliveryGroupPrice();
         }
     }
 
@@ -362,7 +374,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         unifyPayTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startNewActivity(UnifyPayActivity.class);
+                closeOrder();
             }
         });
     }
@@ -427,7 +439,10 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             ImageView selectImg = view.findViewById(R.id.tableware_select_img);
             tablewareNumsTv.setText("✘"+allNums);
             if (selectMark.get(i)){
+                tablewareName = tableware.getName();
                 tablewareId = tableware.getId();
+                tablewareUseMoney = tableware.getUsePrice();
+                tablewareDepositeMoney = tableware.getDeposit();
                 selectImg.setImageDrawable(getResources().getDrawable(R.drawable.selected_drawable));
             }else {
                 selectImg.setImageDrawable(getResources().getDrawable(R.drawable.unselected_drawable));
@@ -469,11 +484,16 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
      * 跳转去结算界面
      * */
     private void closeOrder() {
-        Intent intent = new Intent(PreserveActivity.this,ChoseTablewareActivity.class);
+        Intent intent = new Intent(PreserveActivity.this,UnifyPayActivity.class);
         String data = mGson.toJson(preserverAdapter.preMealMaps);
         intent.putExtra("meals",data);
         intent.putExtra("groupTag",isChosedGroup);
         intent.putExtra("inputNumsTag",isChosedBySetNums);
+        intent.putExtra("nums",allNums);
+        intent.putExtra("tablewareName",tablewareName);
+        intent.putExtra("tablewareUseMoney",tablewareUseMoney);
+        intent.putExtra("tablewareDepositeMoney",tablewareDepositeMoney);
+        intent.putExtra("sendCost",sendCost);
         startActivity(intent);
     }
 

@@ -55,6 +55,9 @@ public class ChoseTablewareActivity extends BaseActivity implements View.OnClick
      * intent.putExtra("meals",data);
      * intent.putExtra("groupTag",isChosedGroup);
      * intent.putExtra("inputNumsTag",isChosedBySetNums);
+     * intent.putExtra("tablewareName",tablewareName);
+     * intent.putExtra("tablewareUseMoney",tablewareUseMoney);
+     * intent.putExtra("tablewareDepositeMoney",tablewareDepositeMoney);
      **/
     private void initData(){
         Intent intent = getIntent();

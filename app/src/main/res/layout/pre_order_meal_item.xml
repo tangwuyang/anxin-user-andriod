@@ -105,14 +105,14 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/normal_item_height">
         <LinearLayout
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:layout_width="0dp"
             android:layout_weight="5"
             android:orientation="horizontal"
             android:layout_height="wrap_content">
 
             <TextView
-
+                android:id="@+id/tableware_de_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="铁牌保温餐具(押金)"
@@ -178,7 +178,7 @@
             android:orientation="horizontal"
             android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/tableware_title_tv"
+                android:id="@+id/tableware_use_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="铁牌保温餐具(使用费)"
@@ -265,7 +265,7 @@
             android:orientation="horizontal"
             android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/tableware_nums_tv"
+                android:id="@+id/send_nums_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="✘20"
@@ -273,7 +273,7 @@
                 android:textSize="@dimen/mid_text_size" />
 
             <TextView
-                android:id="@+id/tableware_money_tv"
+                android:id="@+id/send_money_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

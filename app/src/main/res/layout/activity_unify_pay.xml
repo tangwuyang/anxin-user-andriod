@@ -66,6 +66,7 @@
                     android:src="@drawable/enter_message_normal" />
             </RelativeLayout>
             <com.anxin.kitchen.view.MyListView
+                android:layout_weight="1"
                 android:id="@+id/meal_lv"
                 android:divider="@null"
                 android:layout_width="match_parent"
