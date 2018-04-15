@@ -1,12 +1,13 @@
 package com.anxin.kitchen.bean.Order;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by xujianjun on 2018/4/6.
  */
 
-public class UserOrder {
+public class UserOrder implements Serializable {
     private long id;//订单id
     private long userId;
     private int size;//份量大小,1:成人餐,2:儿童餐

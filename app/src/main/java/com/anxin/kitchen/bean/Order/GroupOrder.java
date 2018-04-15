@@ -1,12 +1,13 @@
 package com.anxin.kitchen.bean.Order;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by xujianjun on 2018/4/6.
  */
 
-public class GroupOrder {
+public class GroupOrder implements Serializable{
     private long userId;//发起人ID
     private long id;//团购订单ID
     private int status;//状态 0:未付款,1:已付款,2:已发货,3:完成,4:退款

@@ -1,6 +1,7 @@
 package com.anxin.kitchen.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.anxin.kitchen.activity.order.OrderDetailActivity;
+import com.anxin.kitchen.activity.order.PayActivity;
 import com.anxin.kitchen.bean.Order.Order;
 import com.anxin.kitchen.bean.Order.PackageOrder;
 import com.anxin.kitchen.user.R;
@@ -153,14 +156,15 @@ public class OrderAdapter extends BaseAdapter {
                         holderUser.tvOrderUserOrderPay.setVisibility(View.GONE);
                         break;
                 }
-                setPackageData(holderUser.llOrderPackageInfo, mList.get(i).getUser().getPackageList());
                 holderUser.tvItemOrderTablewareName.setText(mList.get(i).getUser().getTablewareName() + "(押金)");
+                setPackageData(holderUser.llOrderPackageInfo, mList.get(i).getUser().getPackageList());
                 holderUser.tvItemOrderTablewareDeposit.setText("¥" + mList.get(i).getUser().getTablewareDeposit());
                 holderUser.tvItemOrderTablewareNum.setText("x" + mList.get(i).getUser().getNum());
                 holderUser.tvItemOrderTablewarePrice.setText("¥" + mList.get(i).getUser().getTablewareFee());
                 holderUser.tvItemOrderDeliveryPrice.setText("¥" + mList.get(i).getUser().getDeliveryFee());
                 holderUser.tvItemOrderAllPrice.setText("¥" + mList.get(i).getUser().getMoney());
 
+                holderUser.llOrderUser.setOnClickListener(new MyClickListener(i));
                 holderUser.tvOrderUserOrderPay.setOnClickListener(new MyClickListener(i));
 
                 break;
@@ -247,14 +251,21 @@ public class OrderAdapter extends BaseAdapter {
                 holderGroupLeader.tvItemOrderTablewareNum.setText("x" + mList.get(i).getUser().getNum());
                 holderGroupLeader.tvItemOrderTablewarePrice.setText("¥" + mList.get(i).getUser().getTablewareFee());
                 holderGroupLeader.tvItemOrderDeliveryPrice.setText("¥" + mList.get(i).getUser().getDeliveryFee());
-                holderGroupLeader.tvItemOrderAllPrice.setText("¥" + mList.get(i).getUser().getMoney());
 
+                if (mList.get(i).getGroup().getPayType() == 1) {
+                    //统一支付
+                    holderGroupLeader.tvItemOrderAllPrice.setText("¥" + mList.get(i).getGroup().getMoney());
+                } else {
+                    //AA支付
+                    holderGroupLeader.tvItemOrderAllPrice.setText("¥" + mList.get(i).getUser().getMoney());
+                }
+
+                holderGroupLeader.llOrderGroup.setOnClickListener(new MyClickListener(i));
                 holderGroupLeader.tvOrderUserOrderPay.setOnClickListener(new MyClickListener(i));
 
 
                 break;
             case TYPE_GROUP_MEMBER:
-
                 holderGroupRember.tvOrderNo.setText(mList.get(i).getGroup().getId() + "");
                 holderGroupRember.tvOrderTime.setText("下单时间：" + TimeUtil.getInstance().getNowTime(mList.get(i).getGroup().getCreateTime()));
                 if (mList.get(i).getUser().getDeliveryTime() == 0) {
@@ -266,12 +277,10 @@ public class OrderAdapter extends BaseAdapter {
                     case 1:
                         if (mList.get(i).getGroup().getPayType() == 1) {
                             holderGroupRember.tvOrderStatus.setText("统一待付款");
-
                         } else {
                             holderGroupRember.tvOrderStatus.setText("AA待付款");
                         }
                         holderGroupLeader.tvOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.red));
-//                        holderGroupRember.tvOrderStatus.setText("AA待付款");
                         break;
                     case 2:
                         holderGroupRember.tvOrderStatus.setText("已取消");
@@ -340,6 +349,7 @@ public class OrderAdapter extends BaseAdapter {
                 holderGroupRember.tvItemOrderDeliveryPrice.setText("¥" + mList.get(i).getUser().getDeliveryFee());
                 holderGroupRember.tvItemOrderAllPrice.setText("¥" + mList.get(i).getUser().getMoney());
 
+                holderGroupRember.llOrderMember.setOnClickListener(new MyClickListener(i));
                 holderGroupRember.tvOrderUserOrderPay.setOnClickListener(new MyClickListener(i));
 
                 break;
@@ -358,6 +368,18 @@ public class OrderAdapter extends BaseAdapter {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.tv_order_user_order_pay:
+                    Intent intent = new Intent(mActivity,PayActivity.class);
+                    intent.putExtra("data",mList.get(mPosition));
+                    intent.putExtra("payType",1);
+                    intent.putExtra("payMoney",0.01);
+                    mActivity.startActivity(intent);
+                    break;
+                case R.id.ll_order_user:
+                case R.id.ll_order_group:
+                case R.id.ll_order_member:
+                    Intent intentDetail = new Intent(mActivity, OrderDetailActivity.class);
+                    intentDetail.putExtra("orderId", mList.get(mPosition).getUser().getId());
+                    mActivity.startActivity(intentDetail);
                     break;
                 default:
                     break;
@@ -379,6 +401,7 @@ public class OrderAdapter extends BaseAdapter {
 
     //个人订餐
     private class HolderUser {
+        private LinearLayout llOrderUser;
         private ImageView ivOrderType;
         private LinearLayout llOrderUserOrderInfo;
         private TextView tvOrderUserOrderNum;
@@ -396,6 +419,7 @@ public class OrderAdapter extends BaseAdapter {
         private TextView tvItemOrderAllPrice;
 
         public HolderUser(View v) {
+            llOrderUser = v.findViewById(R.id.ll_order_user);
             ivOrderType = (ImageView) v.findViewById(R.id.iv_order_type);
             llOrderUserOrderInfo = (LinearLayout) v.findViewById(R.id.ll_order_user_order_info);
             tvOrderUserOrderNum = (TextView) v.findViewById(R.id.tv_order_user_order_num);
@@ -417,6 +441,7 @@ public class OrderAdapter extends BaseAdapter {
 
     //饭团 发起者
     private class HolderGroupLeader {
+        private LinearLayout llOrderGroup;
         private LinearLayout llOrderInfo;
         private TextView tvOrderNo;
         private TextView tvOrderTime;
@@ -440,6 +465,7 @@ public class OrderAdapter extends BaseAdapter {
         private TextView tvItemOrderAllPrice;
 
         public HolderGroupLeader(View v) {
+            llOrderGroup = v.findViewById(R.id.ll_order_group);
             llOrderInfo = (LinearLayout) v.findViewById(R.id.ll_order_info);
             tvOrderNo = (TextView) v.findViewById(R.id.tv_order_no);
             tvOrderTime = (TextView) v.findViewById(R.id.tv_order_time);
@@ -467,6 +493,7 @@ public class OrderAdapter extends BaseAdapter {
 
     //饭团成员
     private class HolderGroupRember {
+        private LinearLayout llOrderMember;
         private LinearLayout llOrderInfo;
         private TextView tvOrderNo;
         private TextView tvOrderTime;
@@ -490,6 +517,7 @@ public class OrderAdapter extends BaseAdapter {
         private TextView tvOrderUserOrderPay;
 
         public HolderGroupRember(View v) {
+            llOrderMember = v.findViewById(R.id.ll_order_member);
             ivOrderType = (ImageView) v.findViewById(R.id.iv_order_type);
             llOrderUserOrderInfo = (LinearLayout) v.findViewById(R.id.ll_order_user_order_info);
             tvOrderUserOrderNum = (TextView) v.findViewById(R.id.tv_order_user_order_num);
@@ -542,7 +570,6 @@ public class OrderAdapter extends BaseAdapter {
             tvPackagePrice.setText("¥" + list.get(i).getSubtotal());
             llContent.addView(view);
         }
-
-
     }
+
 }

@@ -34,8 +34,6 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
 import com.loopj.android.http.RequestParams;
 
-import org.apache.http.Header;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +58,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -412,6 +409,61 @@ public class SystemUtility {
     public static String sendUserLogin3(String platId, String sourceCode) {
         return AMUAC_IP + "/v1.0/user/login3?platId=" + platId + "&sourceCode=" + sourceCode + "&formData={}";
     }
+
+    /**
+     * 获取用户信息
+     */
+    public static String getUserInfo() {
+        return AMUAC_IP + "/v1.0/user/info";
+    }
+    /**
+     * 支付食疗订单
+     */
+    public static String payDiet() {
+        return AMUAC_IP + "/v1.0/order/pay_diet";
+    }
+    /**
+     * 支付团订单(代付)
+     */
+    public static String payGroup() {
+        return AMUAC_IP + "/v1.0/order/pay_group";
+    }
+    /**
+     * 支付团订单(AA支付)
+     */
+    public static String payAA() {
+        return AMUAC_IP + "/v1.0/order/group_aa_pay";
+    }
+    /**
+     * 支付多份订单
+     */
+    public static String payMulti() {
+        return AMUAC_IP + "/v1.0/order/pay_multi";
+    }
+    /**
+     *创建预支付
+     */
+    public static String createOrder() {
+        return AMUAC_IP + "/v1.0/pay/create_order";
+    }
+    /**
+     *订单支付金额
+     */
+    public static String orderPayFee() {
+        return AMUAC_IP + "/v1.0/order/order_pay_fee";
+    }
+    /**
+     *支付订单
+     */
+    public static String payOrders() {
+        return AMUAC_IP + "/v1.0/order/pay_orders";
+    }
+
+
+
+
+
+
 //请求网络异步方法
 
     /**

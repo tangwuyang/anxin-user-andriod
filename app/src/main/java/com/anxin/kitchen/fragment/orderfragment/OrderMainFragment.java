@@ -114,8 +114,7 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
 //        mWaitingDiag = new WaitingDialog(activity);
 //        mWaitingDiag.show();
 //        mWaitingDiag.startAnimation();
-        getRecenctOrders();
-        getOrdersNum();
+
 
     }
 
@@ -123,6 +122,17 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
     public void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
+        if (null == token) {
+            token = new Cache(getActivity()).getAMToken();
+        }
+//        token = "C59B7F78953E2B894FBCFE12ED66E5D9";
+        if (token == null) {
+            SystemUtility.startLoginUser(getActivity());
+        } else {
+            getRecenctOrders();
+            getOrdersNum();
+        }
+
     }
 
     /**
@@ -133,7 +143,11 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
         switch (v.getId()) {
             case R.id.allOrder_btn://查看所有订单
             case R.id.allOrder_btn2:
-                startActivity(new Intent(getActivity(), OrderActivity.class));
+                getActivity().startActivity(new Intent(getActivity(), OrderActivity.class));
+//                Intent intent = new Intent(getActivity(),PayActivity.class);
+//                intent.putExtra("payType",2);
+//                intent.putExtra("payMoney",0.01);
+//                getActivity().startActivity(intent);
                 break;
             case R.id.pending_payment_rlt:
                 Intent intent1 = new Intent(getActivity(), OrderActivity.class);
@@ -217,15 +231,10 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
         if (null == token) {
             token = new Cache(activity).getAMToken();
         }
-//        token = "C59B7F78953E2B894FBCFE12ED66E5D9";
-        if (token == null) {
-            SystemUtility.startLoginUser(getActivity());
-        } else {
-            String url = SystemUtility.getRecenctOrdersUrl();
-            Map<String, Object> dataMap = new HashMap<>();
-            dataMap.put(Constant.TOKEN, token);
-            activity.requestNet(url, dataMap, activity.NET_GET_RECENCT_ORDERS);
-        }
+        String url = SystemUtility.getRecenctOrdersUrl();
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put(Constant.TOKEN, token);
+        activity.requestNet(url, dataMap, activity.NET_GET_RECENCT_ORDERS);
     }
 
     //获取订单数量
@@ -233,20 +242,15 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
         if (null == token) {
             token = new Cache(activity).getAMToken();
         }
-//        token = "C59B7F78953E2B894FBCFE12ED66E5D9";
-        if (token == null) {
-            SystemUtility.startLoginUser(getActivity());
-        } else {
-            String url = SystemUtility.getOrdersNumUrl();
-            Map<String, Object> dataMap = new HashMap<>();
-            dataMap.put("localTime", StringUtils.isEmpty(SharedPreferencesUtil.getInstance(activity).getSP("getOrderNumTime")) ? 0 : Long.parseLong(SharedPreferencesUtil.getInstance(activity).getSP("getOrderNumTime")));
-            dataMap.put(Constant.TOKEN, token);
-            activity.requestNet(url, dataMap, activity.NET_GET_ORDERS_NUM);
-        }
+        String url = SystemUtility.getOrdersNumUrl();
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("localTime", StringUtils.isEmpty(SharedPreferencesUtil.getInstance(activity).getSP("getOrderNumTime")) ? 0 : Long.parseLong(SharedPreferencesUtil.getInstance(activity).getSP("getOrderNumTime")));
+        dataMap.put(Constant.TOKEN, token);
+        activity.requestNet(url, dataMap, activity.NET_GET_ORDERS_NUM);
     }
 
     public void setGroup(String json) {
-        if (null != mWaitingDiag &&mWaitingDiag.isShowing()) {
+        if (null != mWaitingDiag && mWaitingDiag.isShowing()) {
             mWaitingDiag.stopAnimation();
             mWaitingDiag.dismiss();
         }
@@ -260,7 +264,7 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
     }
 
     public void setNum(String json) {
-        if (null != mWaitingDiag&&mWaitingDiag.isShowing()) {
+        if (null != mWaitingDiag && mWaitingDiag.isShowing()) {
             mWaitingDiag.stopAnimation();
             mWaitingDiag.dismiss();
         }

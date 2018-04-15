@@ -85,6 +85,7 @@
                 android:layout_weight="1"
                 android:background="@color/red"
                 android:gravity="center"
+                android:visibility="gone"
                 android:orientation="vertical">
 
                 <TextView
