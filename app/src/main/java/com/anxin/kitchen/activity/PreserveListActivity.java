@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PreserveListActivity extends BaseActivity implements RequestNetListener{
+public class PreserveListActivity extends BaseActivity implements RequestNetListener,View.OnClickListener{
     private static final String REQUEST_MENU = "REQUEST_MENU";
     public static final int AFTER_CHOESE = 200;
     private static final String GET_FOOD_REQ = "GET_FOOD_REQ";  //请求套餐
@@ -48,6 +48,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     private String type;
     private String recevieData;
     private FoodMenuBean mMenubean;
+    private ImageView mSearchImg;
     private boolean login;
     private String mToken;
     private int kitchenId;
@@ -57,7 +58,6 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preserve_list);
         setTitleBar();
-
         initView();
         isLogin();
         getData();
@@ -116,7 +116,8 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     }
     private void setTitleBar() {
         setTitle("选择菜单");
-        findViewById(R.id.search_img).setVisibility(View.VISIBLE);
+        mSearchImg = findViewById(R.id.search_img);
+        mSearchImg.setVisibility(View.VISIBLE);
     }
     private void initView() {
         mMealCatalogLv = findViewById(R.id.meal_catalog_lv);
@@ -128,6 +129,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
                 finish();
             }
         });
+        mSearchImg.setOnClickListener(this);
         prefrenceUtil = new PrefrenceUtil(this);
         mCache = new Cache(this);
         mGson = new Gson();
@@ -154,6 +156,15 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
             login = true;
         }
         return login;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.search_img:
+                startNewActivity(SearchMealActivityActivity.class);
+                break;
+        }
     }
 
     private class CatalogAdapter extends BaseAdapter {

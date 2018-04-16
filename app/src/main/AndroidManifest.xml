@@ -43,6 +43,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <!-- 读短信权限 -->
     <uses-permission android:name="android.permission.READ_SMS" />
+
     <application
         android:name="com.anxin.kitchen.MyApplication"
         android:allowBackup="true"
@@ -62,21 +63,22 @@
             android:value="1dfe594cb7ca354ec036dbb62c297190" />
         <meta-data
             android:name="UMENG_CHANNEL"
-            android:value="Channel ID"></meta-data>
-        <!--魅族push应用定义消息receiver声明 -->
+            android:value="Channel ID" />
+        <!-- 魅族push应用定义消息receiver声明 -->
         <receiver android:name=".MeizuReceiver">
             <intent-filter>
+
                 <!-- 接收push消息 -->
                 <action android:name="com.meizu.flyme.push.intent.MESSAGE" />
                 <!-- 接收register消息 -->
                 <action android:name="com.meizu.flyme.push.intent.REGISTER.FEEDBACK" />
-                <!-- 接收unregister消息-->
+                <!-- 接收unregister消息 -->
                 <action android:name="com.meizu.flyme.push.intent.UNREGISTER.FEEDBACK" />
                 <!-- 兼容低版本Flyme3推送服务配置 -->
                 <action android:name="com.meizu.c2dm.intent.REGISTRATION" />
                 <action android:name="com.meizu.c2dm.intent.RECEIVE" />
 
-                <category android:name="${applicationId}"></category>
+                <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
 
@@ -147,7 +149,8 @@
         <activity android:name="com.anxin.kitchen.activity.order.OrderActivity" />
         <activity android:name="com.anxin.kitchen.activity.order.OrderDetailActivity" />
         <activity android:name="com.anxin.kitchen.activity.ClipPictureActivity" />
-        <activity android:name="com.anxin.kitchen.activity.UnifyPayActivity"/>
+        <activity android:name="com.anxin.kitchen.activity.UnifyPayActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.anxin.kitchen.user.fileprovider"
@@ -162,8 +165,8 @@
             android:name="com.anxin.kitchen.activity.MipushActivity"
             android:exported="true"
             android:launchMode="singleTask" />
-
-        <activity android:name="com.anxin.kitchen.activity.ChoseTablewareActivity"></activity>
+        <activity android:name="com.anxin.kitchen.activity.ChoseTablewareActivity" />
+        <activity android:name="com.anxin.kitchen.activity.SearchMealActivityActivity"></activity>
     </application>
 
 </manifest>

@@ -251,7 +251,6 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             if (i == (mMeals.size()-1)){
                 mAllMoneyTv.setText("￥"+(allMealMoney+allTablewareMoeny));
                 mTablewareMoneyTv.setText("其中餐具押金"+allTablewareMoeny+"元");
-
             }
             return view;
         }

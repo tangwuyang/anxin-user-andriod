@@ -178,7 +178,6 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         mBannerAdapter = new IndexHeaderFooterAdapter() {
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-
                 View view = LayoutInflater.from(mContext).inflate(R.layout.indexsticky_header_contact_banner, parent, false);
                 ImageViewVH vh = new ImageViewVH(view);
 

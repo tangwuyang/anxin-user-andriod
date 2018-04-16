@@ -100,11 +100,19 @@ public class SystemUtility {
      * 创建食疗订单
      * /v1.0/order/create_diet
      */
+    public static String getHotFoodsUrl() {
+        return AMUAC_IP + "/v1.0/food/search_hot";
+    }
+
+
+    /**
+     * 创建食疗订单
+     * /v1.0/order/create_diet
+     */
 //上传手机信息
     public static String createRecoverDiet() {
         return AMUAC_IP + "/v1.0/order/create_diet";
     }
-
 
     //上传手机信息
     public static String sendPhoneReportDevice() {

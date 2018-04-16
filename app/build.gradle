@@ -84,4 +84,5 @@ dependencies {
     compile 'cz.msebera.android:httpclient:4.3.6'
     api 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    compile 'com.lcodecorex:labellayout:1.0.1'
 }

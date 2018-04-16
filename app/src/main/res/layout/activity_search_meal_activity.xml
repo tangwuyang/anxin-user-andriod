@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.anxin.kitchen.activity.SearchMealActivityActivity">
+<include layout="@layout/title_bar"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        >
+        <LinearLayout
+
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_marginLeft="@dimen/bar_left_right_padding"
+                android:background="@drawable/search_bg"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                >
+                <ImageView
+                    android:paddingLeft="@dimen/bar_left_right_padding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/search_drawable"
+                    />
+
+                <EditText
+                    android:padding="@dimen/bar_left_right_padding"
+                    android:background="@color/white"
+                    android:id="@+id/search_et"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:hint="请输入菜品"
+                    android:textColorHint="@color/shallow_text_color"
+                    ></EditText>
+            </LinearLayout>
+
+
+
+            <TextView
+                android:id="@+id/search_tv"
+                android:padding="@dimen/bar_left_right_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="搜索"
+                android:textColor="@color/main_text_color"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <ImageView
+            android:background="@color/white"
+            android:id="@+id/no_content_img"
+            android:visibility="gone"
+            android:scaleType="centerInside"
+            android:src="@drawable/no_contents_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+           />
+
+        <com.lcodecore.LabelLayout
+            android:layout_margin="@dimen/bar_left_right_padding"
+            android:background="@color/white"
+            android:id="@+id/hot_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+           ></com.lcodecore.LabelLayout>
+
+    </FrameLayout>
+
+
+</LinearLayout>
