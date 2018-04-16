@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -53,8 +54,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public static final String DELETE_GROUP = "DELETE_GROUP";
     private static final String RE_GET_GROUP = "再次请求团";
     public static final String DELETE_FRIEND = "DELETE_FRIEND";
-    public static final String NET_GET_RECENCT_ORDERS ="getRecentOrders";
-    public static final String NET_GET_ORDERS_NUM ="getOrdersNum";
+    public static final String NET_GET_RECENCT_ORDERS = "getRecentOrders";
+    public static final String NET_GET_ORDERS_NUM = "getOrdersNum";
     private PrefrenceUtil prefrenceUtil;
     public static Context context;
     // 定义4个Fragment对象
@@ -70,6 +71,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private RadioButton groupButtomBtn;
     private RadioButton orderButtomBtn;
     private RadioButton myButtomBtn;
+    private ImageView buttom_img;
     // 定义FragmentManager对象管理器
     private FragmentManager fragmentManager;
     //欢迎页面
@@ -147,6 +149,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         orderButtomBtn = (RadioButton) findViewById(R.id.order_radioBtn);
         myButtomBtn = (RadioButton) findViewById(R.id.my_radioBtn);
         myButtomGroup.setOnCheckedChangeListener(myButtomGroupCheck);
+        buttom_img = findViewById(R.id.buttom_img);
     }
 
     RadioGroup.OnCheckedChangeListener myButtomGroupCheck = new RadioGroup.OnCheckedChangeListener() {
@@ -173,11 +176,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     //隐藏底部栏
     public void hideMainBottom() {
         myButtom_Lyt.setVisibility(View.GONE);
+        buttom_img.setVisibility(View.GONE);
     }
 
     //显示底部栏
     public void showMainBotton() {
         myButtom_Lyt.setVisibility(View.VISIBLE);
+        buttom_img.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -299,7 +304,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 MealBean mealBean = mGson.fromJson(responseBody, MealBean.class);
                 mealMainFragment.closeWaitingDialog();
                 mealMainFragment.setMeal(mealBean);
-            }else if (null != status && status.equals(Constant.REQUEST_EXCEPTION)){
+            } else if (null != status && status.equals(Constant.REQUEST_EXCEPTION)) {
                 Toast.makeText(context, "请求异常", Toast.LENGTH_SHORT).show();
                 mealMainFragment.closeWaitingDialog();
             }
@@ -376,16 +381,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
 
-        if(requestCode != null && requestCode.equals(NET_GET_RECENCT_ORDERS)){
+        if (requestCode != null && requestCode.equals(NET_GET_RECENCT_ORDERS)) {
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 orderMainFragment.setGroup(responseBody);
                 return;
             }
         }
 
-        if(requestCode != null && requestCode.equals(NET_GET_ORDERS_NUM)){
+        if (requestCode != null && requestCode.equals(NET_GET_ORDERS_NUM)) {
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
-                SharedPreferencesUtil.getInstance(this).putSP("getOrderNumTime",System.currentTimeMillis()+"");
+                SharedPreferencesUtil.getInstance(this).putSP("getOrderNumTime", System.currentTimeMillis() + "");
                 orderMainFragment.setNum(responseBody);
                 return;
             }

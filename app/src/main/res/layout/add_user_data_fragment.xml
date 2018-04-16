@@ -189,6 +189,7 @@
                 android:hint="例5号楼1001"
                 android:textColor="@color/black"
                 android:textColorHint="#cccccc"
+                android:background="@null"
                 android:maxLines="1"
                 android:textSize="16sp" />
         </RelativeLayout>

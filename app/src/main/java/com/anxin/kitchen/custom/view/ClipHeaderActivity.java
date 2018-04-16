@@ -66,10 +66,10 @@ public class ClipHeaderActivity extends Activity implements OnTouchListener {
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         wmHeight = wm.getDefaultDisplay().getHeight();
         wmWidth = wm.getDefaultDisplay().getWidth();
-        if (wmHeight > 1900)
-            wmHeight = wmHeight - 250;
-        else {
-            wmHeight = wmHeight - 100;
+        if(wmHeight >1900)
+            wmHeight = wmHeight -250;
+        else{
+            wmHeight = wmHeight -100;
         }
     }
 
@@ -108,9 +108,8 @@ public class ClipHeaderActivity extends Activity implements OnTouchListener {
 
     private void initSrcPic() {
         Uri uri = getIntent().getData();
-        String path = uri.getPath();
+        String path = CommonUtil.getRealFilePathFromUri(getApplicationContext(), uri);
         if (TextUtils.isEmpty(path)) {
-//            LOG.e("--------initSrcPic--------isEmpty---");
             return;
         }
 //        // 原图可能很大，现在手机照出来都3000*2000左右了，直接加载可能会OOM
@@ -145,24 +144,19 @@ public class ClipHeaderActivity extends Activity implements OnTouchListener {
 
     }
 
-    /**
-     *  从给定路径加载图片
-     */
+    /** 从给定路径加载图片*/
     public static Bitmap loadBitmap(String imgpath) {
         return BitmapFactory.decodeFile(imgpath);
     }
-
-    /**
-     *  从给定的路径加载图片，并指定是否自动旋转方向
-     */
+    /** 从给定的路径加载图片，并指定是否自动旋转方向*/
     public static Bitmap loadBitmap(String imgpath, boolean adjustOritation) {
         Bitmap bm = loadBitmap(imgpath);
         // 原图可能很大，现在手机照出来都3000*2000左右了，直接加载可能会OOM
         // 这里 decode 出 720*1280 左右的照片
         bm = BitmapUtil.decodeSampledBitmap(imgpath, 720, 1280);
-        if (!adjustOritation) {
+        if(!adjustOritation){
             return bm;
-        } else {
+        }else{
             int digree = 0;
             ExifInterface exif = null;
             try {
@@ -171,7 +165,7 @@ public class ClipHeaderActivity extends Activity implements OnTouchListener {
                 e.printStackTrace();
                 exif = null;
             }
-            if (exif != null) {
+            if(exif != null){
                 // 读取图片中相机方向信息
                 int ori = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
                 // 计算旋转角度
@@ -190,11 +184,11 @@ public class ClipHeaderActivity extends Activity implements OnTouchListener {
                         break;
                 }
             }
-            if (digree != 0) {
+            if(digree != 0){
                 //旋转图片
                 Matrix m = new Matrix();
                 m.postRotate(digree);
-                bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), m, true);
+                bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(),m,true);
             }
             return bm;
         }
@@ -203,36 +197,36 @@ public class ClipHeaderActivity extends Activity implements OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         ImageView view = (ImageView) v;
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
+        case MotionEvent.ACTION_DOWN:
+            savedMatrix.set(matrix);
+            start.set(event.getX(), event.getY());
+            mode = DRAG;
+            break;
+        case MotionEvent.ACTION_POINTER_DOWN:
+            oldDist = spacing(event);
+            if (oldDist > 10f) {
                 savedMatrix.set(matrix);
-                start.set(event.getX(), event.getY());
-                mode = DRAG;
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                oldDist = spacing(event);
-                if (oldDist > 10f) {
-                    savedMatrix.set(matrix);
-                    midPoint(mid, event);
-                    mode = ZOOM;
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_POINTER_UP:
-                mode = NONE;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (mode == DRAG) {
+                midPoint(mid, event);
+                mode = ZOOM;
+            }
+            break;
+        case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_POINTER_UP:
+            mode = NONE;
+            break;
+        case MotionEvent.ACTION_MOVE:
+            if (mode == DRAG) {
+                matrix.set(savedMatrix);
+                matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
+            } else if (mode == ZOOM) {
+                float newDist = spacing(event);
+                if (newDist > 10f) {
                     matrix.set(savedMatrix);
-                    matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
-                } else if (mode == ZOOM) {
-                    float newDist = spacing(event);
-                    if (newDist > 10f) {
-                        matrix.set(savedMatrix);
-                        float scale = newDist / oldDist;
-                        matrix.postScale(scale, scale, mid.x, mid.y);
-                    }
+                    float scale = newDist / oldDist;
+                    matrix.postScale(scale, scale, mid.x, mid.y);
                 }
-                break;
+            }
+            break;
         }
         view.setImageMatrix(matrix);
         return true;
@@ -286,10 +280,33 @@ public class ClipHeaderActivity extends Activity implements OnTouchListener {
         }
         String path = getCacheDir() + File.separator + email + ".jpg";
         Uri mSaveUri = Uri.fromFile(new File(path));
-        Intent intent = new Intent();
-        intent.setData(mSaveUri);
-        ClipHeaderActivity.this.setResult(this.RESULT_OK, intent);
-        ClipHeaderActivity.this.finish();
+
+        if (mSaveUri != null) {
+            OutputStream outputStream = null;
+            try {
+                outputStream = getContentResolver().openOutputStream(mSaveUri);
+                if (outputStream != null) {
+                    zoomedCropBitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                }
+            } catch (IOException ex) {
+                // TODO: report error to caller
+                LOG.e("Cannot open file: " + mSaveUri, ex);
+            } finally {
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            Intent intent = new Intent();
+            intent.setData(mSaveUri);
+//            MyApplication.mApp.getCache().setAccountImageURI(mApp.getCache().getUsername(), path);
+            ClipHeaderActivity.this.setResult(this.RESULT_OK, intent);
+            ClipHeaderActivity.this.finish();
+        }
     }
 
 }

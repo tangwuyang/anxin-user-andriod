@@ -15,6 +15,7 @@ import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.event.OnUserAcountEvent;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
+import com.anxin.kitchen.fragment.loginfragment.AddUserDataFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
@@ -71,13 +72,18 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         userWalletBtn.setOnClickListener(this);
         settingBtn.setOnClickListener(this);
         userSetBtn.setOnClickListener(this);
-//        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-//                startActivity(new Intent(getActivity(), LoginActivity.class));
-//                return false;
-//            }
-//        });
+        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AddUserDataFragment addUserDataFragment = new AddUserDataFragment();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.content_frame, addUserDataFragment);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.addToBackStack(null);
+                ft.commit();
+                return false;
+            }
+        });
 
         userIcon = (RoundedImageView) view.findViewById(R.id.user_icon);
         userName = (TextView) view.findViewById(R.id.user_name);

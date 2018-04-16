@@ -103,7 +103,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         super.onCreate(savedInstanceState);
         EventBusFactory.getInstance().register(this);
         activity = (MainActivity) MainActivity.context;
-        mWaitingDialog = new WaitingDialog(getActivity());
+        mWaitingDialog = new WaitingDialog(getActivity(),1000*60);
         sendMessageList();
         SystemUtility.sendGetAddressHttp();
     }
