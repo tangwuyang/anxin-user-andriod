@@ -25,11 +25,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <!-- 在SDCard中创建与删除文件权限 -->
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
-    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <!-- 微信权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -147,17 +142,12 @@
         <activity android:name="com.anxin.kitchen.activity.GroupAndFriendsListActivitiy" />
         <activity android:name="com.anxin.kitchen.activity.GroupMemberActivity" />
         <activity android:name="com.anxin.kitchen.activity.ContactsActivity" />
-        <activity
-            android:name="com.anxin.kitchen.custom.view.ClipHeaderActivity"
-            android:screenOrientation="portrait" />
+        <activity android:name="com.anxin.kitchen.custom.view.ClipHeaderActivity" />
         <activity android:name="com.anxin.kitchen.activity.EnsureOrderActivity" />
         <activity android:name="com.anxin.kitchen.activity.order.OrderActivity" />
         <activity android:name="com.anxin.kitchen.activity.order.OrderDetailActivity" />
-        <activity
-            android:name="com.anxin.kitchen.activity.ClipPictureActivity"
-            android:screenOrientation="portrait" />
+        <activity android:name="com.anxin.kitchen.activity.ClipPictureActivity" />
         <activity android:name="com.anxin.kitchen.activity.UnifyPayActivity" />
-        <activity android:name="com.anxin.kitchen.activity.EditAddressActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
