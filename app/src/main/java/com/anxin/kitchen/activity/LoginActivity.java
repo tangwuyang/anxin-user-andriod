@@ -413,14 +413,14 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         public void onFinish() {
             number = 60;
             sendPhoneCodeBtn.setText("获取验证码");
-            sendPhoneCodeBtn.setTextColor(getColor(R.color.login_code_send));
+            sendPhoneCodeBtn.setTextColor(getResources().getColor(R.color.login_code_send));
         }
 
         @Override
         public void onTick(long millisUntilFinished) {
             number--;
             sendPhoneCodeBtn.setText(number + "s后重新发送");
-            sendPhoneCodeBtn.setTextColor(getColor(R.color.login_code_count_down));
+            sendPhoneCodeBtn.setTextColor(getResources().getColor(R.color.login_code_count_down));
         }
     }
 
