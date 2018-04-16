@@ -5,7 +5,7 @@ android {
     defaultConfig {
         applicationId "com.anxin.kitchen.user"
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 25
         versionCode 110
         versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -37,11 +37,6 @@ android {
         variant.outputs.all {
             outputFileName = "anxin-kitchen-${variant.versionName}.apk"
         }
-    }
-    buildToolsVersion '26.0.2'
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 

@@ -1,6 +1,7 @@
 package com.anxin.kitchen.activity;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -120,13 +122,14 @@ public class GroupMemberActivity extends BaseActivity implements View.OnClickLis
         menuLl.setAdapter(new MenuAdapter());
         PopupWindow popWnd = new PopupWindow (this);
         popWnd.setContentView(contentView);
-
-        popWnd.setBackgroundDrawable(getResources().getDrawable(R.drawable.fan_menu_bg));
+/**背景阴影*/
+//        ColorDrawable dw = new ColorDrawable(0x80000000);
+        popWnd.setBackgroundDrawable(new ColorDrawable());
         popWnd.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         popWnd.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         popWnd.setOutsideTouchable(true);
         //popWnd.setBackgroundDrawable(new BitmapDrawable());
-        popWnd.showAsDropDown(mFunctionImg,550,20);
+        popWnd.showAsDropDown(mFunctionImg,550,10);
     }
 
 
@@ -151,7 +154,7 @@ public class GroupMemberActivity extends BaseActivity implements View.OnClickLis
         public View getView(final int i, View view, ViewGroup viewGroup) {
             view = LayoutInflater.from(GroupMemberActivity.this).inflate(R.layout.fan_menu_item,viewGroup,false);
             ImageView menuImg = view.findViewById(R.id.menu_img);
-            LinearLayout menuLl = view.findViewById(R.id.menu_ll);
+            RelativeLayout menuLl = view.findViewById(R.id.menu_ll);
             menuImg.setImageResource(mMenuImgs.get(i));
             TextView menuName = view.findViewById(R.id.menu_tv);
             menuName.setText(mMenuNames.get(i));

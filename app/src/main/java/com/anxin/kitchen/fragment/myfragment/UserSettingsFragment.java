@@ -24,18 +24,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.anxin.kitchen.MyApplication;
-import com.anxin.kitchen.activity.ClipHeaderActivity;
 import com.anxin.kitchen.activity.ClipPictureActivity;
 import com.anxin.kitchen.activity.UserNameActivity;
+import com.anxin.kitchen.custom.view.ClipHeaderActivity;
 import com.anxin.kitchen.custom.view.CustomDatePicker;
 import com.anxin.kitchen.custom.view.SelectGenderPopupWindow;
 import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
+import com.anxin.kitchen.event.AsyncHttpRequestMessage;
+import com.anxin.kitchen.event.OnSaveBitmapEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.DateUtils;
+import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.GetImagePath;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.MyService;
+import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.RoundedImageView;
@@ -92,7 +96,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     private File fileCropUri;
     private File headClipFile;// 裁剪后的头像
     private Uri imageUri;
-    private Uri cropImageUri;
+    private Uri cropImageUri = null;
     public static final String HEAD_ICON_DIC = Environment
             .getExternalStorageDirectory()
             + File.separator + "anxin";
@@ -100,6 +104,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBusFactory.getInstance().register(this);
         fileUri = new File(HEAD_ICON_DIC, "photo.jpg");
         fileCropUri = new File(HEAD_ICON_DIC, "crop_photo.jpg");
         headClipFile = new File(HEAD_ICON_DIC, "clipIcon.jpg");
@@ -140,9 +145,9 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         userBirthday = (TextView) view.findViewById(R.id.user_birthday);
 
         //获取本地用户名称
-        String name = mApp.getAccount().getUserTrueName();
-        if (name != null && name.length() != 0) {
-            userName.setText(name);
+        UserName = mApp.getAccount().getUserTrueName();
+        if (UserName != null && UserName.length() != 0) {
+            userName.setText(UserName);
         }
         //获取本地缓存头像
         String mImageURI = mApp.getCache().getAccountImageURI(mApp.getCache().getUserPhone());
@@ -196,6 +201,33 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         super.onResume();
     }
 
+    /**
+     * 监听网络请求返回
+     *
+     * @param asyncHttpRequestMessage
+     */
+    public void onEventMainThread(AsyncHttpRequestMessage asyncHttpRequestMessage) {
+        String requestCode = asyncHttpRequestMessage.getRequestCode();
+        String responseMsg = asyncHttpRequestMessage.getResponseMsg();
+        String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+        String codeToKen = StringUtils.parserMessage(responseMsg, "code");
+        switch (requestCode) {
+            //验证码发送
+            case "getHeadIconHttp":
+                //网络请求返回成功
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    //解析验证码返回
+                    String code = StringUtils.parserMessage(responseMsg, "code");
+                    String data = StringUtils.parserMessage(responseMsg, "data");
+                    if (code != null && code.equals("1")) {
+                        EventBusFactory.getInstance().post(new OnSaveBitmapEvent(data, mApp.getAccount().getUserPhone()));
+                        sendUpdateAccount(data);
+                    }
+                }
+                break;
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -203,9 +235,12 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 getFragmentManager().popBackStack();
                 break;
             case R.id.PreservationBtn:
-                if (UserName == null && UserDate == null && UserSex == 0)
+                if (UserName == null && UserDate == null && UserSex == 0 && cropImageUri == null)
                     return;
-                sendUpdateAccount();
+                if (cropImageUri != null) {
+                    SystemUtility.setHeadIcon(cropImageUri);
+                } else
+                    sendUpdateAccount(null);
                 break;
             case R.id.user_icon_rlt://修改用户头像
                 menuWindowSelectPic = new SelectPicPopupWindow(getActivity(), itemsOnClick);
@@ -215,7 +250,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
             case R.id.user_name_rlt://修改用户名
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), UserNameActivity.class);
-                intent.putExtra("userName", "");
+                intent.putExtra("userName", UserName);
                 startActivityForResult(intent, USER_NAME);
                 break;
             case R.id.user_gender_rlt://修改用户性别
@@ -232,7 +267,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
     }
 
     //保存用戶信息
-    private void sendUpdateAccount() {
+    private void sendUpdateAccount(String pahtURL) {
         JSONObject jsonObject = new JSONObject();
         try {
             if (UserName != null && UserName.length() != 0) {
@@ -247,6 +282,10 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
             if (UserSex != 0) {
                 jsonObject.put("sex", UserSex);
                 mApp.getAccount().setUserSex(UserSex + "");
+            }
+            if (pahtURL != null && pahtURL.length() != 0) {
+                jsonObject.put("userLogo", pahtURL);
+                mApp.getAccount().setUserLogoPathURL(pahtURL);
             }
 //            jsonObject.put("phone", phone);
 //            jsonObject.put("province", Integer.valueOf(addressBean.getProvinceID()));
@@ -385,44 +424,28 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
         switch (requestCode) {
             //相机返回
             case CODE_CAMERA_REQUEST:
-//                cropImageUri = Uri.fromFile(fileUri);
-//                starCropPhoto(cropImageUri);
-//                cropImageUri(imageUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CROP_PHOTO);
                 clipPhotoBySelf(fileUri.getAbsolutePath());
                 break;
             //相册返回
             case CODE_GALLERY_REQUEST:
-                if (hasSdcard()) {
-//                    cropImageUri = Uri.fromFile(fileCropUri);
-//                    Uri newUri = Uri.parse(SystemUtility.getPath(getActivity(), data.getData()));
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                        newUri = FileProvider.getUriForFile(getActivity(), "com.anxin.kitchen.user.fileprovider", new File(newUri.getPath()));
-//                    }
-//                    cropImageUri(newUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CROP_PHOTO);
-//                    starCropPhoto(newUri);
-                    if (data != null) {
-                        String filePath = "";
-                        Uri originalUri = data.getData(); // 获得图片的uri
+                if (data != null) {
+                    String filePath = "";
+                    Uri originalUri = data.getData(); // 获得图片的uri
 //                        Log.i(TAG, "originalUri : " + originalUri);
-                        if (originalUri != null) {
-                            filePath = GetImagePath.getPath(getActivity(), originalUri);
-                        }
-//                        Log.i(TAG, "filePath : " + filePath);
-                        if (filePath != null && filePath.length() > 0) {
-                            //clipPhotoBySystem(originalUri);
-                            //调用自定义裁剪
-                            clipPhotoBySelf(filePath);
-                        }
+                    if (originalUri != null) {
+                        filePath = GetImagePath.getPath(getActivity(), originalUri);
                     }
-                } else {
-                    ToastUtil.showToast("设备没有SD卡！");
+//                        Log.i(TAG, "filePath : " + filePath);
+                    if (filePath != null && filePath.length() > 0) {
+                        //clipPhotoBySystem(originalUri);
+                        //调用自定义裁剪
+                        clipPhotoBySelf(filePath);
+                    }
                 }
                 break;
             case CROP_PHOTO:
                 if (data != null) {
-//                    Bitmap bm = BitmapFactory.decodeFile(headClipFile.getAbsolutePath());
                     cropImageUri = Uri.fromFile(headClipFile);
-//                    Bitmap bitmap = SystemUtility.getBitmapFromUri(cropImageUri, getActivity());
                     setPicToView(cropImageUri);
                 }
                 break;
@@ -506,52 +529,14 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
             return;
         }
         userIcon.setImageURI(uri);
-        SystemUtility.setHeadIcon(uri);
+//        SystemUtility.setHeadIcon(uri);
 //        mApp.getCache().setAccountImageURI(mApp.getCache().getUserPhone(), uri.getPath());
 //        EventBusFactory.postEvent(new ViewUpdateHeadIconEvent());
     }
 
-    //修改头像
-    public void starCropPhoto(Uri mSaveUri) {
-//        userIcon.setImageURI(mSaveUri);
-        Intent intent = new Intent();
-        intent.setClass(getActivity(), ClipHeaderActivity.class);
-        intent.setData(mSaveUri);
-        intent.putExtra("side_length", 400);// 裁剪图片宽高
-        startActivityForResult(intent, CROP_PHOTO);
-    }
-
-    /**
-     * @param orgUri      剪裁原图的Uri
-     * @param desUri      剪裁后的图片的Uri
-     * @param aspectX     X方向的比例
-     * @param aspectY     Y方向的比例
-     * @param width       剪裁图片的宽度
-     * @param height      剪裁图片高度
-     * @param requestCode 剪裁图片的请求码
-     */
-    private void cropImageUri(Uri orgUri, Uri desUri, int aspectX, int aspectY, int width, int height, int requestCode) {
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
-        intent.setDataAndType(orgUri, "image/*");
-        //发送裁剪信号
-        intent.putExtra("crop", "true");
-        intent.putExtra("aspectX", aspectX);
-        intent.putExtra("aspectY", aspectY);
-        intent.putExtra("outputX", width);
-        intent.putExtra("outputY", height);
-        intent.putExtra("scale", true);
-        //将剪切的图片保存到目标Uri中
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, desUri);
-        //是否是圆形裁剪区域，设置了也不一定有效
-        intent.putExtra("circleCrop", true);
-        //1-false用uri返回图片
-        //2-true直接用bitmap返回图片（此种只适用于小图片，返回图片过大会报错）
-        intent.putExtra("return-data", true);
-        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-        intent.putExtra("noFaceDetection", true);
-        startActivityForResult(intent, requestCode);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBusFactory.getInstance().unregister(this);
     }
 }

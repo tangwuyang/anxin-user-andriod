@@ -54,12 +54,14 @@ public class ChoseGroupDialog extends Dialog{
         mGroupList = prefrenceUtil.getGroups();
         ((PreserveActivity)mContext).myLog("---------------->"+mGroupList);
         Gson gson = new Gson();
+        if (null != mGroupList && !mGroupList.equals("null")){
         bean = gson.fromJson(mGroupList,SearchGroupBean.class);
-        ImageView cancelImg = findViewById(R.id.cancel_img);
-        TextView setcount = (TextView) findViewById(R.id.cancel_tv);
-        TextView createNewGroup = (TextView) findViewById(R.id.open_right_tv);
-        ListView groupLv = findViewById(R.id.group_lv);
-        groupLv.setAdapter(new GroupAdapter());
+            ListView groupLv = findViewById(R.id.group_lv);
+            groupLv.setAdapter(new GroupAdapter());
+        }
+            ImageView cancelImg = findViewById(R.id.cancel_img);
+            TextView setcount = (TextView) findViewById(R.id.cancel_tv);
+            TextView createNewGroup = (TextView) findViewById(R.id.open_right_tv);
         setcount.setOnClickListener(setCountListener);
         createNewGroup.setOnClickListener(clickListener3);
         cancelImg.setOnClickListener(clickListener);

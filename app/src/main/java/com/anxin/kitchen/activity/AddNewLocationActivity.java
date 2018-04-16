@@ -195,7 +195,7 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         Map<String, Object> dataMap = new HashMap();
         dataMap.put("token", SystemUtility.AMToken);
         dataMap.put("formData", jsonObject.toString());
-        Log.e("onEventMainThread", "----------dataMap--------------" + dataMap.toString());
+//        Log.e("onEventMainThread", "----------dataMap--------------" + dataMap.toString());
         SystemUtility.requestNetPost(urlPath, dataMap, sendAddAddress_http);
     }
 

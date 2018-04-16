@@ -4,99 +4,102 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/main_bg_color"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context="com.anxin.kitchen.activity.SendMealLocationActivity">
-    <include layout="@layout/title_bar"
+
+    <include
         android:id="@+id/top_layout"
-        />
+        layout="@layout/title_bar" />
+
     <TextView
-        android:layout_below="@id/top_layout"
         android:id="@+id/this_location_tv"
         android:layout_width="match_parent"
         android:layout_height="37.3dp"
-        android:text="@string/this_location"
+        android:layout_below="@id/top_layout"
+        android:paddingLeft="@dimen/bar_left_right_padding"
         android:gravity="center_vertical"
-        android:textColor="@color/shallow_black"
-        android:layout_marginLeft="@dimen/bar_left_right_padding"
-        />
-    
+        android:background="@color/main_bg_color"
+        android:text="@string/this_location"
+        android:textColor="@color/shallow_black" />
+
     <LinearLayout
         android:id="@+id/this_location_ll"
-        android:layout_below="@id/this_location_tv"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="64dp">
-<ImageView
-    android:layout_width="20dp"
-    android:layout_height="18.7dp"
-    android:scaleType="centerCrop"
-    android:src="@drawable/location_icon"
-    android:layout_marginLeft="@dimen/bar_left_right_padding"
-    />
+        android:layout_height="64dp"
+        android:layout_below="@id/this_location_tv"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="18.7dp"
+            android:layout_marginLeft="@dimen/bar_left_right_padding"
+            android:scaleType="centerCrop"
+            android:src="@drawable/location_icon" />
 
         <TextView
             android:id="@+id/location_tv"
-            android:layout_marginLeft="@dimen/bar_left_right_padding"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:layout_marginLeft="@dimen/bar_left_right_padding"
+            android:layout_weight="1"
             android:text="@string/loacation"
-            />
+            android:textColor="@color/black" />
+
         <LinearLayout
             android:id="@+id/re_location_ll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
             <ImageView
                 android:id="@+id/re_location_img"
                 android:layout_width="20dp"
                 android:layout_height="20.7dp"
-                android:src="@drawable/re_location_drawable"
                 android:layout_marginRight="5dp"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop"
+                android:src="@drawable/re_location_drawable" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/title_bar_color"
-                android:text="@string/re_location"
                 android:layout_marginRight="@dimen/bar_left_right_padding"
-                />
+                android:text="@string/re_location"
+                android:textColor="@color/title_bar_color" />
         </LinearLayout>
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/send_location_tv"
-        android:layout_below="@id/this_location_ll"
-        android:layout_marginLeft="@dimen/bar_left_right_padding"
         android:layout_width="match_parent"
         android:layout_height="37.3dp"
-        android:text="@string/send_location"
+        android:layout_below="@id/this_location_ll"
+        android:paddingLeft="@dimen/bar_left_right_padding"
         android:gravity="center_vertical"
-        android:textColor="@color/shallow_black"
-        />
+        android:background="@color/main_bg_color"
+        android:text="@string/send_location"
+        android:textColor="@color/shallow_black" />
+
     <ListView
-        android:layout_below="@id/send_location_tv"
         android:id="@+id/send_location_lv"
         android:layout_width="match_parent"
-        android:divider="@color/white"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/add_bt"
+        android:layout_below="@id/send_location_tv"
         android:background="@color/white"
-        android:layout_height="wrap_content"/>
-    
+        android:divider="@color/white" />
+
     <TextView
         android:id="@+id/add_bt"
         android:layout_width="match_parent"
         android:layout_height="53.3dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/title_bar_color"
-        android:text="@string/add_location"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="@dimen/big_text_size"
         android:layout_margin="@dimen/bar_left_right_padding"
-        />
+        android:background="#3ed368"
+        android:gravity="center"
+        android:text="@string/add_location"
+        android:textColor="@color/white"
+        android:textSize="@dimen/big_text_size" />
 </RelativeLayout>
