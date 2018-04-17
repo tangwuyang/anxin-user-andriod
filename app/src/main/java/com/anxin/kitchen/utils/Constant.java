@@ -1,7 +1,5 @@
 package com.anxin.kitchen.utils;
 
-import com.google.gson.Gson;
-
 /**
  * Created by 唐午阳 on 2018/2/25.
  */
@@ -23,4 +21,7 @@ public class Constant {
     public static final String NULL = "null";
     public static final String RECAVOR = "recover";
     public static final String RECAVOR_MENU = "RECAVOR_MENU";
+    public static final String BROADCAST_PAY_SUCCEED = "com.anxin.kitchen.pay_succeed";
+    public static final String BROADCAST_PAY_FAILED = "com.anxin.kitchen.pay_succeed";
+    public static final String BROADCAST_REFRESH_ORDER_LIST = "com.anxin.kitchen.refresh_orders";
 }

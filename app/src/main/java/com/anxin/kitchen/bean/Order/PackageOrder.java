@@ -1,10 +1,12 @@
 package com.anxin.kitchen.bean.Order;
 
+import java.io.Serializable;
+
 /**
  * Created by xujianjun on 2018/4/6.
  */
 
-public class PackageOrder {
+public class PackageOrder implements Serializable{
     private String packageName;//套餐名称
     private String foods;//配菜 ,号隔开
     private int num;//数量

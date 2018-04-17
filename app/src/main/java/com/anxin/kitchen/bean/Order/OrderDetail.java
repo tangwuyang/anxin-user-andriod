@@ -42,5 +42,45 @@ public class OrderDetail {
         this.lastPayTime = lastPayTime;
     }
 
+    /**
+     * 是否是统一支付
+     *
+     * @return
+     */
+    public boolean isAllPay() {
+        if (getGroup() != null && getGroup().getUserId() == getUser().getUserId() && getGroup().getPayType() == 1) {
+            //统一付款
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 是否是AA支付
+     *
+     * @return
+     */
+    public boolean isAAPay() {
+        if (getGroup() != null && getGroup().getUserId() == getUser().getUserId() && getGroup().getPayType() == 2) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 获取订单
+     *
+     * @return
+     */
+    public long getOrderId() {
+        if (group != null) {
+            return group.getId();
+        } else {
+            return user.getId();
+        }
+    }
+
 
 }

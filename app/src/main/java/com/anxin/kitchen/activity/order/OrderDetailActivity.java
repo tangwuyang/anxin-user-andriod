@@ -1,6 +1,7 @@
 package com.anxin.kitchen.activity.order;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,6 +79,9 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                 finish();
                 break;
             case R.id.ll_order_detail_pay:
+                Intent intent = new Intent(mActivity, PayActivity.class);
+                intent.putExtra("orderIds", mOrderDetail.getOrderId());
+                mActivity.startActivity(intent);
                 break;
             case R.id.ll_order_detail_suborder_title:
                 TextView tvExpand = (TextView) view.getTag();
@@ -111,7 +115,12 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
             tvOrderDetailHint.setVisibility(View.VISIBLE);
             tvOrderDetailHint.setText("请在" + TimeUtil.getInstance().getNowTimeSS(info.getLastPayTime()) + "前付款");
             llOrderDetailPayInfo.setVisibility(View.VISIBLE);
-            tvOrderDetailPayMoney.setText(info.getUser().getMoney() + "");
+            if (info.isAllPay()) {
+                //统一待付款
+                tvOrderDetailPayMoney.setText(info.getGroup().getMoney() + "");
+            } else {
+                tvOrderDetailPayMoney.setText(info.getUser().getMoney() + "");
+            }
             if (info.getUser().getTablewareDeposit() == 0) {
                 tvOrderDetailMoneyOther.setVisibility(View.GONE);
             } else {
@@ -149,7 +158,11 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
         tvItemOrderTablewarePrice.setText("¥" + info.getUser().getTablewareFee());
 //        tvItemOrderDeliveryNum.setText();
         tvItemOrderDeliveryPrice.setText("¥" + info.getUser().getDeliveryFee());
-        tvItemOrderAllPrice.setText("¥" + info.getUser().getMoney());
+        if (info.isAllPay()) {
+            tvItemOrderAllPrice.setText("¥" + info.getGroup().getMoney());
+        } else {
+            tvItemOrderAllPrice.setText("¥" + info.getUser().getMoney());
+        }
 
         //套餐详细列表
         LinearLayout llPackageInfo = viewPackageInfo.findViewById(R.id.ll_order_package_info);
@@ -165,6 +178,7 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                 tvPackageOther.setText(info.getUser().getPackageList().get(i).getFoods().replaceAll(",", "\n"));
                 tvPackageNum.setText("x" + info.getUser().getPackageList().get(i).getNum());
                 tvPackagePrice.setText("¥" + info.getUser().getPackageList().get(i).getSubtotal());
+
                 llPackageInfo.addView(viewPackage);
             }
             llOrderDetailInfo.addView(viewPackageInfo);
@@ -204,7 +218,6 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
         TextView tvOrderDetailOrderPayType = (TextView) viewOrder.findViewById(R.id.tv_order_detail_order_pay_type);
         TextView tvOrderDetailOrderCreateTime = (TextView) viewOrder.findViewById(R.id.tv_order_detail_order_create_time);
         if (info.getGroup() == null) {
-
             switch (info.getUser().getStatus()) {
                 case 0:
                     tvOrderDetailOrderStatus.setText("待付款");
@@ -235,17 +248,22 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                     break;
             }
             tvOrderDetailOrderNo.setText(info.getUser().getId() + "");
-            switch (info.getUser().getPayType()) {
-                case 1:
-                    tvOrderDetailOrderPayType.setText("微信支付");
-                    break;
-                case 2:
-                    tvOrderDetailOrderPayType.setText("支付宝支付");
-                    break;
-                default:
-                    tvOrderDetailOrderPayType.setText("");
-                    break;
+            if (info.getUser().getStatus() == 0) {
+                tvOrderDetailOrderPayType.setText("");
+            } else {
+                switch (info.getUser().getPayType()) {
+                    case 1:
+                        tvOrderDetailOrderPayType.setText("微信支付");
+                        break;
+                    case 2:
+                        tvOrderDetailOrderPayType.setText("支付宝支付");
+                        break;
+                    default:
+                        tvOrderDetailOrderPayType.setText("");
+                        break;
+                }
             }
+
             tvOrderDetailOrderCreateTime.setText(TimeUtil.getInstance().getNowTime(info.getUser().getCreateTime()));
         } else {
             switch (info.getGroup().getStatus()) {
@@ -255,7 +273,6 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                     } else {
                         tvOrderDetailOrderStatus.setText("AA待付款");
                     }
-
                     tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.red));
                     break;
                 case 2:
@@ -275,17 +292,22 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                     break;
             }
             tvOrderDetailOrderNo.setText(info.getGroup().getId() + "");
-            switch (info.getGroup().getPayType()) {
-                case 1:
-                    tvOrderDetailOrderPayType.setText("微信支付");
-                    break;
-                case 2:
-                    tvOrderDetailOrderPayType.setText("支付宝支付");
-                    break;
-                default:
-                    tvOrderDetailOrderPayType.setText("");
-                    break;
+            if (info.getUser().getStatus() == 0) {
+                tvOrderDetailOrderPayType.setText("");
+            } else {
+                switch (info.getUser().getPayType()) {
+                    case 1:
+                        tvOrderDetailOrderPayType.setText("微信支付");
+                        break;
+                    case 2:
+                        tvOrderDetailOrderPayType.setText("支付宝支付");
+                        break;
+                    default:
+                        tvOrderDetailOrderPayType.setText("");
+                        break;
+                }
             }
+
             tvOrderDetailOrderCreateTime.setText(TimeUtil.getInstance().getNowTime(info.getGroup().getCreateTime()));
             if (info.getGroup().getUserId() == info.getUser().getUserId()) {
 
@@ -344,5 +366,18 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
             ToastUtil.showToast(responseFailureBody);
         }
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        getOrderDetail();
+    }
+
+    //    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        getOrderDetail();
+//    }
+
 
 }

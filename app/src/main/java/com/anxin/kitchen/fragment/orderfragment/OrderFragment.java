@@ -1,17 +1,13 @@
 package com.anxin.kitchen.fragment.orderfragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.anxin.kitchen.activity.order.OrderDetailActivity;
 import com.anxin.kitchen.adapter.OrderAdapter;
-import com.anxin.kitchen.bean.Order.Order;
 import com.anxin.kitchen.fragment.BaseFragment;
 import com.anxin.kitchen.response.OrderListResponse;
 import com.anxin.kitchen.user.R;
@@ -64,19 +60,19 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
         refreshOrder = (RefreshLayout) view.findViewById(R.id.refresh_order);
         lvOrder = (ListView) view.findViewById(R.id.lv_order);
 
-        lvOrder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Order order = (Order) mAdapter.getItem(i);
-                Intent intent = new Intent(mActivity, OrderDetailActivity.class);
-                intent.putExtra("orderId", order.getUser().getId());
-                mActivity.startActivity(intent);
-            }
-        });
+//        lvOrder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Order order = (Order) mAdapter.getItem(i);
+//                Intent intent = new Intent(mActivity, OrderDetailActivity.class);
+//                intent.putExtra("orderId", order.getUser().getId());
+//                mActivity.startActivity(intent);
+//            }
+//        });
 
         refreshOrder.setOnLoadListener(this);
         refreshOrder.setOnRefreshListener(this);
-        getOrderList(page);
+//        getOrderList(page);
     }
 
 
@@ -88,8 +84,13 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
 
     @Override
     public void onLoad() {
-        page++;
-        getOrderList(page);
+        if(mAdapter!=null &&mAdapter.getCount()>=page*10){
+            page++;
+            getOrderList(page);
+        }else{
+            refreshOrder.setLoading(false);
+        }
+
     }
 
     private void getOrderList(int page) {
@@ -130,6 +131,7 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
             } else {
                 mAdapter.upDate(response.getData());
             }
+
         }
     }
 
@@ -149,5 +151,11 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
             }
             ToastUtil.showToast(responseFailureBody);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        onRefresh();
     }
 }

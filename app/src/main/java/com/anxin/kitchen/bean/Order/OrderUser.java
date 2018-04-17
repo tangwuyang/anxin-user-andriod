@@ -1,11 +1,13 @@
 package com.anxin.kitchen.bean.Order;
 
+import java.io.Serializable;
+
 /**
  * 订单用户对象---组成员信息
  * Created by xujianjun on 2018/4/8.
  */
 
-public class OrderUser {
+public class OrderUser implements Serializable {
     private long userId;
     private String trueName;
     private String userLogo;

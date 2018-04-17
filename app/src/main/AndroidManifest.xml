@@ -39,6 +39,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 支付宝支付权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -67,8 +73,8 @@
             android:value="1dfe594cb7ca354ec036dbb62c297190" />
         <meta-data
             android:name="UMENG_CHANNEL"
-            android:value="Channel ID" />
-        <!-- 魅族push应用定义消息receiver声明 -->
+            android:value="Channel ID"></meta-data>
+        <!--魅族push应用定义消息receiver声明 -->
         <receiver android:name=".MeizuReceiver">
             <intent-filter>
 
@@ -126,6 +132,10 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
+            android:name=".wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop"/>
+        <activity
             android:name="com.tencent.tauth.AuthActivity"
             android:launchMode="singleTask"
             android:noHistory="true">
@@ -148,17 +158,15 @@
         <activity android:name="com.anxin.kitchen.activity.GroupAndFriendsListActivitiy" />
         <activity android:name="com.anxin.kitchen.activity.GroupMemberActivity" />
         <activity android:name="com.anxin.kitchen.activity.ContactsActivity" />
-        <activity
-            android:name="com.anxin.kitchen.custom.view.ClipHeaderActivity"
-            android:screenOrientation="portrait" />
+        <activity android:name="com.anxin.kitchen.custom.view.ClipHeaderActivity" />
         <activity android:name="com.anxin.kitchen.activity.EnsureOrderActivity" />
         <activity android:name="com.anxin.kitchen.activity.order.OrderActivity" />
-        <activity android:name="com.anxin.kitchen.activity.order.OrderDetailActivity" />
-        <activity
-            android:name="com.anxin.kitchen.activity.ClipPictureActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name="com.anxin.kitchen.activity.UnifyPayActivity" />
-        <activity android:name="com.anxin.kitchen.activity.EditAddressActivity" />
+        <activity android:name="com.anxin.kitchen.activity.order.OrderDetailActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name="com.anxin.kitchen.activity.ClipPictureActivity" />
+        <activity android:name="com.anxin.kitchen.activity.UnifyPayActivity"/>
+        <activity android:name="com.anxin.kitchen.activity.order.PayActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -174,6 +182,24 @@
             android:name="com.anxin.kitchen.activity.MipushActivity"
             android:exported="true"
             android:launchMode="singleTask" />
+
+        <activity android:name="com.anxin.kitchen.activity.ChoseTablewareActivity"></activity>
+        <!-- 支付宝支付 -->
+        <activity
+            android:name="com.alipay.sdk.app.H5PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+        </activity>
+        <activity
+            android:name="com.alipay.sdk.app.H5AuthActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+        </activity>
+        <!-- 支付宝支付结束 -->
         <activity android:name="com.anxin.kitchen.activity.ChoseTablewareActivity" />
         <activity android:name="com.anxin.kitchen.activity.SearchMealActivityActivity"></activity>
     </application>
