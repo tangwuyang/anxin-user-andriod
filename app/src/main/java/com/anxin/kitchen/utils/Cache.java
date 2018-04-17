@@ -119,8 +119,8 @@ public class Cache {
     /***
      * @return user Account.
      */
-    public final MessageBean getMessageBean(Context context) {
-        MessageBean messageBean = (MessageBean) readObject(context, SAVED_MESSAGE);
+    public final MessageBean getMessageBean(Context context, String user) {
+        MessageBean messageBean = (MessageBean) readObject(context, SAVED_MESSAGE + user);
 //        Log.e("--------------", "-------getAcount---------" + account);
         if (null == messageBean)
             return null;
@@ -131,8 +131,8 @@ public class Cache {
      * @param messageBean
      *            Acount
      */
-    public final void setMessage(Context context, final MessageBean messageBean) {
-        saveObject(context, SAVED_MESSAGE, messageBean);
+    public final void setMessage(Context context, final MessageBean messageBean, String user) {
+        saveObject(context, SAVED_MESSAGE + user, messageBean);
     }
 
     public final Map<String, AddressListBean> getAddressNameMap(Context context) {

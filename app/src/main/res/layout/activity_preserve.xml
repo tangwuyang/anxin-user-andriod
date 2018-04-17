@@ -5,63 +5,69 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.anxin.kitchen.activity.PreserveActivity">
-<include layout="@layout/title_bar"
-    android:id="@+id/top_layout"/>
+
+    <include
+        android:id="@+id/top_layout"
+        layout="@layout/title_bar" />
+
     <LinearLayout
-        android:orientation="vertical"
-        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/close_account_tv"
-        android:layout_below="@id/top_layout">
+        android:layout_below="@id/top_layout"
+        android:background="@color/white"
+        android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            >
+            android:layout_height="48dp">
+
             <TextView
                 android:layout_width="74.7dp"
                 android:layout_height="match_parent"
-                android:background="@color/main_bg_color"/>
+                android:background="@color/main_bg_color" />
+
             <TextView
-                android:gravity="center"
                 android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="6.7dp"
                 android:layout_height="match_parent"
-                android:background="@color/main_bg_color"
-                android:text="午餐"
-                android:textSize="@dimen/mid_text_size"
-                android:textColor="@color/title_bar_color"
-                />
-            <TextView
-                android:gravity="center"
-                android:textColor="@color/title_bar_color"
-                android:text="晚餐"
-                android:layout_width="0dp"
+                android:layout_marginLeft="6.7dp"
                 android:layout_weight="1"
-                android:textSize="@dimen/mid_text_size"
+                android:background="@color/main_bg_color"
+                android:gravity="center"
+                android:text="午餐"
+                android:textColor="@color/title_bg_color"
+                android:textSize="@dimen/mid_text_size" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="6.7dp"
                 android:layout_marginRight="5.3dp"
-                android:layout_height="match_parent"
-                android:background="@color/main_bg_color"/>
+                android:layout_weight="1"
+                android:background="@color/main_bg_color"
+                android:gravity="center"
+                android:text="晚餐"
+                android:textColor="@color/title_bg_color"
+                android:textSize="@dimen/mid_text_size" />
         </LinearLayout>
+
         <ListView
             android:id="@+id/add_preserve_lv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:dividerHeight="5dp"
             android:divider="@color/main_bg_color"
-            ></ListView>
+            android:dividerHeight="5dp"></ListView>
     </LinearLayout>
+
     <TextView
         android:id="@+id/close_account_tv"
         android:layout_width="match_parent"
         android:layout_height="52.3dp"
-        android:gravity="center"
-        android:background="@color/red"
-        android:textColor="@color/white"
-        android:textSize="@dimen/big_text_size"
         android:layout_alignParentBottom="true"
-        android:text="去结算"/>
+        android:background="@color/red"
+        android:gravity="center"
+        android:text="去结算"
+        android:textColor="@color/white"
+        android:textSize="@dimen/big_text_size" />
 </RelativeLayout>

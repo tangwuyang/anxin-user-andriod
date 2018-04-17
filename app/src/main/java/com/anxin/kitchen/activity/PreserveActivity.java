@@ -824,7 +824,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             mel.setPackageId(food.getPackageId());
             mel.setPackageName(food.getPackageName());
             String foodListSt = mGson.toJson(food.getFoodList());
-            List<MealBean.FoodList> foodList = mGson.fromJson(foodListSt, new TypeToken<List<FoodList>>() {}.getType());
+            List<FoodList> foodList = mGson.fromJson(foodListSt, new TypeToken<List<FoodList>>() {}.getType());
             mel.setFoodList(foodList);
             mel.setPrice(food.getPrice());
             mel.setImg(food.getImg());

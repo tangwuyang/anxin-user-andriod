@@ -238,7 +238,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 if (UserName == null && UserDate == null && UserSex == 0 && cropImageUri == null)
                     return;
                 if (cropImageUri != null) {
-                    SystemUtility.setHeadIcon(cropImageUri);
+                    SystemUtility.setHeadIcon(cropImageUri,getActivity());
                 } else
                     sendUpdateAccount(null);
                 break;
