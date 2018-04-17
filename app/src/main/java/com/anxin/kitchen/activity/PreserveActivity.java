@@ -131,13 +131,17 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 int type = mel.getEatType();
                 if (type == 1){
                     myLog("-----------------午餐");
-                    if (!preMealMaps.get(thisDay).containsKey("午餐")){
-                        preMealMaps.get(thisDay).put("午餐",mel);
+                    if (null!=preMealMaps.get(thisDay)) {
+                        if (!preMealMaps.get(thisDay).containsKey("午餐")) {
+                            preMealMaps.get(thisDay).put("午餐", mel);
+                        }
                     }
                 }else if (type == 2){
                     myLog("-----------------晚餐");
-                    if (!preMealMaps.get(thisDay).containsKey("晚餐")){
-                        preMealMaps.get(thisDay).put("晚餐",mel);
+                    if (null!=preMealMaps.get(thisDay)) {
+                        if (!preMealMaps.get(thisDay).containsKey("晚餐")) {
+                            preMealMaps.get(thisDay).put("晚餐", mel);
+                        }
                     }
                 }
 
