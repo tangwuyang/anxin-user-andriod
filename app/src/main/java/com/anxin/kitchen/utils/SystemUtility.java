@@ -45,6 +45,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -75,7 +77,7 @@ import static com.anxin.kitchen.MyApplication.mApp;
 
 public class SystemUtility {
     private static final Log LOG = Log.getLog();
-    public static final String PHOTO_FILE_NAME = "anxinicon.png";//用户头像名称
+    public static final String PHOTO_FILE_NAME = "anxinicon.jpg";//用户头像名称
     public static String AMUAC_IP = "http://tapi.anxinyc.com";//服务器请求，IP地址
     public static String AMToken;//网络请求ToKen
     public static String RequestSuccess = "onSuccess";//http方法成功返回标志
@@ -97,11 +99,62 @@ public class SystemUtility {
     }
 
     /**
-     * 创建食疗订单
-     * /v1.0/order/create_diet
+     * 获取热点搜索
      */
     public static String getHotFoodsUrl() {
         return AMUAC_IP + "/v1.0/food/search_hot";
+    }
+
+
+
+    /**
+     * 获取下单前总金额跟 餐具押金
+     * 预约点餐
+     */
+
+    public static String getDeMoneyUrl() {
+        return AMUAC_IP + "/v1.0/order/pre_order_pay";
+    }
+
+
+    /**
+     * 支付
+     */
+
+    public static String payUrl() {
+        return AMUAC_IP + "/v1.0/order/pay_orders";
+    }
+
+
+    /**
+     * 获取下单后总金额跟 餐具押金
+     * 预约点餐
+     * 下单后再次确认
+     */
+
+    public static String getSureDeMoneyUrl() {
+        return AMUAC_IP + "/v1.0/order/order_pay_fee";
+    }
+
+
+    /**
+     * 订单
+     * 预约点餐
+     * 设置数量的接口
+     */
+
+    public static String createOederUrl() {
+        return AMUAC_IP + "/v1.0/order/create_multi";
+    }
+
+
+    /**
+     * 获取下单前总金额跟 餐具押金
+     * 康复食疗
+     */
+
+    public static String getDiet_DeMoneyUrl() {
+        return AMUAC_IP + "/v1.0/order/pre_order_pay_diet";
     }
 
 
@@ -109,7 +162,7 @@ public class SystemUtility {
      * 创建食疗订单
      * /v1.0/order/create_diet
      */
-//上传手机信息
+
     public static String createRecoverDiet() {
         return AMUAC_IP + "/v1.0/order/create_diet";
     }
@@ -145,7 +198,7 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/user/address_list?token=" + AMToken;
     }
 
-    //获取送餐地址
+    //获取餐具
     public static String getTablewareListUrl() {
         return AMUAC_IP + "/v1.0/system/tableware_list";
     }
@@ -165,7 +218,12 @@ public class SystemUtility {
     public static void setHeadIcon(Uri uri) {
         OkHttpClient client = new OkHttpClient();
 // form 表单形式上传
-        File file = new File(uri.getPath());
+        File file = null;
+        try {
+            file = new File(new URI(uri.toString()));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         Bitmap bitmap = SystemUtility.getBitmapFromUri(uri, MyApplication.getInstance());
         compressBmpToFile(bitmap, file);
         MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -183,7 +241,7 @@ public class SystemUtility {
         client.newBuilder().readTimeout(5000, TimeUnit.MILLISECONDS).build().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                LOG.e("-------------------------------");
+//                LOG.e("-------------------------------");
             }
 
             @Override
@@ -192,62 +250,27 @@ public class SystemUtility {
                 if (response.isSuccessful()) {
                     String str = response.body().string();
                     LOG.e(response.message() + " , body " + str);
+                    EventBusFactory.getInstance().post(new AsyncHttpRequestMessage("getHeadIconHttp", str, RequestSuccess));
                 } else {
-                    LOG.e(response.message() + " error : body " + response.body().string());
+//                    LOG.e(response.message() + " error : body " + response.body().string());
                 }
             }
         });
-
-//       MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-//        //1.定义一个OkhttpClient
-//        OkHttpClient client = new OkHttpClient();
-//        JSONObject jsonObject = new JSONObject();
-//        try {
-//            jsonObject.put("path","user_logo");
-//            jsonObject.put("relation","");
-//            jsonObject.put("token",AMToken);
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        //建立body，然后设置这个body里面放的数据类型是什么。
-//        RequestBody body = RequestBody.create(JSON,jsonObject.toString());
-//        //建立请求
-//        Request request = new Request.Builder().post(body).url(url).build();
-//        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-//
-//        builder.addFormDataPart("user_logo", "user_logo.jpg", RequestBody.create(MediaType.parse("image/jpg"), file));
-//
-//        body = builder.build();
-//        //定义Call
-//        Call call = client.newCall(request);
-//        //执行Call
-//        call.enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                httpResponseCallBack.error(e);
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                httpResponseCallBack.response(response.body().string());
-//            }
-//        });
     }
 
     public static void compressBmpToFile(Bitmap bmp, File file) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int options = 80;
         bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
-        while (baos.toByteArray().length / 1024 > 50) {
+        while (baos.toByteArray().length / 1024 > 70) {
             baos.reset();
             options -= 10;
-            LOG.e("-------------baos.toByteArray().length-----" + baos.toByteArray().length);
+//            LOG.e("-------------baos.toByteArray().length-----" + baos.toByteArray().length);
             bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
         }
         try {
-            LOG.e("-------------bmp.toByteArray().length-----" + bmp.getByteCount() / 1024);
-            LOG.e("-------------baos.toByteArray().length-----" + baos.toByteArray().length / 1024);
+//            LOG.e("-------------bmp.toByteArray().length-----" + bmp.getByteCount() / 1024);
+//            LOG.e("-------------baos.toByteArray().length-----" + baos.toByteArray().length / 1024);
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(baos.toByteArray());
             fos.flush();

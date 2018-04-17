@@ -47,7 +47,7 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
 
     private void showDialog(){
         if (null == mDialog){
-            mDialog = new WaitingDialog(this);
+            mDialog = new WaitingDialog(this,100);
             mDialog.show();
             mDialog.startAnimation();
         }else {

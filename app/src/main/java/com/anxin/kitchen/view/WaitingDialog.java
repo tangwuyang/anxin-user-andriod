@@ -4,21 +4,28 @@ import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.user.R;
 
 /**
  * Created by 唐午阳 on 2018/3/1.
  */
 
-public class WaitingDialog extends Dialog{
+public class WaitingDialog extends Dialog {
     private ImageView mWaitingImg;
     private ObjectAnimator ra;
-    public WaitingDialog(Context context) {
-        super(context,R.style.MyDialog);
+    private MyCountDownTimer mc;
+    private long millisInFuture;
+
+    public WaitingDialog(Context context, long millisInFuture) {
+        super(context, R.style.MyDialog);
+        this.millisInFuture = millisInFuture;
     }
 
     @Override
@@ -26,14 +33,35 @@ public class WaitingDialog extends Dialog{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.waiting_layout);
         mWaitingImg = findViewById(R.id.waiting_img);
-        ra = ObjectAnimator.ofFloat(mWaitingImg,"rotationY", 0f, 360f);
-        ra.setDuration(10000);
+        mc = new MyCountDownTimer(millisInFuture, 1000 * 20);
     }
 
-    public void startAnimation(){
-        ra.start();
+    class MyCountDownTimer extends CountDownTimer {
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+            ra = ObjectAnimator.ofFloat(mWaitingImg, "rotationY", 0f, 360f);
+            ra.setDuration(20000);
+        }
+
+        @Override
+        public void onFinish() {
+            ra.cancel();
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+        }
     }
-    public void stopAnimation(){
+
+    private Handler handler = new Handler();
+
+    public void startAnimation() {
+        ra.start();
+        mc.start();
+    }
+
+    public void stopAnimation() {
+        mc.cancel();
         ra.cancel();
     }
 

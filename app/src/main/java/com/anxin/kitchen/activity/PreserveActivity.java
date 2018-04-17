@@ -385,11 +385,16 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             for (Long day :
                     preserverAdapter.preMealMaps.keySet()) {
                 myLog("-----------day---->"+day);
+
                 Map<String, MealBean.Data> dayData = preserverAdapter.preMealMaps.get(day);
                 if (dayData.containsKey("午餐")){
                     allNums = allNums + dayData.get("午餐").getNums();
-                }else if (dayData.containsKey("晚餐")){
+                    myLog("-----------day---->"+allNums + dayData.containsKey("晚餐"));
+
+                }
+                if (dayData.containsKey("晚餐")){
                     allNums = allNums + dayData.get("晚餐").getNums();
+                    myLog("-----------day---->"+allNums);
                 }
             }
         }
@@ -491,6 +496,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         intent.putExtra("inputNumsTag",isChosedBySetNums);
         intent.putExtra("nums",allNums);
         intent.putExtra("tablewareName",tablewareName);
+        intent.putExtra("tableawareId",tablewareId);
         intent.putExtra("tablewareUseMoney",tablewareUseMoney);
         intent.putExtra("tablewareDepositeMoney",tablewareDepositeMoney);
         intent.putExtra("sendCost",sendCost);
@@ -752,6 +758,8 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                         }
                     });
 
+                //显示数量
+                myLog("---------wan----->"+lunch.getNums()+"份");
                 if (lunch.isGrouporderTag()){
                     numTv.setText(lunch.getRelatedGroupName());
                 }
@@ -809,6 +817,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             String foodSt = data.getStringExtra("food");
             FoodsBean.Data food = mGson.fromJson(foodSt,FoodsBean.Data.class);
             mel.setMenuDay(day);
+            mel.setPackageId(food.getPackageId());
             mel.setPackageName(food.getPackageName());
             String foodListSt = mGson.toJson(food.getFoodList());
             List<MealBean.FoodList> foodList = mGson.fromJson(foodListSt, new TypeToken<List<FoodList>>() {}.getType());
@@ -845,6 +854,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     public void choseGroup(long day,String type,int groupId,String groupName,int nums){
         boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
         if (isContain){
+
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setSetNumsTag(false);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(0);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setGrouporderTag(true);

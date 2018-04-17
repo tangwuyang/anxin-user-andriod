@@ -298,6 +298,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
                     intent.putExtra("type",type);
                     //myLog("--------------->"+mGson.toJson(food));
                     intent.putExtra("food",mGson.toJson(food));
+
                     setResult(AFTER_CHOESE,intent);
                     finish();
                 }

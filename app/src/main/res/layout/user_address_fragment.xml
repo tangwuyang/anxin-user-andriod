@@ -34,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/title_rlt"
+        android:divider="@color/white"
         android:layout_above="@+id/add_address_btn"
         android:background="@color/white">
 

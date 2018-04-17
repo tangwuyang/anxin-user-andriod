@@ -6,12 +6,6 @@
     android:background="@color/main_bg_color">
 
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/main_bottom_group"
-        android:background="@drawable/main_buttom_shadow" />
-
     <LinearLayout
         android:id="@+id/main_bottom_group"
         android:layout_width="match_parent"
@@ -93,6 +87,7 @@
         </RadioGroup>
     </LinearLayout>
 
+
     <RelativeLayout
         android:id="@+id/welcome_bg"
         android:layout_width="match_parent"
@@ -112,4 +107,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/main_bottom_group"></FrameLayout>
+
+    <ImageView
+        android:id="@+id/buttom_img"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/main_bottom_group"
+        android:background="@drawable/main_buttom_shadow" />
 </RelativeLayout>

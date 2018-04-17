@@ -240,4 +240,6 @@
     <string name="select_time">选择时间</string>
     <string name="current_time">当前时间</string>
     <string name="title_activity_setting">SettingActivity</string>
+
+    <item type="id" name="position"></item>
 </resources>

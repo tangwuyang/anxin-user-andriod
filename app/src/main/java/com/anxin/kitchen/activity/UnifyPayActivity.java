@@ -2,6 +2,7 @@ package com.anxin.kitchen.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.bean.MealBean;
+import com.anxin.kitchen.bean.OrderInfoBean;
 import com.anxin.kitchen.bean.RecoverBean;
 import com.anxin.kitchen.bean.TablewareBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
@@ -21,10 +23,14 @@ import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.MyListView;
+import com.anxin.kitchen.view.WaitingDialog;
 import com.google.gson.reflect.TypeToken;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,6 +39,9 @@ import java.util.Map;
 
 public class UnifyPayActivity extends BaseActivity implements View.OnClickListener ,RequestNetListener{
     private static final String CREATE_DIET = "CREATE_DIET";
+    private static final String GET_PRE_MONEY = "GET_PRE_MONEY";
+    private static final String ENSURE_MONEY = "ENSURE_MONEY";
+    private static final String PAY_MONEY = "PAY_MONEY";
     private ImageView mBackImg;
     private TextView mTitleTv;
     private ImageView mTransmitImg;
@@ -52,7 +61,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
     private LinkedList<MealBean.Data> mMeals = new LinkedList<>();
     private long tablewareId;
     private int payType;
-
+    private int kitchenId;
     public LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps;
     private boolean isChosedGroup; //选择的是团的方式
     private boolean isChosedBySetNums;//通过选择数量
@@ -62,14 +71,35 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
     private String tablewareName;    //餐具名
     private double sendCost;
     private double allSendCost;   //所有配送费
+    private WaitingDialog mdialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unify_pay);
         setTitle("统一支付");
+        mdialog = new WaitingDialog(this,100);
+        if (null == mCache) {
+            mCache = new Cache(this);
+            mToken = mCache.getAMToken();
+        }
+        kitchenId = new PrefrenceUtil(this).getKitchenId();
         initData();
+        getPreMoney();
         initView();
         // getTableWare();
+    }
+
+
+    //后台获取总金额跟押金
+    private void getPreMoney() {
+        Map<String,Object> dataMap = new HashMap<>();
+        dataMap.put("token",mToken);
+        dataMap.put("kitchenId",kitchenId);
+        dataMap.put("tablewareId",tablewareId);
+        dataMap.put("timePackages",getPackages());
+        dataMap.put("payType",1);
+        myLog("--------------->" + mToken +"  " + tablewareId + "  " + getPackages());
+        requestNet(SystemUtility.getDeMoneyUrl(),dataMap,GET_PRE_MONEY);
     }
 
 
@@ -91,6 +121,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         String mealSt = intent.getStringExtra("meals");
         isChosedGroup = intent.getBooleanExtra("groupTag",false);
         isChosedBySetNums = intent.getBooleanExtra("inputNumsTag",false);
+        tablewareId = intent.getLongExtra("tableawareId",0);
         sendCost = intent.getDoubleExtra("sendCost",0);
         if (null!=mealSt){
             //还原数据
@@ -101,7 +132,8 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
                 Map<String, MealBean.Data> dayData = preMealMaps.get(day);
                 if (dayData.containsKey("午餐")){
                     mMeals.add(dayData.get("午餐"));
-                }else if (dayData.containsKey("晚餐")){
+                }
+                if (dayData.containsKey("晚餐")){
                     mMeals.add(dayData.get("晚餐"));
                 }
             }
@@ -128,6 +160,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         mEnsurePayTv.setOnClickListener(this);
     }
 
+    String ids = "";
     @Override
     public void requestSuccess(String responseString, String requestCode) {
         super.requestSuccess(responseString, requestCode);
@@ -143,9 +176,59 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         if (requestCode ==  CREATE_DIET && status.equals(Constant.REQUEST_SUCCESS)){
             Toast.makeText(this, "创建订单成功", Toast.LENGTH_SHORT).show();
             PrefrenceUtil prefrenceUtil = new PrefrenceUtil(this);
-            prefrenceUtil.setRecoverList("");
+            /*prefrenceUtil.setRecoverList("");
             prefrenceUtil.setRecoverMenuList("");
+            startNewActivity(MainActivity.class);*/
+            OrderInfoBean bean = mGson.fromJson(responseString,OrderInfoBean.class);
+
+            //再次获取需要支付的费用
+            Map<String ,Object> dataMap = new HashMap<>();
+
+            for (OrderInfoBean.Data data:bean.getData()){
+                ids = ids + data.getId()+",";
+            }
+            ids = ids.substring(0,ids.lastIndexOf(","));
+            myLog("-------->"+ids);
+            dataMap.put("orderIds",ids);
+            dataMap.put("token",mToken);
+            requestNet(SystemUtility.getSureDeMoneyUrl(),dataMap,ENSURE_MONEY);
+            return;
+        }else if (requestCode == CREATE_DIET&& (!status.equals(Constant.REQUEST_SUCCESS))){
+            Toast.makeText(this, "创建订单失败", Toast.LENGTH_SHORT).show();
+            mdialog.stopAnimation();
+            mdialog.dismiss();
+        }
+
+        if (requestCode == ENSURE_MONEY&& (status.equals(Constant.REQUEST_SUCCESS))){
+            PreMoneyBean bean = mGson.fromJson(responseString,PreMoneyBean.class);
+            Map<String ,Object> dataMap = new HashMap<>();
+            myLog("--------s>"+ids);
+            dataMap.put("orderIds",ids);
+            dataMap.put("token",mToken);
+            requestNet(SystemUtility.payUrl(),dataMap,PAY_MONEY);
+
+        }else if (requestCode == ENSURE_MONEY&& (!status.equals(Constant.REQUEST_SUCCESS))){
+            Toast.makeText(this, "确认订单失败", Toast.LENGTH_SHORT).show();
+            mdialog.stopAnimation();
+            mdialog.dismiss();
+        }
+
+        if (requestCode == PAY_MONEY&& (status.equals(Constant.REQUEST_SUCCESS))){
+            Toast.makeText(this, "付款成功", Toast.LENGTH_SHORT).show();
+            mdialog.stopAnimation();
+            mdialog.dismiss();
+            //要修改  跳转到订单活动
             startNewActivity(MainActivity.class);
+        }else if (requestCode == PAY_MONEY&& (!status.equals(Constant.REQUEST_SUCCESS))){
+            Toast.makeText(this, "付款失败", Toast.LENGTH_SHORT).show();
+            mdialog.stopAnimation();
+            mdialog.dismiss();
+        }
+
+        if (requestCode == GET_PRE_MONEY && status.equals(Constant.REQUEST_SUCCESS)){
+            PreMoneyBean bean = mGson.fromJson(responseString,PreMoneyBean.class);
+            mAllMoneyTv.setText("￥" + (bean.getData().getTotalPay()));
+            mTablewareMoneyTv.setText("其中餐具押金" + bean.getData().getPayDeposit() + "元");
         }
     }
 
@@ -160,38 +243,92 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             case R.id.transmit_img:
                 break;
             case R.id.ensure_pay_tv:
-                //createOrder();
+                createOrder();
                 break;
         }
     }
 
     private void createOrder() {
-        Map<String ,Object> dataMap = new HashMap<>();
-        dataMap.put("kitchenId",mPrefrenceUtil.getKitchenId());
-        dataMap.put("tablewareId",tablewareId);
-
         //获取所有套餐信息
-        String tempPackages = "";
-        for (String key : mChosedMeals.keySet()) {
-            double littlePrice = mChosedMeals.get(key).getPrice()*mChosedMeals.get(key).getNums();
-            BigDecimal b = new BigDecimal(littlePrice);
-            double price = b.setScale(2, BigDecimal.ROUND_UP).doubleValue();
-            tempPackages = tempPackages +mChosedMeals.get(key).getPackageId()+"*"
-                    +mChosedMeals.get(key).getNums()+"*"+price+"0,";
-        }
-        String packages = tempPackages.substring(0,tempPackages.lastIndexOf(","));
-        dataMap.put("packages",packages);
-        dataMap.put("payType",payType);
+        mdialog.show();
+        mdialog.startAnimation();
+        Map<String,Object> dataMap = new HashMap<>();
+        dataMap.put("token",mToken);
+        dataMap.put("kitchenId",kitchenId);
+        dataMap.put("tablewareId",tablewareId);
+        dataMap.put("timePackages",getPackages());
+        dataMap.put("payType",1);
+        dataMap.put("address","深圳金展大厦28楼");
         dataMap.put("contactPhone",mCache.getUserPhone());
         dataMap.put("contactName",mCache.getNickName());
-        dataMap.put("address","深圳金展大厦28楼");
-        dataMap.put("token",mCache.getAMToken());
+        requestNet(SystemUtility.createOederUrl(),dataMap,CREATE_DIET);
+    }
 
-        requestNet(SystemUtility.createRecoverDiet(),dataMap,CREATE_DIET);
+    @NonNull
+    private String getPackages() {
+        String tempPackages = "";
+        for (int i = 0; i<mMeals.size();i++) {
+            MealBean.Data meal = mMeals.get(i);
+            double littlePrice = meal.getPrice()*meal.getNums();
+            BigDecimal b = new BigDecimal(meal.getPrice()*meal.getNums());
+            double price = b.setScale(2, BigDecimal.ROUND_UP).doubleValue();
+            String dateTem = transToWeekDay(meal.getMenuDay());
+            String dateSt = null;
+            if (meal.getEatType()==1){
+                dateSt = transData(dateTem + " 12:00");
+            }else if (meal.getEatType()==2){
+                dateSt = transData(dateTem + " 18:00");
+            }
+            tempPackages = tempPackages+"0*"+dateSt+"*"+meal.getEatType()+"*"+meal.getPackageId()+"*"
+                    +meal.getNums()+"*"+price+"0,";
+        }
+        return tempPackages.substring(0,tempPackages.lastIndexOf(","));
     }
 
 
+    private String transData(String dataSt){
+        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
+        try {
+            myLog("----------da----->"+ dataSt);
+            Date date = sdf.parse(dataSt);
+            String dateSt = String.valueOf(date.getTime());
+            myLog("----------da----->"+dataSt + "  " + dateSt);
+            return dateSt.substring(0,10);
+        } catch (ParseException e) {
+            myLog("------------------>异常");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    private String transToWeekDay(long thisDay) {
+        myLog("-------w------>" + thisDay);
+        String dataSt = String.valueOf(thisDay);
+        StringBuffer dateBf = new StringBuffer();
+        dateBf.append(dataSt.substring(0, 4));
+        dateBf.append("-");
+        dateBf.append(dataSt.substring(4, 6));
+        dateBf.append("-");
+        dateBf.append(dataSt.substring(6));
+        dataSt = dateBf.toString();
+        return dataSt;
+    }
+    private void getAllMoney(){
+        for (int i = 0 ; i<mMeals.size();i++){
+            MealBean.Data meal = mMeals.get(i);
+            double mealMoney = meal.getNums()*meal.getPrice();
+            double tablewareDeMoney = tablewareDepositeMoney*meal.getNums();
+            double tablewareUseMoney1 = tablewareUseMoney*meal.getNums();
+            double sendCosts = sendCost*meal.getNums();
+            double thisTablewareMoney = tablewareDeMoney + tablewareUseMoney1 + sendCosts;
+            allMealMoney += (mealMoney+ tablewareUseMoney1 + sendCosts);
+            allTablewareMoeny += tablewareDeMoney;
+        }
+    }
+    int position = -1;
     class MealAdapter extends BaseAdapter{
+        boolean mark = false;
         private LinkedList<RecoverBean.Data> mChosedList = new LinkedList<>();
 
         public MealAdapter() {
@@ -199,6 +336,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
 
         @Override
         public int getCount() {
+            myLog("-----------view-------" +mMeals.size() );
             return mMeals.size();
         }
 
@@ -214,43 +352,51 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
+            myLog("--------view----"+i);
             MealBean.Data meal = mMeals.get(i);
             ViewHolder holder = null;
             if (view == null){
                 view = LayoutInflater.from(UnifyPayActivity.this).inflate(R.layout.pre_order_meal_item,viewGroup,false);
                 holder = new ViewHolder(view);
                 view.setTag(holder);
+                view.setTag(R.id.position,position);
             }else {
                 holder = (ViewHolder) view.getTag();
+                view.setTag(R.id.position,position);
             }
             holder.sendTimeTv.setText(meal.getMenuDay()+"");
-            holder.mealNums.setText("✘"+allNums);
+            holder.mealNums.setText("✘"+meal.getNums());
             holder.mealTitleTv.setText(meal.getPackageName());
             holder.mealContentTv.setText(meal.getFoodList().get(0).getDishName());
-            holder.mealNums.setText("✘"+allNums);
-            holder.tablewareDeNums.setText("✘"+allNums);
-            holder.tablewareUseNUms.setText("✘"+allNums);
-            holder.sendNums.setText("✘"+allNums);
+            holder.mealNums.setText("✘"+meal.getNums());
+            holder.tablewareDeNums.setText("✘"+meal.getNums());
+            holder.tablewareUseNUms.setText("✘"+meal.getNums());
+            holder.sendNums.setText("✘"+meal.getNums());
             holder.tableDeNameTv.setText(tablewareName+"(押金)");
             holder.tableUseNameTv.setText(tablewareName+"(使用费)");
             holder.tablewareDeReTv.setText("(押金"+tablewareDepositeMoney+"元/份)");
             holder.tablewareUseReTv.setText("(使用费"+tablewareUseMoney+"元/份)");
-            double mealMoney = meal.getNums()*meal.getPrice();
-            double tablewareDeMoney = tablewareDepositeMoney*meal.getNums();
-            double tablewareUseMoney1 = tablewareUseMoney*meal.getNums();
-            double sendCosts = sendCost*meal.getNums();
-            double thisTablewareMoney = tablewareDeMoney + tablewareUseMoney1 + sendCosts;
-            allMealMoney += mealMoney;
-            allTablewareMoeny += tablewareDeMoney;
-            myLog("----------------all--->"+allTablewareMoeny);
-            holder.mealMoneyTv.setText("￥"+mealMoney);
-            holder.tablewareDeMoneyTv.setText("￥"+tablewareDeMoney);
-            holder.tablewareUseMoneyTv.setText("￥"+tablewareUseMoney1);
-            holder.sendMoneyTv.setText("￥"+sendCosts);
-            holder.allMoneyTfv.setText("￥"+(sendCosts+tablewareUseMoney1+tablewareDeMoney+mealMoney));
-            if (i == (mMeals.size()-1)){
-                mAllMoneyTv.setText("￥"+(allMealMoney+allTablewareMoeny));
-                mTablewareMoneyTv.setText("其中餐具押金"+allTablewareMoeny+"元");
+            myLog("----------------all--->"+view.getTag(R.id.position));
+            if (((int)view.getTag(R.id.position)) != i){
+                double mealMoney = meal.getNums()*meal.getPrice();
+                double tablewareDeMoney = tablewareDepositeMoney*meal.getNums();
+                double tablewareUseMoney1 = tablewareUseMoney*meal.getNums();
+                double sendCosts = sendCost*meal.getNums();
+                double thisTablewareMoney = tablewareDeMoney + tablewareUseMoney1 + sendCosts;
+                myLog("----------------all--->"+allTablewareMoeny );
+                position = i;
+                holder.mealMoneyTv.setText("￥"+mealMoney);
+                holder.tablewareDeMoneyTv.setText("￥"+tablewareDeMoney);
+                holder.tablewareUseMoneyTv.setText("￥"+tablewareUseMoney1);
+                holder.sendMoneyTv.setText("￥"+sendCosts);
+                holder.allMoneyTfv.setText("￥"+(sendCosts+tablewareUseMoney1+tablewareDeMoney+mealMoney));
+            }
+
+            if (!mark) {
+                if (i == (mMeals.size() - 1)) {
+                    getAllMoney();
+                    mark = true;
+                }
             }
             return view;
         }

@@ -1,26 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+
+    <RelativeLayout
         android:id="@+id/menu_ll"
-        android:padding="@dimen/bar_left_right_padding"
-        android:background="@color/white"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:gravity="center_vertical"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/menu_img"
-            android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/create_new_group_drawale"/>
-        <TextView
-            android:id="@+id/menu_tv"
-            android:layout_marginLeft="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:text="创建饭团"/>
-    </LinearLayout>
+            android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/bar_left_right_padding">
+
+            <ImageView
+                android:id="@+id/menu_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/create_new_group_drawale" />
+
+            <TextView
+                android:id="@+id/menu_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="创建饭团"
+                android:textColor="@color/black" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/item_divider"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
