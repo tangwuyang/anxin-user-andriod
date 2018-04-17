@@ -47,7 +47,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
                 android:src="@drawable/icon"
-                app:riv_oval="true"/>
+                app:riv_oval="true" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -69,8 +69,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/user_name"
-                    android:textColor="@color/white"
                     android:text="登录后可享受更多特权"
+                    android:textColor="@color/white"
                     android:textSize="12sp" />
 
                 <ImageView
@@ -119,12 +119,13 @@
             android:src="@drawable/enter_message_normal" />
 
         <TextView
+            android:id="@+id/Totalamount_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@+id/wallet_next"
-            android:text="100.00"
+            android:text=""
             android:textColor="#333333"
             android:textSize="14sp" />
     </RelativeLayout>
@@ -259,7 +260,7 @@
         android:id="@+id/test_map_bt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="测试地图" />
+        android:text="测试地图"
+        android:visibility="gone" />
 
 </LinearLayout>

@@ -57,6 +57,7 @@
                 android:textSize="13sp" />
 
             <EditText
+                android:id="@+id/payUserID"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
@@ -89,6 +90,7 @@
                 android:textSize="13sp" />
 
             <EditText
+                android:id="@+id/payUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
@@ -132,6 +134,7 @@
                 android:textSize="30sp" />
 
             <EditText
+                android:id="@+id/payRefundNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -145,6 +148,7 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/all_money"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -157,7 +161,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/add_address_btn"
+        android:id="@+id/determine_btn"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
@@ -166,7 +170,6 @@
         android:layout_marginRight="15dp"
         android:background="#3ed368"
         android:text="确认提现"
-        android:alpha="0.5"
         android:textColor="@color/white"
         android:textSize="15sp" />
 </RelativeLayout>

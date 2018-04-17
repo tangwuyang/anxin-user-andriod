@@ -161,7 +161,7 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
                     return;
                 }
                 if (cropImageUri != null) {
-                    SystemUtility.setHeadIcon(cropImageUri);
+                    SystemUtility.setHeadIcon(cropImageUri,getActivity());
                 } else {
                     sendAddAddressHttp(UserName, mApp.getAccount().getUserPhone(), userAddress);
                     sendUpdateAccount(null);

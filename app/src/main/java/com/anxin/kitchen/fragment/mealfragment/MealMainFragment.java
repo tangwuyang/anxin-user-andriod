@@ -34,8 +34,10 @@ import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.Message;
 import com.anxin.kitchen.bean.MessageBean;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
+import com.anxin.kitchen.event.OnUserAcountEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.StringUtils;
@@ -97,15 +99,28 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     private static final String sendGetMessageList_http = "sendGetMessageList";
     //设置图片标题:自动对应
     String[] titles = new String[]{"十大星级品牌联盟，全场2折起", "全场2折起", "十大星级品牌联盟", "嗨购5折不要停", "12趁现在", "嗨购5折不要停，12.12趁现在", "实打实大顶顶顶顶"};
+    private String amToKen;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBusFactory.getInstance().register(this);
         activity = (MainActivity) MainActivity.context;
-        mWaitingDialog = new WaitingDialog(getActivity(),1000*60);
-        sendMessageList();
-        SystemUtility.sendGetAddressHttp();
+        mWaitingDialog = new WaitingDialog(getActivity(), 1000 * 60);
+        amToKen = mApp.getCache().getAMToken();
+        if (amToKen != null && amToKen.length() != 0) {
+            sendMessageList();
+            SystemUtility.sendGetAddressHttp();
+            SystemUtility.sendGetUserInfo(amToKen, SystemUtility.sendUserInfo);
+        }
+    }
+
+    public void onEventMainThread(OnUserAcountEvent event) {//用户信息修改监听
+        String amToKen = mApp.getCache().getAMToken();
+        if (amToKen != null && amToKen.length() != 0) {
+            sendMessageList();
+            SystemUtility.sendGetAddressHttp();
+        }
     }
 
     //声明定位回调监听器
@@ -268,7 +283,6 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         mLocationTv = view.findViewById(R.id.location_tv);
         mBanner = view.findViewById(R.id.broadcast_banner);
         messagePaymentNumber = view.findViewById(R.id.message_payment_number);
-        setMyLocation();
         return view;
     }
 
@@ -309,6 +323,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         // TODO Auto-generated method stub
         super.onResume();
         setListener();
+        setMyLocation();
     }
 
     private void setListener() {
@@ -339,31 +354,52 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 messagePaymentNumber.setVisibility(View.GONE);
                 break;
             case R.id.preserver_meal_img:
-                Intent intent1 = new Intent(activity, PreserveActivity.class);
-                Gson gson = new Gson();
-                String mealBeanSt = null;
-                if (null != mealBean) {
-                    mealBeanSt = gson.toJson(mealBean);
+                if (null == amToKen) {
+                    amToKen = new Cache(activity).getAMToken();
                 }
-                intent1.putExtra("mealListSt", mealBeanSt);
-                startActivity(intent1);
+                if (amToKen == null) {
+                    SystemUtility.startLoginUser(getActivity());
+                } else {
+                    Intent intent1 = new Intent(activity, PreserveActivity.class);
+                    Gson gson = new Gson();
+                    String mealBeanSt = null;
+                    if (null != mealBean) {
+                        mealBeanSt = gson.toJson(mealBean);
+                    }
+                    intent1.putExtra("mealListSt", mealBeanSt);
+                    startActivity(intent1);
+                }
                 break;
             case R.id.recovery_meal_img:
-                Intent intent2 = new Intent(activity, RecoveryMealActivity.class);
-                Gson gson2 = new Gson();
-                String mealBeanSt2 = null;
-                if (null != mealBean) {
-                    mealBeanSt2 = gson2.toJson(mealBean);
+                if (null == amToKen) {
+                    amToKen = new Cache(activity).getAMToken();
                 }
-                intent2.putExtra("mealListSt", mealBeanSt2);
-                startActivity(intent2);
+                if (amToKen == null) {
+                    SystemUtility.startLoginUser(getActivity());
+                } else {
+                    Intent intent2 = new Intent(activity, RecoveryMealActivity.class);
+                    Gson gson2 = new Gson();
+                    String mealBeanSt2 = null;
+                    if (null != mealBean) {
+                        mealBeanSt2 = gson2.toJson(mealBean);
+                    }
+                    intent2.putExtra("mealListSt", mealBeanSt2);
+                    startActivity(intent2);
+                }
                 break;
             case R.id.location_tv:
-                //startNewActivity(SendMealLocationActivity.class);
-                Intent intent = new Intent(activity, SendMealLocationActivity.class);
-                startActivity(intent);
-                activity.overridePendingTransition(R.anim.activity_open, R.anim.activity_close);
-                //送餐地址活动
+                if (null == amToKen) {
+                    amToKen = new Cache(activity).getAMToken();
+                }
+                if (amToKen == null) {
+                    SystemUtility.startLoginUser(getActivity());
+                } else {
+                    //startNewActivity(SendMealLocationActivity.class);
+                    Intent intent = new Intent(activity, SendMealLocationActivity.class);
+                    startActivity(intent);
+                    activity.overridePendingTransition(R.anim.activity_open, R.anim.activity_close);
+                    //送餐地址活动
+                }
             default:
                 break;
         }
@@ -474,6 +510,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     };
 
     public void setMeal(MealBean mealBean) {
+//        LOG.e("------------setMeal------------");
         //更新首页菜品
         this.mealBean = mealBean;
         mealList = mealBean.getData();

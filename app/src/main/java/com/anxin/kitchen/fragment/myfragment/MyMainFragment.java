@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.anxin.kitchen.activity.LoginActivity;
+import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.event.OnUserAcountEvent;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
@@ -40,6 +41,7 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
     private RoundedImageView userIcon;//用户头像
     private TextView userName;//用户名称
     private TextView userPhone;//用户手机
+    private TextView Totalamount_tv;//用户钱包金额
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,7 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         userIcon = (RoundedImageView) view.findViewById(R.id.user_icon);
         userName = (TextView) view.findViewById(R.id.user_name);
         userPhone = (TextView) view.findViewById(R.id.user_phone);
+        Totalamount_tv = view.findViewById(R.id.Totalamount_tv);
         updateUserAcount();
     }
 
@@ -99,8 +102,9 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
             userIcon.setImageResource(R.drawable.icon);
             return;
         }
+        Account account = mApp.getAccount();
         //获取本地用户名称
-        String name = mApp.getAccount().getUserTrueName();
+        String name = account.getUserTrueName();
         if (name != null && name.length() != 0) {
             userName.setText(name);
         }
@@ -114,6 +118,11 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         String phone = mApp.getCache().getUserPhone();
         if (phone != null && phone.length() != 0) {
             userPhone.setText(phone);
+        }
+        String userMoney = account.getUserMoney();
+//        LOG.e("--------------userMoney---------------" + userMoney);
+        if (userMoney != null && userMoney.length() != 0) {
+            Totalamount_tv.setText(userMoney);
         }
     }
 
