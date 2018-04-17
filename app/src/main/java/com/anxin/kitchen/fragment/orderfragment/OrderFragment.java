@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.anxin.kitchen.adapter.OrderAdapter;
 import com.anxin.kitchen.fragment.BaseFragment;
@@ -32,6 +33,7 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
     private final String NET_REQUEST_GET_ORDER_LIST = "requestGetOrderList";
     private RefreshLayout refreshOrder;
     private ListView lvOrder;
+    private RelativeLayout rlNoOrders;
     private OrderAdapter mAdapter;
 
     /**
@@ -59,6 +61,7 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
     private void initView() {
         refreshOrder = (RefreshLayout) view.findViewById(R.id.refresh_order);
         lvOrder = (ListView) view.findViewById(R.id.lv_order);
+        rlNoOrders = view.findViewById(R.id.rl_no_orders);
 
 //        lvOrder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
@@ -84,10 +87,10 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
 
     @Override
     public void onLoad() {
-        if(mAdapter!=null &&mAdapter.getCount()>=page*10){
+        if (mAdapter != null && mAdapter.getCount() >= page * 10) {
             page++;
             getOrderList(page);
-        }else{
+        } else {
             refreshOrder.setLoading(false);
         }
 
@@ -98,9 +101,9 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
             token = new Cache(mActivity).getAMToken();
         }
 //        token = "C59B7F78953E2B894FBCFE12ED66E5D9";
-        if (token==null){
+        if (token == null) {
             SystemUtility.startLoginUser(mActivity);
-        }else {
+        } else {
             String url = SystemUtility.getOrderListUrl();
             Map<String, Object> dataMap = new HashMap<>();
             dataMap.put("page", page);
@@ -121,13 +124,19 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
 
             }
             OrderListResponse response = JsonHandler.getHandler().getTarget(responseBody, OrderListResponse.class);
-            if(response==null ||response.getData()==null){
+            if (response == null || response.getData() == null) {
                 ToastUtil.showToast("没有更多了");
                 return;
             }
-            if (page == 1 || mAdapter == null) {
-                mAdapter = new OrderAdapter(mActivity, response.getData());
-                lvOrder.setAdapter(mAdapter);
+            if (page == 1) {
+                if (response.getData().size() > 0) {
+                    mAdapter = new OrderAdapter(mActivity, response.getData());
+                    lvOrder.setAdapter(mAdapter);
+                    rlNoOrders.setVisibility(View.GONE);
+                } else {
+                    rlNoOrders.setVisibility(View.VISIBLE);
+                }
+
             } else {
                 mAdapter.upDate(response.getData());
             }
@@ -143,6 +152,10 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
                 refreshOrder.setLoading(false);
             } catch (Exception e) {
 
+            }
+
+            if (page == 1) {
+                rlNoOrders.setVisibility(View.VISIBLE);
             }
             if (page > 1) {
                 page--;

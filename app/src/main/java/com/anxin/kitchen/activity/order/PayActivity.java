@@ -1,7 +1,6 @@
 package com.anxin.kitchen.activity.order;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -63,8 +62,10 @@ public class PayActivity extends BaseActivity implements ListenerBack {
     private String token;
     //支付的订单id
     private long orderIds;
+
+    private int makeType;
     //    //订单类型
-    private Order mOrder;
+//    private Order mOrder;
     //    //支付的金额
 //    private double payMoney;
     //充值金额
@@ -81,7 +82,8 @@ public class PayActivity extends BaseActivity implements ListenerBack {
         mActivity = this;
 
         orderIds = getIntent().getLongExtra("orderIds", 0);
-        mOrder = (Order) getIntent().getSerializableExtra("data");
+        makeType = getIntent().getIntExtra("makeType", 0);
+//        mOrder = (Order) getIntent().getSerializableExtra("data");
 
 //        payMoney = getIntent().getDoubleExtra("payMoney", 0);
 //        payType = getIntent().getIntExtra("payType", 0);
@@ -115,24 +117,15 @@ public class PayActivity extends BaseActivity implements ListenerBack {
         if (response.getCode() == 1) {
 //            if (requestCode.equals(NET_GET_USER_INFO)) {
 //                UserInfoResponse userResponse = JsonHandler.getHandler().getTarget(responseString, UserInfoResponse.class);
-//                if (userResponse.getData().getMoney() > payMoney) {
-//                    switch (mOrder.getOrderType()) {
-//                        case 1:
-//                            //个人订单
-//                            break;
-//                        case 2:
-//                            //统一付款
-//                            break;
-//                        case 3:
-//                            //AA付款
-//                            break;
-//                        default:
-//                            break;
-//                    }
+//                if (userResponse.getData().getMoney() >= payMoney) {
+//                    payOrders();
 //                } else {
-//                    //获取支付信息签名
-//
-////                    createOrder(mActivity, (int) (payMoney * 100), payType);
+//                    if (mOrder.getUser().getMakeType() == 1) {
+//                        Intent intentPayOrder = new Intent(mActivity, Order.class);
+//                        intentPayOrder.putExtra("orderId", orderIds);
+//                        mActivity.startActivity(intentPayOrder);
+//                    }
+//                    finish();
 //                }
 //            } else
             if (requestCode.equals(NET_ORDER_PAY_FRR)) {
@@ -163,14 +156,10 @@ public class PayActivity extends BaseActivity implements ListenerBack {
             } else if (requestCode.equals(NET_PAY_MULTI)) {
 
             } else if (requestCode.equals(NET_PAY_ORDERS)) {
-                if (mOrder.getUser().getMakeType() == 1) {
+                if (makeType == 1) {
                     Intent intentPayOrder = new Intent(mActivity, Order.class);
                     intentPayOrder.putExtra("orderId", orderIds);
                     mActivity.startActivity(intentPayOrder);
-                } else {
-//                    Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
-//                    intentPayOrder.putExtra("orderId", orderIds);
-//                    mActivity.startActivity(intentPayOrder);
                 }
                 finish();
 
@@ -179,6 +168,12 @@ public class PayActivity extends BaseActivity implements ListenerBack {
             if (response != null) {
                 ToastUtil.showToast(response.getMessage());
             }
+            if (makeType == 1) {
+                Intent intentPayOrder = new Intent(mActivity, Order.class);
+                intentPayOrder.putExtra("orderId", orderIds);
+                mActivity.startActivity(intentPayOrder);
+            }
+            finish();
 
         }
     }
@@ -186,18 +181,24 @@ public class PayActivity extends BaseActivity implements ListenerBack {
     @Override
     public void requestFailure(String responseFailure, String requestCode) {
         ToastUtil.showToast("支付失败");
-
-    }
-
-    private void getUserInfo(Activity mActivity) {
-        if (null == token) {
-            token = new Cache(mActivity).getAMToken();
+        if (makeType == 1) {
+            Intent intentPayOrder = new Intent(mActivity, Order.class);
+            intentPayOrder.putExtra("orderId", orderIds);
+            mActivity.startActivity(intentPayOrder);
         }
-        String url = SystemUtility.getUserInfo();
-        Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put(Constant.TOKEN, token);
-        requestNet(url, dataMap, NET_GET_USER_INFO);
+        finish();
+
     }
+
+//    private void getUserInfo(Activity mActivity) {
+//        if (null == token) {
+//            token = new Cache(mActivity).getAMToken();
+//        }
+//        String url = SystemUtility.getUserInfo();
+//        Map<String, Object> dataMap = new HashMap<>();
+//        dataMap.put(Constant.TOKEN, token);
+//        requestNet(url, dataMap, NET_GET_USER_INFO);
+//    }
 
     private void orderPayFee() {
         if (null == token) {
@@ -298,26 +299,25 @@ public class PayActivity extends BaseActivity implements ListenerBack {
                 case GlobalVariable.PAY_ZHIFUBAO:
 //                    System.out.println("---支付宝回调：" + JsonHandler.getHandler().toJson(message.obj));
                     Map<String, String> result = (Map<String, String>) message.obj;
-                    AlertDialog.Builder mDialog = new AlertDialog.Builder(PayActivity.this);
-                    mDialog.setTitle("提示");
+
                     if (result != null && result.get("resultStatus").equals("9000")) {
-                        mDialog.setMessage("支付成功");
+                        ToastUtil.showToast("支付成功");
+                        orderPayFee();
                     } else {
-                        mDialog.setMessage("支付失败");
+                        ToastUtil.showToast("支付失败");
+                        mHandler.sendEmptyMessageDelayed(HANDLER_ZHIFUBAO_PAY, 1000);
                     }
-                    mDialog.show();
-                    mHandler.sendEmptyMessageDelayed(HANDLER_ZHIFUBAO_PAY, 2000);
+
                     break;
                 case HANDLER_SHOW_POP:
                     PopupUtil.getInstances().show(mActivity, findViewById(R.id.ll_all), PayActivity.this);
                     break;
                 case HANDLER_ZHIFUBAO_PAY:
-                    if (mOrder.getUser().getMakeType() == 1) {
+//                   getUserInfo(mActivity);
+                    if (makeType == 1) {
                         Intent intentPayOrder = new Intent(mActivity, Order.class);
                         intentPayOrder.putExtra("orderId", orderIds);
                         mActivity.startActivity(intentPayOrder);
-                    } else {
-
                     }
                     finish();
                     break;
@@ -378,7 +378,7 @@ public class PayActivity extends BaseActivity implements ListenerBack {
     private BroadcastReceiver mReciverFailed = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (mOrder.getUser().getMakeType() == 1) {
+            if (makeType == 1) {
                 Intent intentPayOrder = new Intent(mActivity, Order.class);
                 intentPayOrder.putExtra("orderId", orderIds);
                 mActivity.startActivity(intentPayOrder);

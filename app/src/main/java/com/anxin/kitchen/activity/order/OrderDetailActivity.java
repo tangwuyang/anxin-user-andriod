@@ -81,6 +81,7 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
             case R.id.ll_order_detail_pay:
                 Intent intent = new Intent(mActivity, PayActivity.class);
                 intent.putExtra("orderIds", mOrderDetail.getOrderId());
+                intent.putExtra("makeType", mOrderDetail.getUser().getMakeType());
                 mActivity.startActivity(intent);
                 break;
             case R.id.ll_order_detail_suborder_title:
@@ -135,15 +136,11 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
         //套餐信息
         View viewPackageInfo = LayoutInflater.from(mActivity).inflate(R.layout.item_order_detail_group_order_info, null);
         ImageView ivOrderDetailType = (ImageView) viewPackageInfo.findViewById(R.id.iv_order_detail_type);
-        if (info.getGroup() == null) {
+
+        if (info.getUser().getMakeType() != 1) {
             ivOrderDetailType.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.icon_order_user));
         } else {
             ivOrderDetailType.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.icon_order_group));
-            if (info.getGroup().getUserId() == info.getUser().getUserId()) {
-
-            } else {
-
-            }
         }
         TextView tvItemOrderTablewareName = (TextView) viewPackageInfo.findViewById(R.id.tv_item_order_tableware_name);
         TextView tvItemOrderTablewareDeposit = (TextView) viewPackageInfo.findViewById(R.id.tv_item_order_tableware_deposit);
@@ -197,12 +194,17 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
 //            tvOrderDetailDeliveryAddress.setText(info.getUser().getAddress());
 //            tvOrderDetailDeliveryUserName.setText(info.getUser().getContactName());
 //            tvOrderDetailDeliveryUserPhone.setText(info.getUser().getContactPhone());
-            tvOrderDetailDeliveryTime.setText(TimeUtil.getInstance().getNowTime(info.getUser().getDeliveryTime()));
+            if (info.getUser().getDeliveryTime() > 0) {
+                tvOrderDetailDeliveryTime.setText(TimeUtil.getInstance().getNowTimeSS(info.getUser().getDeliveryTime()));
+            } else {
+                tvOrderDetailDeliveryTime.setText("暂未配送");
+            }
+
         } else {
 //            tvOrderDetailDeliveryAddress.setText(info.getGroup().getAddress());
 //            tvOrderDetailDeliveryUserName.setText(info.getGroup().getContactName());
 //            tvOrderDetailDeliveryUserPhone.setText(info.getGroup().getContactPhone());
-            tvOrderDetailDeliveryTime.setText(TimeUtil.getInstance().getNowTime(info.getGroup().getDeliveryTime()));
+            tvOrderDetailDeliveryTime.setText(TimeUtil.getInstance().getNowTimeSS(info.getGroup().getDeliveryTime()));
             if (info.getGroup().getUserId() == info.getUser().getUserId()) {
 
             } else {
@@ -264,10 +266,10 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                 }
             }
 
-            tvOrderDetailOrderCreateTime.setText(TimeUtil.getInstance().getNowTime(info.getUser().getCreateTime()));
+            tvOrderDetailOrderCreateTime.setText(TimeUtil.getInstance().getNowTimeSS(info.getUser().getCreateTime()));
         } else {
             switch (info.getGroup().getStatus()) {
-                case 1:
+                case 0:
                     if (info.getGroup().getPayType() == 1) {
                         tvOrderDetailOrderStatus.setText("统一待付款");
                     } else {
@@ -275,18 +277,23 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                     }
                     tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.red));
                     break;
-                case 2:
-                    tvOrderDetailOrderStatus.setText("已取消");
-                    tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
-                    break;
-                case 3:
-                    tvOrderDetailOrderStatus.setText("自动取消");
-                    tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
-                    break;
-                case 4:
+                case 1:
                     tvOrderDetailOrderStatus.setText("已付款");
                     tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
                     break;
+                case 2:
+                    tvOrderDetailOrderStatus.setText("已发货");
+                    tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                    break;
+                case 3:
+                    tvOrderDetailOrderStatus.setText("已完成");
+                    tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                    break;
+                case 4:
+                    tvOrderDetailOrderStatus.setText("已取消");
+                    tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                    break;
+
                 default:
                     tvOrderDetailOrderStatus.setText("");
                     break;
@@ -308,7 +315,7 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                 }
             }
 
-            tvOrderDetailOrderCreateTime.setText(TimeUtil.getInstance().getNowTime(info.getGroup().getCreateTime()));
+            tvOrderDetailOrderCreateTime.setText(TimeUtil.getInstance().getNowTimeSS(info.getGroup().getCreateTime()));
             if (info.getGroup().getUserId() == info.getUser().getUserId()) {
 
             } else {
