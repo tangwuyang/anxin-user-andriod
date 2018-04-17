@@ -45,5 +45,18 @@ public class Order implements Serializable {
         }
     }
 
+    /**
+     * 获取订单
+     *
+     * @return
+     */
+    public long getOrderId() {
+        if (group != null) {
+            return group.getId();
+        } else {
+            return user.getId();
+        }
+    }
+
 
 }

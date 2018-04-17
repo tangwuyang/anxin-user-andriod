@@ -11,13 +11,39 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/lv_order"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:dividerHeight="0dp"
-            android:divider="@color/transparent">
-        </ListView>
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/lv_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@color/transparent"
+                android:dividerHeight="0dp"></ListView>
+
+            <RelativeLayout
+                android:id="@+id/rl_no_orders"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/iv_no_orders"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/icon_no_orders" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/iv_no_orders"
+                    android:layout_centerHorizontal="true"
+                    android:text="暂无订单"
+                    android:textColor="@color/tv_gray"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+        </FrameLayout>
     </com.anxin.kitchen.view.RefreshLayout>
 
 </LinearLayout>
