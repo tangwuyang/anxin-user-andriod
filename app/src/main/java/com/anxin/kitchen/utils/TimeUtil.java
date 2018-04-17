@@ -152,17 +152,19 @@ public class TimeUtil {
      * @return
      */
     public String getNowTimeSS(long times) {
-        frequency++;
-        if (frequency >= 3) {
-            return "";
-        }
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat();
-            sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
-            return sdf.format(times);
-        } catch (Exception e) {
-            return getNowTimeSS(times);
-        }
+        //frequency++;
+        //if (frequency >= 3) {
+        //    return "";
+        //}
+        //try {
+         //   SimpleDateFormat sdf = new SimpleDateFormat();
+        //    sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
+        //    return sdf.format(times);
+       // } catch (Exception e) {
+        //    return getNowTimeSS(times);
+       // }
+
+        return DateUtils.stampToDate(times+"","yyyy-MM-dd HH:mm:ss");
     }
 
     /**

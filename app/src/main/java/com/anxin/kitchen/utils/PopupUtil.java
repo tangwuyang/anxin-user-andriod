@@ -48,7 +48,7 @@ public class PopupUtil {
             mPopupWindow = new PopupWindow(mView, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             mPopupWindow.setBackgroundDrawable(new ColorDrawable(-00000));// 点击PopupWindow
             // 外的屏幕，PopupWindow依然会消失
-            mPopupWindow.setFocusable(true);
+            mPopupWindow.setFocusable(false);
             mPopupWindow.update();
             mPopupWindow.setAnimationStyle(R.style.PopupBottomAnimation);
         }

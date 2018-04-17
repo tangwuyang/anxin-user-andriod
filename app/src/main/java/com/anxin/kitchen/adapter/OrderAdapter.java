@@ -177,8 +177,7 @@ public class OrderAdapter extends BaseAdapter {
                     holderGroupLeader.tvOrderSendTime.setText("送餐时间：" + TimeUtil.getInstance().getNowTime(mList.get(i).getUser().getDeliveryTime()));
                 }
                 switch (mList.get(i).getGroup().getStatus()) {
-                    case 1:
-//                        holderGroupLeader.tvOrderStatus.setText("待付款");
+                    case 0:
                         if (mList.get(i).getGroup().getPayType() == 1) {
                             holderGroupLeader.tvOrderStatus.setText("统一待付款");
                         } else {
@@ -186,18 +185,23 @@ public class OrderAdapter extends BaseAdapter {
                         }
                         holderGroupLeader.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.red));
                         break;
-                    case 2:
-                        holderGroupLeader.tvOrderStatus.setText("已取消");
-                        holderGroupLeader.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
-                        break;
-                    case 3:
-                        holderGroupLeader.tvOrderStatus.setText("自动取消");
-                        holderGroupLeader.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
-                        break;
-                    case 4:
+                    case 1:
                         holderGroupLeader.tvOrderStatus.setText("已付款");
                         holderGroupLeader.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
                         break;
+                    case 2:
+                        holderGroupLeader.tvOrderStatus.setText("已发货");
+                        holderGroupLeader.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                        break;
+                    case 3:
+                        holderGroupLeader.tvOrderStatus.setText("已完成");
+                        holderGroupLeader.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                        break;
+                    case 4:
+                        holderGroupLeader.tvOrderStatus.setText("已取消");
+                        holderGroupLeader.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                        break;
+
                     default:
                         holderGroupLeader.tvOrderStatus.setText("");
                         break;
@@ -274,26 +278,31 @@ public class OrderAdapter extends BaseAdapter {
                     holderGroupRember.tvOrderSendTime.setText("送餐时间：" + TimeUtil.getInstance().getNowTime(mList.get(i).getUser().getDeliveryTime()));
                 }
                 switch (mList.get(i).getGroup().getStatus()) {
-                    case 1:
+                    case 0:
                         if (mList.get(i).getGroup().getPayType() == 1) {
                             holderGroupRember.tvOrderStatus.setText("统一待付款");
                         } else {
                             holderGroupRember.tvOrderStatus.setText("AA待付款");
                         }
-                        holderGroupLeader.tvOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.red));
+                        holderGroupRember.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.red));
+                        break;
+                    case 1:
+                        holderGroupRember.tvOrderStatus.setText("已付款");
+                        holderGroupRember.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
                         break;
                     case 2:
-                        holderGroupRember.tvOrderStatus.setText("已取消");
-                        holderGroupLeader.tvOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                        holderGroupRember.tvOrderStatus.setText("已发货");
+                        holderGroupRember.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
                         break;
                     case 3:
-                        holderGroupRember.tvOrderStatus.setText("自动取消");
-                        holderGroupLeader.tvOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                        holderGroupRember.tvOrderStatus.setText("已完成");
+                        holderGroupRember.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
                         break;
                     case 4:
-                        holderGroupRember.tvOrderStatus.setText("已付款");
-                        holderGroupLeader.tvOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                        holderGroupRember.tvOrderStatus.setText("已取消");
+                        holderGroupRember.tvOrderUserOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
                         break;
+
                     default:
                         holderGroupRember.tvOrderStatus.setText("");
                         break;
@@ -368,10 +377,9 @@ public class OrderAdapter extends BaseAdapter {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.tv_order_user_order_pay:
-                    Intent intent = new Intent(mActivity,PayActivity.class);
-                    intent.putExtra("data",mList.get(mPosition));
-                    intent.putExtra("payType",1);
-                    intent.putExtra("payMoney",0.01);
+                    Intent intent = new Intent(mActivity, PayActivity.class);
+                    intent.putExtra("orderIds", mList.get(mPosition).getOrderId());
+                    intent.putExtra("makeType", mList.get(mPosition).getUser().getMakeType());
                     mActivity.startActivity(intent);
                     break;
                 case R.id.ll_order_user:
