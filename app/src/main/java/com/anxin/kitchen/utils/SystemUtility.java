@@ -2,6 +2,7 @@ package com.anxin.kitchen.utils;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.ContentUris;
@@ -29,6 +30,7 @@ import com.anxin.kitchen.event.AddressListEvent;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.event.OnSaveBitmapEvent;
 import com.anxin.kitchen.event.OnUserAcountEvent;
+import com.anxin.kitchen.event.OnUserWalletEvent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
@@ -79,6 +81,8 @@ public class SystemUtility {
     public static String AMToken;//网络请求ToKen
     public static String RequestSuccess = "onSuccess";//http方法成功返回标志
     public static String RequestFailure = "onFailure";//http方法失败返回标志
+    public static final String sendUserInfo = "sendUserInfo";
+    public static final String sendUserWallet = "sendUserWallet";
 
     //发送手机验证码
     public static String sendUserPhoneCode(String phone, String type) {
@@ -168,7 +172,10 @@ public class SystemUtility {
     public static String sendPhoneReportDevice() {
         return AMUAC_IP + "/v1.0/user/report_device";
     }
-
+    //钱包提现
+    public static String sendUserWithdraw() {
+        return AMUAC_IP + "/v1.0/user/withdraw";
+    }
     //注册用户
     public static String sendUserPhoneLogin(String phone, String code) {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
@@ -212,15 +219,11 @@ public class SystemUtility {
         return AMUAC_IP + "/file/upload";
     }
 
-    public static void setHeadIcon(Uri uri) {
+    public static void setHeadIcon(Uri uri, Context context) {
         OkHttpClient client = new OkHttpClient();
-// form 表单形式上传
+        // form 琛ㄥ崟褰㈠紡涓婁紶
         File file = null;
-        try {
-            file = new File(new URI(uri.toString()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        file = new File(GetImagePath.getPath(context, uri));
         Bitmap bitmap = SystemUtility.getBitmapFromUri(uri, MyApplication.getInstance());
         compressBmpToFile(bitmap, file);
         MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -447,52 +450,62 @@ public class SystemUtility {
     public static String getUserInfo() {
         return AMUAC_IP + "/v1.0/user/info";
     }
+
+    /**
+     * 获取用户信息
+     */
+    public static String getUserInfo(String AMToken) {
+        return AMUAC_IP + "/v1.0/user/info?token=" + AMToken;
+    }
+
     /**
      * 支付食疗订单
      */
     public static String payDiet() {
         return AMUAC_IP + "/v1.0/order/pay_diet";
     }
+
     /**
      * 支付团订单(代付)
      */
     public static String payGroup() {
         return AMUAC_IP + "/v1.0/order/pay_group";
     }
+
     /**
      * 支付团订单(AA支付)
      */
     public static String payAA() {
         return AMUAC_IP + "/v1.0/order/group_aa_pay";
     }
+
     /**
      * 支付多份订单
      */
     public static String payMulti() {
         return AMUAC_IP + "/v1.0/order/pay_multi";
     }
+
     /**
-     *创建预支付
+     * 创建预支付
      */
     public static String createOrder() {
         return AMUAC_IP + "/v1.0/pay/create_order";
     }
+
     /**
-     *订单支付金额
+     * 订单支付金额
      */
     public static String orderPayFee() {
         return AMUAC_IP + "/v1.0/order/order_pay_fee";
     }
+
     /**
-     *支付订单
+     * 支付订单
      */
     public static String payOrders() {
         return AMUAC_IP + "/v1.0/order/pay_orders";
     }
-
-
-
-
 
 
 //请求网络异步方法
@@ -558,7 +571,13 @@ public class SystemUtility {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
-                        LOG.d("------requestNetGet---onSuccess-------" + result);
+//                        LOG.e("------requestNetGet---onSuccess-------" + result);
+                        if (requestCode.equals(sendUserInfo) || requestCode.equals(sendUserWallet)) {
+                            String code = StringUtils.parserMessage(result, "code");
+                            if (code != null && code.equals("1")) {
+                                SystemUtility.loginAnalysisJason(result, requestCode);
+                            }
+                        }
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
                 }
@@ -578,25 +597,37 @@ public class SystemUtility {
         }
     }
 
+    public static void sendGetUserInfo(String token, String code) {
+        String url = getUserInfo(token);
+        requestNetGet(url, code);
+    }
+
     /**
      * 解析用户信息
      *
      * @param jason
      */
-    public static Account loginAnalysisJason(String jason) {
-        final Account userAccount = new Account();
+    public static Account loginAnalysisJason(String jason, String code) {
+//        LOG.e("--------------loginAnalysisJason----------------" + code);
+        String user = "";
+        Account userAccount = new Account();
         try {
             JSONObject jsonObject = new JSONObject(jason);
-            String data = jsonObject.getString("data");
-            //解析服务器请求密钥，toKen
-            String toKen = new JSONObject(data).getString("token");
-            if (toKen != null && toKen.length() != 0) {
-                AMToken = toKen;
-                userAccount.setUserAMToKen(toKen);
-                MyApplication.getInstance().getCache().setAMToken(toKen);
+            if (code.equals(sendUserInfo) || code.equals(sendUserWallet)) {
+                user = jsonObject.getString("data");
+                userAccount = mApp.getCache().getAcount(MyApplication.getInstance());
+            } else {
+                String data = jsonObject.getString("data");
+                //解析服务器请求密钥，toKen
+                String toKen = new JSONObject(data).getString("token");
+                if (toKen != null && toKen.length() != 0) {
+                    AMToken = toKen;
+                    userAccount.setUserAMToKen(toKen);
+                    MyApplication.getInstance().getCache().setAMToken(toKen);
+                }
+                //解析用户信息
+                user = new JSONObject(data).getString("user");
             }
-            //解析用户信息
-            String user = new JSONObject(data).getString("user");
             JSONObject userJason = new JSONObject(user);
             Iterator<?> it1 = userJason.keys();
             String resultKey = "";
@@ -644,7 +675,7 @@ public class SystemUtility {
                     userAccount.setUserBirthdayTime(resultValue);
                 } else if (resultKey.equals("userLogo")) {
                     userAccount.setUserLogoPathURL(resultValue);
-                    if (resultValue != null && resultValue.length() != 0) {
+                    if (resultValue != null && resultValue.length() != 0 && !code.equals(sendUserWallet)) {
                         EventBusFactory.getInstance().post(new OnSaveBitmapEvent(resultValue, userAccount.getUserPhone()));
                     }
                 } else if (resultKey.equals("addressNum")) {
@@ -663,7 +694,11 @@ public class SystemUtility {
             e.printStackTrace();
         }
         MyApplication.getInstance().setAccount(userAccount);
-        EventBusFactory.postEvent(new OnUserAcountEvent());
+        if (code.equals(sendUserWallet)) {
+            EventBusFactory.postEvent(new OnUserWalletEvent());
+        } else {
+            EventBusFactory.postEvent(new OnUserAcountEvent());
+        }
         return userAccount;
     }
 

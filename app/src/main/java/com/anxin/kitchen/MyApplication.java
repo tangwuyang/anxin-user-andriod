@@ -107,10 +107,12 @@ public class MyApplication extends MultiDexApplication {
      */
     public final synchronized void setAccount(Account account) {
         this.mAccount = account;
+//        LOG.e("-----------setAccount------------" + mAccount);
         mCache.setAcount(this, account);
     }
 
     public final synchronized Account getAccount() {
+//        LOG.e("-----------getAccount------------" + mAccount);
         return mAccount;
     }
 
@@ -121,11 +123,13 @@ public class MyApplication extends MultiDexApplication {
      */
     public final synchronized void setMessageList(MessageBean messageList) {
         this.mMessagebean = messageList;
-        mCache.setMessage(this, mMessagebean);
+        if (getCache().getUserPhone() != null)
+            mCache.setMessage(this, mMessagebean, getCache().getUserPhone());
     }
 
     public final synchronized MessageBean getMessageList() {
-        mMessagebean = getCache().getMessageBean(this);
+        if (getCache().getUserPhone() != null)
+            mMessagebean = getCache().getMessageBean(this, getCache().getUserPhone());
         return mMessagebean;
     }
 

@@ -147,6 +147,12 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/RelativeLayout01"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_rl" />
+
+    <RelativeLayout
         android:id="@+id/bottom_rl"
         android:layout_width="match_parent"
         android:layout_height="70dp"
@@ -156,8 +162,8 @@
         <View
             android:layout_width="92dp"
             android:layout_height="30dp"
-            android:background="@color/main_bg_color"
-            />
+            android:background="@color/main_bg_color" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="64dp"
@@ -222,6 +228,5 @@
             android:textColor="@color/white"
             android:textSize="@dimen/title_text_size" />
     </RelativeLayout>
-
 
 </RelativeLayout>

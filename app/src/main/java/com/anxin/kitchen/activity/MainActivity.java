@@ -267,12 +267,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void requestSuccess(String responseBody, String requestCode) {
         String status = StringUtils.parserMessage(responseBody, "message");
         if (requestCode != null && requestCode.equals(GET_KITCHEN_ID)) {
-            myLog("----------->" + responseBody + status);
+            myLog("------GET_KITCHEN_ID----->" + responseBody + status);
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 Gson gson = new Gson();
                 NearKitchenBean bean = gson.fromJson(responseBody, NearKitchenBean.class);
                 int kichtchenId = bean.getData().getKitchenid();
-                myLog("--------" + bean.getData().getKitchenname());
+                myLog("----getKitchenname----" + bean.getData().getKitchenname());
                 PrefrenceUtil prefrenceUtil = new PrefrenceUtil(MainActivity.this);
                 prefrenceUtil.putKitchenId(kichtchenId);
                 Map<String, Object> dataMap = new HashMap<>();
@@ -286,7 +286,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         //请求轮播广告返回
         if (requestCode != null && requestCode.equals(GET_BANNER_LIST)) {
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
-                myLog("--------" + responseBody);
+                myLog("----GET_BANNER_LIST----" + responseBody);
                 //再去获取广告列表
                 BannerListBean bannerListBean = mGson.fromJson(responseBody, BannerListBean.class);
                 List<BannerListBean.Data> dataList = bannerListBean.getData();
@@ -298,7 +298,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
         //请求附近的菜单
         if (requestCode != null && requestCode.equals(GET_MENU_MEAL)) {
-            myLog("------------>status" + status);
+            myLog("--------GET_MENU_MEAL---->status" + status);
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 myLog("--------" + responseBody);
                 MealBean mealBean = mGson.fromJson(responseBody, MealBean.class);

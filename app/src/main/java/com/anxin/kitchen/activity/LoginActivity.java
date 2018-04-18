@@ -242,7 +242,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         String code = StringUtils.parserMessage(Msg, "code");
         if (code != null && code.equals("1")) {
             //解析验证码返回
-            Account account = SystemUtility.loginAnalysisJason(Msg);
+            Account account = SystemUtility.loginAnalysisJason(Msg,"");
 //            LOG.e("--------sendPhoneLogin--Account--" + account.toString());
 //            LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
             if (account != null) {

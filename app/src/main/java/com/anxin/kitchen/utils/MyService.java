@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
 import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.event.OnSaveBitmapEvent;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
@@ -78,9 +79,9 @@ public class MyService extends Service {
 //                LOG.e("-------------?onResponse----");
                 byte[] bytes = response.body().bytes();
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                String fileName = context.getExternalCacheDir().getPath()+"anxin/" + userPhone + "logo.png";
+                String fileName = context.getExternalCacheDir().getPath() + "anxin/" + userPhone + "logo.png";
                 onSaveBitmap(bitmap, context, fileName);
-                MyApplication.mApp.getCache().setAccountImageURI(userPhone,fileName);
+                MyApplication.mApp.getCache().setAccountImageURI(userPhone, fileName);
                 EventBusFactory.postEvent(new ViewUpdateHeadIconEvent());
             }
         });

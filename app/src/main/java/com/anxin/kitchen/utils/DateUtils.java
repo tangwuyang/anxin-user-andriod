@@ -61,18 +61,10 @@ public class DateUtils {
     }
 
     // 返回星期
-    public static int getWeek(int year, int month, int day) {
-        int week = 0;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date curDate = new Date(System.currentTimeMillis());
-        String time = year + "-" + month + "-" + day;
-        Calendar c = Calendar.getInstance();
-        try {
-            c.setTime(format.parse(time));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return c.get(Calendar.DAY_OF_WEEK);
+    public static String getDate(String time) {
+        String month = time.substring(4, 6);
+        String day = time.substring(6, time.length());
+        return month + "-" + day;
     }
 
     // 判断闰年

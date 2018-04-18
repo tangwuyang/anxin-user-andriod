@@ -42,9 +42,9 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:paddingRight="15dp"
-                    android:gravity="center_vertical"
                     android:text="查看明细"
                     android:textColor="@color/white"
                     android:textSize="15.7sp" />
@@ -74,10 +74,11 @@
                         android:textSize="12sp" />
 
                     <TextView
+                        android:id="@+id/Totalamount_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/user_name"
-                        android:text="200.00"
+                        android:text=""
                         android:textColor="@color/white"
                         android:textSize="30sp" />
 
@@ -120,15 +121,33 @@
             android:layout_height="58dp"
             android:background="@color/white">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="15dp"
-                android:text="餐具押金30元"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="餐具押金"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/wallet_mortgage_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="元"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/contact_next"
@@ -140,6 +159,7 @@
                 android:src="@drawable/enter_message_normal" />
 
             <TextView
+                android:id="@+id/UserDeposit_refund"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -150,16 +170,18 @@
                 android:textSize="14sp" />
         </RelativeLayout>
     </LinearLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/bottom_tv"
         android:layout_centerHorizontal="true"
-        android:gravity="center"
         android:layout_marginBottom="3dp"
-        android:textSize="15sp"
+        android:gravity="center"
+        android:text="提现须知"
         android:textColor="#80888888"
-        android:text="提现须知"/>
+        android:textSize="15sp" />
+
     <TextView
         android:id="@+id/bottom_tv"
         android:layout_width="wrap_content"
@@ -167,10 +189,10 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="26dp"
-        android:layout_marginRight="40dp"
         android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
         android:gravity="center"
-        android:textSize="12sp"
+        android:text="提现只支持支付宝，提现时请输入支付宝账号和姓名。每笔提前金额至少1元，5个工作日内到账。"
         android:textColor="#80888888"
-        android:text="提现只支持支付宝，提现时请输入支付宝账号和姓名。每笔提前金额至少1元，5个工作日内到账。"/>
+        android:textSize="12sp" />
 </RelativeLayout>
