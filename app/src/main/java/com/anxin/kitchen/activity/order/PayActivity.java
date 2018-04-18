@@ -156,6 +156,7 @@ public class PayActivity extends BaseActivity implements ListenerBack {
             } else if (requestCode.equals(NET_PAY_MULTI)) {
 
             } else if (requestCode.equals(NET_PAY_ORDERS)) {
+                ToastUtil.showToast("支付成功");
                 if (makeType == 1) {
                     Intent intentPayOrder = new Intent(mActivity, Order.class);
                     intentPayOrder.putExtra("orderId", orderIds);

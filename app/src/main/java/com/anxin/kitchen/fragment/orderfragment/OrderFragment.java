@@ -129,9 +129,10 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
                 return;
             }
             if (page == 1) {
+                mAdapter = new OrderAdapter(mActivity, response.getData());
+                lvOrder.setAdapter(mAdapter);
                 if (response.getData().size() > 0) {
-                    mAdapter = new OrderAdapter(mActivity, response.getData());
-                    lvOrder.setAdapter(mAdapter);
+
                     rlNoOrders.setVisibility(View.GONE);
                 } else {
                     rlNoOrders.setVisibility(View.VISIBLE);

@@ -25,7 +25,8 @@
             <RelativeLayout
                 android:id="@+id/rl_no_orders"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@color/bg_body">
 
                 <ImageView
                     android:id="@+id/iv_no_orders"
