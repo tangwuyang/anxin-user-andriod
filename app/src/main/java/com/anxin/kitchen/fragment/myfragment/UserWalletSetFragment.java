@@ -56,7 +56,7 @@ public class UserWalletSetFragment extends HomeBaseFragment implements View.OnCl
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.user_wallet_fragment, null);
         initView();//初始化界面控制
-        SystemUtility.sendGetUserInfo(SystemUtility.AMToken, SystemUtility.sendUserWallet);
+        SystemUtility.sendGetUserInfo(MyApplication.getInstance().getCache().getAMToken(), SystemUtility.sendUserWallet);
         return view;
     }
 
@@ -105,6 +105,9 @@ public class UserWalletSetFragment extends HomeBaseFragment implements View.OnCl
         String requestCode = asyncHttpRequestMessage.getRequestCode();
         String responseMsg = asyncHttpRequestMessage.getResponseMsg();
         String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+        LOG.e("----------requestCode------" + requestCode);
+        LOG.e("----------responseMsg------" + responseMsg);
+        LOG.e("----------requestStatus------" + requestStatus);
         String codeToKen = StringUtils.parserMessage(responseMsg, "code");
         if (codeToKen != null && (codeToKen.equals("4") || codeToKen.equals("7"))) {
             SystemUtility.startLoginUser(getActivity());

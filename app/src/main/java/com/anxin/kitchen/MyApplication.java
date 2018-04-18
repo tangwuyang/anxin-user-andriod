@@ -9,6 +9,7 @@ import com.anxin.kitchen.bean.AddressListBean;
 import com.anxin.kitchen.bean.MessageBean;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.UmengHelper;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -57,6 +58,7 @@ public class MyApplication extends MultiDexApplication {
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);*/
 //        UMShareAPI.get(this);
         mApp = this;
+        SystemUtility.AMToken = getCache().getAMToken();
         mAccount = getCache().getAcount(this);
         addressNameMap = getCache().getAddressNameMap(this);
         addressIDMap = getCache().getAddressIDMap(this);
