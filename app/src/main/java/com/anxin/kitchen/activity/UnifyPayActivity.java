@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.OrderInfoBean;
+import com.anxin.kitchen.bean.PreMoneyBean;
 import com.anxin.kitchen.bean.RecoverBean;
 import com.anxin.kitchen.bean.TablewareBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
@@ -42,6 +44,8 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
     private static final String GET_PRE_MONEY = "GET_PRE_MONEY";
     private static final String ENSURE_MONEY = "ENSURE_MONEY";
     private static final String PAY_MONEY = "PAY_MONEY";
+    private static final int GET_LOCATION = 202;
+    private String mlocation;
     private ImageView mBackImg;
     private TextView mTitleTv;
     private ImageView mTransmitImg;
@@ -72,11 +76,15 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
     private double sendCost;
     private double allSendCost;   //所有配送费
     private WaitingDialog mdialog;
+    private RelativeLayout mLocationRl;
+    private TextView mLocationTv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unify_pay);
         setTitle("统一支付");
+        mLocationTv = findViewById(R.id.location_tv);
+        mLocationRl = findViewById(R.id.user_address_rlt);
         mdialog = new WaitingDialog(this,100);
         if (null == mCache) {
             mCache = new Cache(this);
@@ -158,6 +166,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         mTransmitImg.setVisibility(View.VISIBLE);
         mBackImg.setOnClickListener(this);
         mEnsurePayTv.setOnClickListener(this);
+        mLocationRl.setOnClickListener(this);
     }
 
     String ids = "";
@@ -234,6 +243,17 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
 
 
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GET_LOCATION){
+            String location = data.getStringExtra("location");
+            mLocationTv.setText(location);
+            mlocation = location;
+        }
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -244,6 +264,10 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.ensure_pay_tv:
                 createOrder();
+                break;
+            case R.id.user_address_rlt:
+                Intent intent = new Intent(this,SendMealLocationActivity.class);
+                startActivityForResult(intent,GET_LOCATION);
                 break;
         }
     }
@@ -258,7 +282,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         dataMap.put("tablewareId",tablewareId);
         dataMap.put("timePackages",getPackages());
         dataMap.put("payType",1);
-        dataMap.put("address","深圳金展大厦28楼");
+        dataMap.put("address",mlocation);
         dataMap.put("contactPhone",mCache.getUserPhone());
         dataMap.put("contactName",mCache.getNickName());
         requestNet(SystemUtility.createOederUrl(),dataMap,CREATE_DIET);

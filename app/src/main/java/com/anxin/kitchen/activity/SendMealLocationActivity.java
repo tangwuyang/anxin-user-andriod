@@ -199,11 +199,27 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
                 onBackPressed();
                 break;
             case R.id.add_bt:
-                startNewActivity(AddNewLocationActivity.class);
+                Intent intent = new Intent(this,AddNewLocationActivity.class);
+                startActivityForResult(intent,200);
                 break;
         }
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 200){
+            String location = data.getStringExtra("location");
+            Intent intent = new Intent();
+
+            intent.putExtra("location", location); //将计算的值回传回去
+            //通过intent对象返回结果，必须要调用一个setResult方法，
+            //setResult(resultCode, data);第一个参数表示结果返回码，一般只要大于1就可以，但是
+            setResult(2, intent);
+            finish(); //结束当前的activity的生命周期
+        }
+    }
 
     private class SendMealLocationAdapter extends BaseAdapter {
 
@@ -243,8 +259,20 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
             String contactName = addressBean.getContactName();
             String streetName = addressBean.getStreetName();
             holder.addressPhone.setText(contactName + "  " + phoneNumber);
-            String addressTitle = streetName;
+            final String addressTitle = streetName;
             holder.addressTitle.setText(addressTitle);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent();
+                    String location = addressTitle;
+                    intent.putExtra("location", location); //将计算的值回传回去
+                    //通过intent对象返回结果，必须要调用一个setResult方法，
+                    //setResult(resultCode, data);第一个参数表示结果返回码，一般只要大于1就可以，但是
+                    setResult(2, intent);
+                    finish(); //结束当前的activity的生命周期
+                }
+            });
             return view;
         }
 
