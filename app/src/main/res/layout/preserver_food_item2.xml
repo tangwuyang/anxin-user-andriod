@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="清蒸狮子头"
-        android:textColor="@color/shallow_text_color"
+        android:textColor="@color/black"
         android:textSize="@dimen/mid_text_size"
         />
 
@@ -56,6 +56,7 @@
         android:background="@color/main_bg_color"
         android:layout_width="match_parent"
         android:orientation="horizontal"
+        android:alpha="0.8"
         android:layout_alignParentBottom="true"
         android:layout_height="24dp">
         <TextView
@@ -65,6 +66,7 @@
             android:layout_height="match_parent"
             android:textColor="@color/red"
             android:text="￥33.00"
+            android:paddingLeft="5dp"
             android:textSize="@dimen/mid_text_size"
             />
 
@@ -78,6 +80,7 @@
             android:gravity="right|center_vertical"
             android:textSize="@dimen/normal_text_size"
             android:text="选择饭团"
+            android:paddingRight="5dp"
             />
 
     </LinearLayout>

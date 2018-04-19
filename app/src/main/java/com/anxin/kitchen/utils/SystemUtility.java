@@ -107,7 +107,6 @@ public class SystemUtility {
     }
 
 
-
     /**
      * 获取下单前总金额跟 餐具押金
      * 预约点餐
@@ -172,10 +171,17 @@ public class SystemUtility {
     public static String sendPhoneReportDevice() {
         return AMUAC_IP + "/v1.0/user/report_device";
     }
+
     //钱包提现
     public static String sendUserWithdraw() {
         return AMUAC_IP + "/v1.0/user/withdraw";
     }
+
+    //钱包明细
+    public static String sendGetMoneyLog(String page) {
+        return AMUAC_IP + "/v1.0/user/money_log_list?token=" + AMToken + "&formData={}&page=" + page;
+    }
+
     //注册用户
     public static String sendUserPhoneLogin(String phone, String code) {
         return AMUAC_IP + "/v1.0/user/login_code?phone=" + phone + "&code=" + code;
@@ -528,14 +534,14 @@ public class SystemUtility {
                     params.put(para, dataMap.get(para));
                 }
             }
-//            Log.e("", "------requestNetPost----------" + params.toString());
+            Log.e("", "------requestNetPost----------" + params.toString());
             client.post(urlPath, params, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
-//                        LOG.e("------requestNetPost----------" + result);
+                        LOG.e("------requestNetPost----------" + result);
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
                 }
@@ -564,7 +570,7 @@ public class SystemUtility {
         if (null != urlPath && urlPath.length() > 0) {
 
             AsyncHttpClient client = new AsyncHttpClient();
-            LOG.d("------requestNetGet------urlPath----" + urlPath);
+//            LOG.d("------requestNetGet------urlPath----" + urlPath);
             client.get(urlPath, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
