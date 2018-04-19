@@ -132,9 +132,6 @@ public class WalletExtractFragment extends HomeBaseFragment implements View.OnCl
     }
 
     private void sendReturnMoney(int money, String alipay, String trueName) {
-        String deviceID = UmengHelper.dToken;
-        if (deviceID == null)
-            return;
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("money", money);
