@@ -185,7 +185,6 @@
             android:exported="true"
             android:launchMode="singleTask" />
 
-        <activity android:name="com.anxin.kitchen.activity.ChoseTablewareActivity"></activity>
         <!-- 支付宝支付 -->
         <activity
             android:name="com.alipay.sdk.app.H5PayActivity"

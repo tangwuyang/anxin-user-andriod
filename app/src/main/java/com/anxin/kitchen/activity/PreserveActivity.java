@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Display;
@@ -30,6 +31,7 @@ import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.DateUtils;
+import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
@@ -74,6 +76,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private double tablewareUseMoney;  //使用费用
     private String tablewareName;    //餐具名
     private double sendCost;   // 配送费
+    private String tablewareType = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -358,15 +361,16 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
         popupWindow = new PopupWindow(layout,
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        int popWidth = view.getMeasuredWidth();
-        int popHeight = view.getMeasuredHeight();
-        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        popupWindow.setHeight(display.getHeight() * 7 / 10);
+                ViewGroup.LayoutParams.MATCH_PARENT);
+//        int popWidth = view.getMeasuredWidth();
+//        int popHeight = view.getMeasuredHeight();
+//        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+//        Display display = wm.getDefaultDisplay();
+//        popupWindow.setHeight(display.getHeight() * 7 / 10);
         //点击空白处时，隐藏掉pop窗口
         popupWindow.setFocusable(true);
-        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        ColorDrawable dw = new ColorDrawable(getResources().getColor(R.color.dialog_background));
+        popupWindow.setBackgroundDrawable(dw);
         //添加弹出、弹入的动画
         popupWindow.setAnimationStyle(R.style.Popupwindow);
         int[] location = new int[2];
@@ -375,9 +379,16 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         //添加按键事件监听
         setButtonListeners(layout);
         //添加pop窗口关闭事件，主要是实现关闭时改变背景的透明度
-        popupWindow.setOnDismissListener(new poponDismissListener());
+//        popupWindow.setOnDismissListener(new poponDismissListener());
         mTablewareLv.setAdapter(new TablewareAdapter(tablewareBean));
-        backgroundAlpha(0.5f);
+//        backgroundAlpha(0.5f);
+        RelativeLayout back_layout = layout.findViewById(R.id.back_layout);
+        back_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popupWindow.dismiss();
+            }
+        });
         TextView unifyPayTv = layout.findViewById(R.id.unify_pay_tv);
         unifyPayTv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -641,7 +652,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 MealBean.Data lunch = preMealMaps.get(day).get("午餐");
                 TextView mealTitle = lunchItem.findViewById(R.id.meal_title_tv);
                 TextView mealContext = lunchItem.findViewById(R.id.meal_content_tv);
-                ImageView foodImg = lunchItem.findViewById(R.id.food_img);
+                ImageView foodImg1 = lunchItem.findViewById(R.id.food_img);
                 TextView priceTv = lunchItem.findViewById(R.id.price_tv);
                 priceTv.setText("￥" + lunch.getPrice());
                 mealTitle.setText(lunch.getPackageName());
@@ -666,7 +677,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                         .bitmapConfig(Bitmap.Config.RGB_565)
                         .build();
                 String imgSrc = lunch.getImg();
-                imageLoader.displayImage(imgSrc, foodImg, options);
+                imageLoader.displayImage(imgSrc, foodImg1, options);
                 ImageView deleteImg = lunchItem.findViewById(R.id.delete_img);
                 deleteImg.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -676,7 +687,14 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                         lunchItem.setTag(day + "-午餐");
                     }
                 });
-
+                foodImg1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(PreserveActivity.this, PreserveListActivity.class);
+                        intent.putExtra("data", (String) lunchItem.getTag());
+                        startActivityForResult(intent, CHOSE_MEAL);
+                    }
+                });
                 //显示数量
                 myLog("-------------->" + lunch.getNums() + "份");
                 TextView numTv = lunchItem.findViewById(R.id.nums_tv);
@@ -742,7 +760,14 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 if (lunch.getNums() > 0) {
                     numTv.setText(lunch.getNums() + "份");
                 }
-
+                foodImg.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(PreserveActivity.this, PreserveListActivity.class);
+                        intent.putExtra("data", (String) dinnerItem.getTag());
+                        startActivityForResult(intent, CHOSE_MEAL);
+                    }
+                });
                 mealTitle.setText(lunch.getPackageName());
                 List<FoodList> foodLists = lunch.getFoodList();
                 StringBuffer foodBf = new StringBuffer();
