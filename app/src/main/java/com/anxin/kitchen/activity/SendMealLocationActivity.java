@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.anxin.kitchen.event.AddressListEvent;
 import com.anxin.kitchen.fragment.myfragment.UserAddressFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.EventBusFactory;
+import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 
 import java.text.SimpleDateFormat;
@@ -33,7 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SendMealLocationActivity extends BaseActivity implements View.OnClickListener {
+public class SendMealLocationActivity extends Activity implements View.OnClickListener {
+    private Log LOG = Log.getLog();
     private ListView mLocationsLv;
     private List<AddressBean> addressBeanList = new ArrayList<>();
     private ImageView mBackImg;
@@ -49,6 +52,7 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
     public AMapLocationClient mLocationClient = null;
     private boolean isFirstLoc = true;
     private SendMealLocationAdapter myAdaped;
+    private AddressBean defaultAddress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,7 +156,15 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
         mLocationsLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                finish();
+//                LOG.e("-------------onItemClick---------");
+                AddressBean addressBean = addressBeanList.get(i);
+                Intent intent = getIntent();
+//                LOG.e("-------------addressBean---------" + addressBean.toString());
+                intent.putExtra("addressBean", addressBean); //将计算的值回传回去
+                //通过intent对象返回结果，必须要调用一个setResult方法，
+                //setResult(resultCode, data);第一个参数表示结果返回码，一般只要大于1就可以，但是
+                setResult(RESULT_OK, intent);
+                finish(); //结束当前的activity的生命周期
             }
         });
     }
@@ -171,6 +183,7 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
     @Override
     protected void onResume() {
         super.onResume();
+        defaultAddress = MyApplication.getInstance().getCache().getDefaultAddress(this);
     }
 
     private void setListeners() {
@@ -199,11 +212,28 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
                 onBackPressed();
                 break;
             case R.id.add_bt:
-                startNewActivity(AddNewLocationActivity.class);
+                Intent intent = new Intent(this, AddNewLocationActivity.class);
+                startActivityForResult(intent, 200);
                 break;
         }
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 200) {
+//            String location = data.getStringExtra("location");
+//            Intent intent = new Intent();
+//
+//            intent.putExtra("location", location); //将计算的值回传回去
+//            //通过intent对象返回结果，必须要调用一个setResult方法，
+//            //setResult(resultCode, data);第一个参数表示结果返回码，一般只要大于1就可以，但是
+//            setResult(2, intent);
+//            finish(); //结束当前的activity的生命周期
+            SystemUtility.sendGetAddressHttp();
+        }
+    }
 
     private class SendMealLocationAdapter extends BaseAdapter {
 
@@ -232,6 +262,7 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
                 view = LayoutInflater.from(SendMealLocationActivity.this).inflate(R.layout.send_meal_location_item, null);
                 holder.addressTitle = view.findViewById(R.id.location_tv);
                 holder.addressPhone = view.findViewById(R.id.contact_tv);
+                holder.select_status_img = view.findViewById(R.id.select_status_img);
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
@@ -243,13 +274,34 @@ public class SendMealLocationActivity extends BaseActivity implements View.OnCli
             String contactName = addressBean.getContactName();
             String streetName = addressBean.getStreetName();
             holder.addressPhone.setText(contactName + "  " + phoneNumber);
-            String addressTitle = streetName;
+            final String addressTitle = streetName;
             holder.addressTitle.setText(addressTitle);
+            if (defaultAddress != null){
+                if (defaultAddress.getAddressID().equals(addressBean.getAddressID())){
+                    holder.select_status_img.setImageDrawable(getResources().getDrawable(R.drawable.login_selected));
+                }else {
+                    holder.select_status_img.setImageDrawable(getResources().getDrawable(R.drawable.login_no_selected));
+                }
+            }
+//            view.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    android.util.Log.e("","---------------------");
+//                    Log.e("", "---------addressBean------------" + addressBean.toString());
+//                    Intent intent = getIntent();
+//                    intent.putExtra("addressBean", addressBean); //将计算的值回传回去
+//                    //通过intent对象返回结果，必须要调用一个setResult方法，
+//                    //setResult(resultCode, data);第一个参数表示结果返回码，一般只要大于1就可以，但是
+//                    setResult(2, intent);
+//                    finish(); //结束当前的activity的生命周期
+//                }
+//            });
             return view;
         }
 
         class ViewHolder {
             private TextView addressTitle, addressPhone;
+            private ImageView select_status_img;
         }
     }
 

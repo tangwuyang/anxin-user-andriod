@@ -88,6 +88,8 @@ public class SettingFragment extends HomeBaseFragment implements View.OnClickLis
                 if (userId != null)
                     UmengHelper.getInstance().deleteUserAlias(userId);
                 mApp.setAccount(null);
+                mApp.getCache().setAcount(getActivity(),null);
+                mApp.getCache().setAMToken(null);
                 SystemUtility.AMToken = "";
                 getFragmentManager().popBackStack();
                 break;

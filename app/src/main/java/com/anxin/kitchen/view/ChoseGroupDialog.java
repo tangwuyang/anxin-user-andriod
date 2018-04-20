@@ -114,8 +114,8 @@ public class ChoseGroupDialog extends Dialog{
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = LayoutInflater.from(mContext).inflate(R.layout.group_simple_item,viewGroup,false);
             final SearchGroupBean.Data group = groupList.get(i);
-            int groupMembersNum = group.getGroupNum();
-            TextView groupnameTv = view.findViewById(R.id.group_name_tv);
+            final int groupMembersNum = group.getGroupNum();
+            final TextView groupnameTv = view.findViewById(R.id.group_name_tv);
             TextView groupNumTv = view.findViewById(R.id.group_nums_tv);
             if (groupMembersNum>=10){
                 view.setEnabled(true);
@@ -131,8 +131,10 @@ public class ChoseGroupDialog extends Dialog{
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((PreserveActivity)mContext).choseGroup(day,type,group.getId(),group.getGroupName(),group.getGroupNum());
-                    ChoseGroupDialog.this.dismiss();
+                    if (groupMembersNum>=10){
+                        ((PreserveActivity)mContext).choseGroup(day,type,group.getId(),group.getGroupName(),group.getGroupNum());
+                        ChoseGroupDialog.this.dismiss();
+                    }
                 }
             });
             return view;

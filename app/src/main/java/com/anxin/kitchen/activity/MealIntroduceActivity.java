@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,7 +23,7 @@ import java.util.SimpleTimeZone;
  * 订餐详细介绍
  * created by tangwuyang
  * */
-public class MealIntroduceActivity extends AppCompatActivity {
+public class MealIntroduceActivity extends BaseActivity {
     private List<String> nameLists = new ArrayList<>();
     private List<String> nunmsLists = new ArrayList<>();
     private List<String> stepLists = new ArrayList<>();
@@ -38,6 +39,15 @@ public class MealIntroduceActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        ImageView mBackImg = findViewById(R.id.back_img);
+        mBackImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        TextView title_tv = findViewById(R.id.title_tv);
+        title_tv.setText("菜品详情");
         meterialGv = findViewById(R.id.material_gv);
         stepsLv = findViewById(R.id.step_lv);
         meterialGv.setAdapter(new MeterialGv());
