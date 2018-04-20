@@ -15,7 +15,7 @@
             android:layout_centerVertical="true"
             android:padding="@dimen/bar_left_right_padding"
             android:scaleType="centerCrop"
-            android:src="@drawable/unselected_drawable" />
+            android:src="@drawable/login_no_selected" />
 
         <LinearLayout
             android:layout_width="wrap_content"

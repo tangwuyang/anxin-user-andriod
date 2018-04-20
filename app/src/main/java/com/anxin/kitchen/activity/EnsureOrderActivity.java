@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.menu.MenuAdapter;
@@ -8,9 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.bean.AddressBean;
+import com.anxin.kitchen.bean.OrderInfoBean;
+import com.anxin.kitchen.bean.PreMoneyBean;
+import com.anxin.kitchen.bean.RecorveOrderBean;
 import com.anxin.kitchen.bean.RecoverBean;
 import com.anxin.kitchen.bean.TablewareBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
@@ -21,6 +28,7 @@ import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.MyListView;
+import com.anxin.kitchen.view.WaitingDialog;
 import com.google.gson.reflect.TypeToken;
 
 import java.math.BigDecimal;
@@ -33,12 +41,16 @@ import java.util.Map;
 
 public class EnsureOrderActivity extends BaseActivity implements View.OnClickListener, RequestNetListener {
     private static final String CREATE_DIET = "CREATE_DIET";
+    private static final String GET_PRO_MOENY = "GET_PRO_MOENY";
+    private static final String PAY_MONEY = "PAY_MONEY";
+    private static final String ENSURE_MONEY = "ENSURE_MONEY";
+    private static final int GET_LOCATION = 202;
     private ImageView mBackImg;
     private TextView mTitleTv;
     private ImageView mTransmitImg;
     private MyListView mMealLv;
     private MyListView mTablemareLv;
-//    private MyListView mPayWayLv;
+    //    private MyListView mPayWayLv;
     private TextView mAllMoneyTv;
     private TextView mTablewareMoneyTv;
     private TextView mEnsurePayTv;
@@ -52,6 +64,11 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
     private long tablewareId;
     private int payType;
     private TablewareAdapter tablewareAdapter;
+    private int kitchenId;
+    private WaitingDialog mdialog;
+    private RelativeLayout mLocationRl;
+    private TextView mLocationTv;
+    private AddressBean addressBean = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +76,59 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         setContentView(R.layout.activity_ensure_order);
         initView();
         getTableWare();
+        initDate();
+    }
+
+    private void initDate() {
+        addressBean = MyApplication.getInstance().getCache().getDefaultAddress(this);
+        if (null == addressBean) {
+            List<AddressBean> addressBeanList = MyApplication.getInstance().getAddressBeanList();
+            for (int i = 0; i < addressBeanList.size(); i++) {
+                AddressBean addressBean = addressBeanList.get(i);
+                String isDefault = addressBean.getIsDefault();
+                if (isDefault != null && isDefault.equals("1")) {
+                    this.addressBean = addressBean;
+                    mLocationTv.setText(addressBean.getStreetName());
+                }
+            }
+        }else {
+            mLocationTv.setText(addressBean.getStreetName());
+        }
+    }
+
+
+    /**
+     * 获取后台计算的关于这个单的钱
+     */
+    private void getPreMoney() {
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("kitchenId", mPrefrenceUtil.getKitchenId());
+        dataMap.put("tablewareId", tablewareId);
+
+        //获取所有套餐信息
+        String tempPackages = "";
+        for (String key : mChosedMeals.keySet()) {
+            double littlePrice = mChosedMeals.get(key).getPrice() * mChosedMeals.get(key).getNums();
+            BigDecimal b = new BigDecimal(littlePrice);
+            double price = b.setScale(2, BigDecimal.ROUND_UP).doubleValue();
+            tempPackages = tempPackages + mChosedMeals.get(key).getPackageId() + "*"
+                    + mChosedMeals.get(key).getNums() + "*" + price + "0,";
+        }
+        String packages = tempPackages.substring(0, tempPackages.lastIndexOf(","));
+        dataMap.put("packages", packages);
+        dataMap.put("payType", payType);
+        dataMap.put("token", mCache.getAMToken());
+        requestNet(SystemUtility.getDiet_DeMoneyUrl(), dataMap, GET_PRO_MOENY);
     }
 
     private void initView() {
+        if (null == mCache) {
+            mCache = new Cache(this);
+        }
+        mLocationTv = findViewById(R.id.location_tv);
+        mLocationRl = findViewById(R.id.user_address_rlt);
+        mToken = mCache.getAMToken();
+        mdialog = new WaitingDialog(this, 100);
         mBackImg = findViewById(R.id.back_img);
         mTitleTv = findViewById(R.id.title_tv);
         mMealLv = findViewById(R.id.meal_lv);
@@ -77,13 +144,18 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         mMealLv.setAdapter(new MealAdapter());
 //        mPayWayLv.setAdapter(new PaymentAdapter());
         mTitleTv.setText("确认订单");
+        kitchenId = new PrefrenceUtil(this).getKitchenId();
         mCache = new Cache(this);
         mPrefrenceUtil = new PrefrenceUtil(this);
         mTransmitImg.setVisibility(View.VISIBLE);
         mBackImg.setOnClickListener(this);
         mEnsurePayTv.setOnClickListener(this);
         tablewareAdapter = new TablewareAdapter();
+        mLocationRl.setOnClickListener(this);
     }
+
+
+    String ids = "";
 
     @Override
     public void requestSuccess(String responseString, String requestCode) {
@@ -99,11 +171,75 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
 
         if (requestCode == CREATE_DIET && status.equals(Constant.REQUEST_SUCCESS)) {
             Toast.makeText(this, "创建订单成功", Toast.LENGTH_SHORT).show();
-            PrefrenceUtil prefrenceUtil = new PrefrenceUtil(this);
-            prefrenceUtil.setRecoverList("");
-            prefrenceUtil.setRecoverMenuList("");
-            startNewActivity(MainActivity.class);
+            RecorveOrderBean bean = mGson.fromJson(responseString, RecorveOrderBean.class);
+            Map<String, Object> dataMap = new HashMap<>();
+
+            ids = String.valueOf(bean.getData().getId());
+
+            myLog("-------->" + ids);
+            dataMap.put("orderIds", ids);
+            dataMap.put("token", mToken);
+            requestNet(SystemUtility.getSureDeMoneyUrl(), dataMap, ENSURE_MONEY);
+
+        } else if (requestCode == CREATE_DIET && (!status.equals(Constant.REQUEST_SUCCESS))) {
+            Toast.makeText(this, "创建订单失败：" + status, Toast.LENGTH_SHORT).show();
+            mdialog.stopAnimation();
+            mdialog.dismiss();
         }
+
+
+        if (requestCode == ENSURE_MONEY && (status.equals(Constant.REQUEST_SUCCESS))) {
+            PreMoneyBean bean = mGson.fromJson(responseString, PreMoneyBean.class);
+            Map<String, Object> dataMap = new HashMap<>();
+            myLog("--------s>" + ids);
+            dataMap.put("orderIds", ids);
+            dataMap.put("token", mToken);
+            requestNet(SystemUtility.payUrl(), dataMap, PAY_MONEY);
+
+        } else if (requestCode == ENSURE_MONEY && (!status.equals(Constant.REQUEST_SUCCESS))) {
+            Toast.makeText(this, "确认订单失败", Toast.LENGTH_SHORT).show();
+            mdialog.stopAnimation();
+            mdialog.dismiss();
+        }
+
+        if (requestCode == GET_PRO_MOENY && status.equals(Constant.REQUEST_SUCCESS)) {
+            PreMoneyBean bean = mGson.fromJson(responseString, PreMoneyBean.class);
+            mAllMoneyTv.setText("￥" + bean.getData().getTotalPay() + ".00");
+            mTablewareMoneyTv.setText("其中餐具押金" + bean.getData().getPayDeposit() + "元");
+        }
+
+        if (requestCode == PAY_MONEY && (status.equals(Constant.REQUEST_SUCCESS))) {
+            Toast.makeText(this, "付款成功", Toast.LENGTH_SHORT).show();
+            mdialog.stopAnimation();
+            mdialog.dismiss();
+            clearCache();
+            //要修改  跳转到订单活动
+            startNewActivity(MainActivity.class);
+        } else if (requestCode == PAY_MONEY && (!status.equals(Constant.REQUEST_SUCCESS))) {
+            Toast.makeText(this, "付款失败" + status, Toast.LENGTH_SHORT).show();
+            mdialog.stopAnimation();
+            mdialog.dismiss();
+        }
+
+
+    }
+
+    private void payMoney(RecorveOrderBean bean) {
+        Map<String, Object> dataMap = new HashMap<>();
+
+        ids = String.valueOf(bean.getData().getId());
+
+        myLog("-------->" + ids);
+        dataMap.put("orderIds", ids);
+        dataMap.put("token", mToken);
+        requestNet(SystemUtility.payUrl(), dataMap, PAY_MONEY);
+    }
+
+    private void clearCache() {
+        PrefrenceUtil prefrenceUtil = new PrefrenceUtil(this);
+        prefrenceUtil.setRecoverList("");
+        prefrenceUtil.setRecoverMenuList("");
+        startNewActivity(MainActivity.class);
     }
 
     //获取所有餐具
@@ -124,10 +260,31 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
             case R.id.ensure_pay_tv:
                 createOrder();
                 break;
+            case R.id.user_address_rlt:
+                Intent intent = new Intent(this, SendMealLocationActivity.class);
+                startActivityForResult(intent, GET_LOCATION);
+                break;
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) {
+//            LOG.e("onActivityResult: resultCode!=RESULT_OK");
+            return;
+        }
+        if (requestCode == GET_LOCATION) {
+            addressBean = (AddressBean) data.getSerializableExtra("addressBean");
+            mLocationTv.setText(addressBean.getStreetName());
         }
     }
 
     private void createOrder() {
+        //先去再次请求订餐金钱
+        mdialog.show();
+        mdialog.startAnimation();
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("kitchenId", mPrefrenceUtil.getKitchenId());
         dataMap.put("tablewareId", tablewareId);
@@ -144,11 +301,10 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         String packages = tempPackages.substring(0, tempPackages.lastIndexOf(","));
         dataMap.put("packages", packages);
         dataMap.put("payType", payType);
-        dataMap.put("contactPhone", mCache.getUserPhone());
-        dataMap.put("contactName", mCache.getNickName());
-        dataMap.put("address", "深圳金展大厦28楼");
+        dataMap.put("contactPhone", addressBean.getPhoneNumber());
+        dataMap.put("contactName", addressBean.getContactName());
+        dataMap.put("address", addressBean.getStreetName() + addressBean.getAddress());
         dataMap.put("token", mCache.getAMToken());
-
         requestNet(SystemUtility.createRecoverDiet(), dataMap, CREATE_DIET);
     }
 
@@ -251,9 +407,9 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
             moneyTv.setText("￥" + num * data.getUsePrice() + ".00");
             if (selectMark.get(i)) {
                 tablewareId = data.getId();
+                getPreMoney();
+                myLog("------------tableid" + tablewareId);
                 tablewareMoeny = num * data.getUsePrice();
-                mAllMoneyTv.setText("￥" + (mealMoney + tablewareMoeny));
-                mTablewareMoneyTv.setText("其中餐具押金" + tablewareMoeny + "元");
                 selectImg.setImageDrawable(getResources().getDrawable(R.drawable.selected_drawable));
             } else {
                 selectImg.setImageDrawable(getResources().getDrawable(R.drawable.unselected_drawable));

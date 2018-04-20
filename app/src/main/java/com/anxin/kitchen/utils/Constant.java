@@ -20,6 +20,7 @@ public class Constant {
     public static final int ADD_FRIEND_CODE = 300;
     public static final String NULL = "null";
     public static final String RECAVOR = "recover";
+    public static final String PRESEVER_LIST = "PRESEVER_LIST";
     public static final String RECAVOR_MENU = "RECAVOR_MENU";
     public static final String BROADCAST_PAY_SUCCEED = "com.anxin.kitchen.pay_succeed";
     public static final String BROADCAST_PAY_FAILED = "com.anxin.kitchen.pay_succeed";

@@ -196,7 +196,14 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
         dataMap.put("token", SystemUtility.AMToken);
         dataMap.put("formData", jsonObject.toString());
 //        Log.e("onEventMainThread", "----------dataMap--------------" + dataMap.toString());
+
+        Intent intent = new Intent();
+        // 获取用户计算后的结果
+
         SystemUtility.requestNetPost(urlPath, dataMap, sendAddAddress_http);
+        intent.putExtra("location", address); //将计算的值回传回去
+        setResult(2, intent);
+        finish(); //结束当前的activity的生命周期
     }
 
     @Override

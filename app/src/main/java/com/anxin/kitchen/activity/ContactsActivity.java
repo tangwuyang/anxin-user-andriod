@@ -183,9 +183,8 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
         //查询数据，返回Cursor
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
         List<Map<String,Object>> list1 = new ArrayList<Map<String,Object>>();
-        if (null != list1 && list1.size()>0) {
-            while (cursor.moveToNext()) {
 
+            while (cursor!=null&&cursor.moveToNext()) {
 
                 //获取联系人的ID
                 String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
@@ -205,7 +204,7 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
                 }
                 phones.close();
             }
-        }
+
         return list;
     }
 
