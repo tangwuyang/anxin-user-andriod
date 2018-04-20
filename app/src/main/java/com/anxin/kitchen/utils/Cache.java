@@ -73,6 +73,7 @@ public class Cache {
 
     private final Context mContext;
     private static final String SAVED_MESSAGE = "SAVED_MESSAGE";
+    private static final String SAVED_DEFAULTADDRESS = "SAVED_DEFAULTADDRESS";
 
     public Cache(final Context context) {
         mContext = context;
@@ -114,6 +115,18 @@ public class Cache {
      */
     public final void setAcount(Context context, final Account acount) {
         saveObject(context, SAVED_ACCOUNT, acount);
+    }
+
+    public final AddressBean getDefaultAddress(Context context) {
+        AddressBean addressBean = (AddressBean) readObject(context, SAVED_DEFAULTADDRESS);
+//        Log.e("--------------", "-------getAcount---------" + account);
+        if (null == addressBean)
+            return null;
+        return addressBean;
+    }
+
+    public final void setSavedDefaultaddress(Context context, final AddressBean addressBean) {
+        saveObject(context, SAVED_DEFAULTADDRESS, addressBean);
     }
 
     /***

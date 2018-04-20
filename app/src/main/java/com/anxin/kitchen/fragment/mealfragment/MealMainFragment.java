@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,6 +75,7 @@ import static com.anxin.kitchen.MyApplication.mApp;
 public class MealMainFragment extends HomeBaseFragment implements View.OnClickListener {
     private Log LOG = Log.getLog();
     private View view;
+    private static final int GET_LOCATION = 178;
     private RecyclerView mPreserverRv;
     private LinearLayoutManager mLiearManager;
     private ImageView mMessageImg;  //消息中心
@@ -83,8 +85,6 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     private Banner mBanner;
     //声明mLocationOption对象
     public AMapLocationClientOption mLocationOption = null;
-    private double lat;
-    private double lon;
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     private MainActivity activity;
@@ -101,6 +101,8 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     //设置图片标题:自动对应
     String[] titles = new String[]{"十大星级品牌联盟，全场2折起", "全场2折起", "十大星级品牌联盟", "嗨购5折不要停", "12趁现在", "嗨购5折不要停，12.12趁现在", "实打实大顶顶顶顶"};
     private String amToKen;
+    private boolean isGetKitChenID = false;
+    private AddressBean addressBean = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,6 +115,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
             sendMessageList();
             SystemUtility.sendGetAddressHttp();
             SystemUtility.sendGetUserInfo(amToKen, SystemUtility.sendUserInfo);
+            addressBean = mApp.getCache().getDefaultAddress(getActivity());
         }
     }
 
@@ -148,13 +151,14 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                     amapLocation.getCityCode();//城市编码
                     amapLocation.getAdCode();//地区编码
                     amapLocation.getAoiName();//获取当前定位点的AOI信息
-                    lat = amapLocation.getLatitude();
-                    lon = amapLocation.getLongitude();
-                    android.util.Log.v("pcw", "lat : " + lat + " lon : " + lon);
-                    android.util.Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
+                    double lat = amapLocation.getLatitude();
+                    double lon = amapLocation.getLongitude();
+//                    android.util.Log.v("pcw", "lat : " + lat + " lon : " + lon);
+//                    android.util.Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
                     mLocationTv.setText(amapLocation.getCity() + amapLocation.getDistrict() + amapLocation.getStreet() + amapLocation.getStreetNum());
                     //获取到位置信息 再去获取kitchenId
-                    getKitchenId();
+                    getKitchenId(lon, lat);
+                    isGetKitChenID = true;
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
                     android.util.Log.e("AmapError", "location Error, ErrCode:"
@@ -162,14 +166,6 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                             + amapLocation.getErrorInfo());
                 }
             }
-
-//            float distance = AMapUtils.calculateLineDistance(,latLng2);
-//            //1.将两个经纬度点转成投影点
-//            MAMapPoint point1 = MAMapPointForCoordinate(CLLocationCoordinate2DMake(39.989612, 116.480972));
-//            MAMapPoint point2 = MAMapPointForCoordinate(CLLocationCoordinate2DMake(39.990347, 116.480441));
-////2.计算距离
-//            CLLocationDistance distance = MAMetersBetweenMapPoints(point1, point2);
-
 
         }
     };
@@ -260,14 +256,14 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         }
     }
 
-    private void getKitchenId() {
+    private void getKitchenId(double longitude, double latitude) {
         if (null != activity) {
             mWaitingDialog.show();
             mWaitingDialog.startAnimation();
             Map<String, Object> dataMap = new HashMap();
-            dataMap.put("longitude", lon);
-            dataMap.put("latitude", lat);
-            activity.myLog("------------->开始请求" + lon + "  " + lat);
+            dataMap.put("longitude", longitude);
+            dataMap.put("latitude", latitude);
+//            activity.myLog("------------->开始请求" + longitude + "  " + latitude);
             activity.requestNet(SystemUtility.getNearKitchenId(), dataMap, activity.GET_KITCHEN_ID);
         }
     }
@@ -284,6 +280,9 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         mLocationTv = view.findViewById(R.id.location_tv);
         mBanner = view.findViewById(R.id.broadcast_banner);
         messagePaymentNumber = view.findViewById(R.id.message_payment_number);
+        RelativeLayout title_address = view.findViewById(R.id.title_address);
+        title_address.setOnClickListener(this);
+        setListener();
         return view;
     }
 
@@ -322,16 +321,24 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     @Override
     public void onResume() {
         // TODO Auto-generated method stub
+        if (!isGetKitChenID) {
+            if (addressBean != null) {
+                mLocationTv.setText(addressBean.getStreetName());
+                double longitude = Double.parseDouble(addressBean.getLongitude());
+                double latitude = Double.parseDouble(addressBean.getLatitude());
+                getKitchenId(longitude, latitude);
+                isGetKitChenID = true;
+                return;
+            }
+            setMyLocation();
+        }
         super.onResume();
-        setListener();
-        setMyLocation();
     }
 
     private void setListener() {
         mMessageImg.setOnClickListener(this);
         mPreserverMealImg.setOnClickListener(this);
         mRecoveryMealImg.setOnClickListener(this);
-        mLocationTv.setOnClickListener(this);
     }
 
     public void closeWaitingDialog() {
@@ -388,7 +395,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                     startActivity(intent2);
                 }
                 break;
-            case R.id.location_tv:
+            case R.id.title_address:
                 if (null == amToKen) {
                     amToKen = new Cache(activity).getAMToken();
                 }
@@ -396,13 +403,32 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                     SystemUtility.startLoginUser(getActivity());
                 } else {
                     //startNewActivity(SendMealLocationActivity.class);
-                    Intent intent = new Intent(activity, SendMealLocationActivity.class);
-                    startActivity(intent);
-                    activity.overridePendingTransition(R.anim.activity_open, R.anim.activity_close);
+                    Intent intent = new Intent(getActivity(), SendMealLocationActivity.class);
+                    this.startActivityForResult(intent, GET_LOCATION);
+                    getActivity().overridePendingTransition(R.anim.activity_open, R.anim.activity_close);
                     //送餐地址活动
                 }
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+//        LOG.e("onActivityResult: requestCode: " + requestCode + "  resultCode:" + resultCode);
+        if (resultCode != getActivity().RESULT_OK) {
+//            LOG.e("onActivityResult: resultCode!=RESULT_OK");
+            return;
+        }
+        if (requestCode == GET_LOCATION) {
+            addressBean = (AddressBean) data.getSerializableExtra("addressBean");
+//            LOG.e("-------------requestCode---------" + addressBean.toString());
+            mLocationTv.setText(addressBean.getStreetName());
+            double longitude = Double.parseDouble(addressBean.getLongitude());
+            double latitude = Double.parseDouble(addressBean.getLatitude());
+            getKitchenId(longitude, latitude);
+            mApp.getCache().setSavedDefaultaddress(getActivity(), addressBean);
         }
     }
 

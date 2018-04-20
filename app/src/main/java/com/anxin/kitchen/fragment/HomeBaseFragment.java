@@ -34,11 +34,6 @@ public class HomeBaseFragment extends Fragment implements OnClickListener {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
     }

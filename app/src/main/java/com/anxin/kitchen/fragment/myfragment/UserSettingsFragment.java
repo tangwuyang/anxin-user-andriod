@@ -415,7 +415,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        LOG.e("onActivityResult: requestCode: " + requestCode + "  resultCode:" + resultCode);
+//        LOG.e("onActivityResult: requestCode: " + requestCode + "  resultCode:" + resultCode);
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != getActivity().RESULT_OK) {
 //            LOG.e("onActivityResult: resultCode!=RESULT_OK");
