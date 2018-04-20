@@ -71,6 +71,19 @@ public class PrefrenceUtil {
         return groupSt;
     }
 
+
+    //预约点餐缓存
+    public void setPreserveList(String recoverBeanListSt){
+        SharedPreferences.Editor editor = getPreference().edit();
+        editor.putString(Constant.PRESEVER_LIST,recoverBeanListSt);
+        editor.commit();
+    }
+    public String getPreserveList(){
+        SharedPreferences preferences =  getPreference();
+        String preserve_listSt = preferences.getString(Constant.PRESEVER_LIST,"null");
+        return preserve_listSt;
+    }
+
     public void setRecoverMenuList(String recoverBeanListSt){
         SharedPreferences.Editor editor = getPreference().edit();
         editor.putString(Constant.RECAVOR_MENU,recoverBeanListSt);

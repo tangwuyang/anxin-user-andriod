@@ -77,7 +77,7 @@ public class AddNewFriendActivity extends BaseActivity implements View.OnClickLi
                 boolean isValue = VerifyDataIsValue(name, phone);
                 if (isValue) {
                     addFriend(name, phone);
-                    onBackPressed();
+                    //onBackPressed();
                 }
                 break;
         }
@@ -125,6 +125,11 @@ public class AddNewFriendActivity extends BaseActivity implements View.OnClickLi
             String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
             if (status.equals(Constant.REQUEST_SUCCESS)) {
                 //关闭按钮 返回前一个界面刷新界面
+                Intent intent = new Intent();
+                setResult(500,intent);
+                finish();
+            }else {
+                Toast.makeText(this, "添加失败", Toast.LENGTH_SHORT).show();
             }
         }
     }

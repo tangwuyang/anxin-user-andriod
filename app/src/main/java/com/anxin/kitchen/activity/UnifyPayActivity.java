@@ -227,6 +227,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             mdialog.stopAnimation();
             mdialog.dismiss();
             //要修改  跳转到订单活动
+            new PrefrenceUtil(this).setPreserveList("");
             startNewActivity(MainActivity.class);
         }else if (requestCode == PAY_MONEY&& (!status.equals(Constant.REQUEST_SUCCESS))){
             Toast.makeText(this, "付款失败", Toast.LENGTH_SHORT).show();

@@ -82,7 +82,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preserve);
-        tellRule();
+
         getTableWare();
         initView();
         getNextDayOfWeek();
@@ -112,7 +112,18 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
         List<List<MealBean.Data>> dataList = new ArrayList<>();
         LinkedHashMap<Long, WeekDayBean> weakDays = new LinkedHashMap<>();
+
+
         LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps = new LinkedHashMap<>();
+
+        String premealCache = new PrefrenceUtil(this).getPreserveList();
+        myLog("------------->" + premealCache);
+        if (null!=premealCache &&( !"null".equals(premealCache))){
+            preMealMaps = mGson.fromJson(premealCache,new TypeToken<LinkedHashMap<Long,Map<String ,MealBean.Data>>>(){}.getType());
+        }else {
+            tellRule();
+        }
+
         //一周的时间跟周之间的对应
         for (int i = 0; i < days.size(); i++) {
             Long day = days.get(i);
@@ -129,7 +140,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         }
 
         long lastDay = 0;
-        if (!((null == mealListSt) || mealListSt.equals(Constant.NULL))) {
+        /*if (!((null == mealListSt) || mealListSt.equals(Constant.NULL))) {
             for (MealBean.Data mel :
                     mealList) {
                 long thisDay = mel.getMenuDay();
@@ -151,12 +162,20 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 }
 
             }
-            updateUI(days, weakDays, preMealMaps);
         } else {
 
-        }
+        }*/
 
+        updateUI(days, weakDays, preMealMaps);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        String mPreseverSt = mGson.toJson( preserverAdapter.preMealMaps);
+        myLog("---------------->pre"+mPreseverSt);
+       new PrefrenceUtil(this).setPreserveList(mPreseverSt);
     }
 
     //获取配送费

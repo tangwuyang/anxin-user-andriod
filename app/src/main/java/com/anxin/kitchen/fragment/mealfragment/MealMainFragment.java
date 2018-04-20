@@ -62,6 +62,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -339,7 +340,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     }
 
     //设置点餐适配器
-    private void setAdapter(List<List<MealBean.Data>> dataList) {
+    private void setAdapter(Map<Long, List<MealBean.Data>> dataList) {
         mLiearManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         PreserverAdapter adapter = new PreserverAdapter(dataList);
         mPreserverRv.setLayoutManager(mLiearManager);
@@ -514,19 +515,18 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         //更新首页菜品
         this.mealBean = mealBean;
         mealList = mealBean.getData();
-        List<List<MealBean.Data>> dataList = new ArrayList<>();
+        Map<Long ,List<MealBean.Data>> dataList = new LinkedHashMap<>();
         List<MealBean.Data> thisDayData = new ArrayList<>();
         long lastDay = 0;
         for (MealBean.Data mel :
                 mealList) {
             long thisDay = mel.getMenuDay();
-            if (thisDay != lastDay) {
-                lastDay = thisDay;
+            if (dataList.containsKey(thisDay)) {
+                dataList.get(thisDay).add(mel);
+            } else {
                 thisDayData = new ArrayList<>();
                 thisDayData.add(mel);
-                dataList.add(thisDayData);
-            } else {
-                thisDayData.add(mel);
+                dataList.put(thisDay,thisDayData);
             }
         }
         setAdapter(dataList);
@@ -535,10 +535,14 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
 
     private class PreserverAdapter extends RecyclerView.Adapter<PreserverAdapter.ViewHolderw> {
 
-        List<List<MealBean.Data>> dataList;
+        List<List<MealBean.Data>> dataList = new ArrayList<>();
 
-        public PreserverAdapter(List<List<MealBean.Data>> dataList) {
-            this.dataList = dataList;
+        public PreserverAdapter(Map<Long, List<MealBean.Data>> dataList) {
+
+            for (Long key :
+                    dataList.keySet()) {
+                this.dataList.add(dataList.get(key));
+            }
         }
 
         @Override
