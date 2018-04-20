@@ -899,28 +899,53 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             myLog("------------>" + day + "  " + type + "  " + nums);
             boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
             myLog("-------------" + isContain);
-            if (isContain) {
+            for (Long key:preserverAdapter.preMealMaps.keySet()
+                 ) {
+                for (String meal:
+                    preserverAdapter.preMealMaps.get(key).keySet()) {
+                    preserverAdapter.preMealMaps.get(key).get(meal).setSetNumsTag(true);
+                    preserverAdapter.preMealMaps.get(key).get(meal).setNums(nums);
+                    preserverAdapter.preMealMaps.get(key).get(meal).setGrouporderTag(false);
+                    preserverAdapter.preMealMaps.get(key).get(meal).setRelativeGroupId(0);
+                    preserverAdapter.preMealMaps.get(key).get(meal).setRelatedGroupName(null);
+                }
+            }
+           /* if (isContain) {
                 preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setSetNumsTag(true);
                 preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(nums);
                 preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setGrouporderTag(false);
                 preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelativeGroupId(0);
                 preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelatedGroupName(null);
                 myLog("--------------->fen:" + preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
-            }
+            }*/
             preserverAdapter.notifyDataSetChanged();
         }
     }
 
     public void choseGroup(long day, String type, int groupId, String groupName, int nums) {
         boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
+
+        for (Long key:preserverAdapter.preMealMaps.keySet()
+                ) {
+            for (String meal:
+                    preserverAdapter.preMealMaps.get(key).keySet()) {
+                preserverAdapter.preMealMaps.get(key).get(meal).setSetNumsTag(false);
+                preserverAdapter.preMealMaps.get(key).get(meal).setNums(0);
+                preserverAdapter.preMealMaps.get(key).get(meal).setGrouporderTag(true);
+                preserverAdapter.preMealMaps.get(key).get(meal).setRelativeGroupId(groupId);
+                preserverAdapter.preMealMaps.get(key).get(meal).setRelatedGroupName(groupName);
+                preserverAdapter.preMealMaps.get(key).get(meal).setNums(nums);
+
+            }}
+
         if (isContain) {
 
-            preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setSetNumsTag(false);
+         /*   preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setSetNumsTag(false);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(0);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setGrouporderTag(true);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelativeGroupId(groupId);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelatedGroupName(groupName);
-            preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(nums);
+            preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(nums);*/
             myLog("--------------->fen:" + preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
         }
         preserverAdapter.notifyDataSetChanged();
