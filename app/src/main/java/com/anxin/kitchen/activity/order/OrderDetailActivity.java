@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.adapter.OrderMemberAdapter;
 import com.anxin.kitchen.bean.Order.OrderDetail;
 import com.anxin.kitchen.bean.Order.OrderUser;
@@ -52,7 +53,7 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
 
     private long mOrderId;
     private String token;
-
+    private int closeType = -1;
     private OrderDetail mOrderDetail;
 
 
@@ -62,6 +63,7 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
         setContentView(R.layout.activity_order_detail);
         mActivity = this;
         mOrderId = getIntent().getLongExtra("orderId", 0);
+        closeType = getIntent().getIntExtra("closeType", 0);
         initView();
         getOrderDetail();
     }
@@ -86,10 +88,26 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (closeType != -1 && closeType == 1) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else
+            finish();
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.back_img:
-                finish();
+                if (closeType != -1 && closeType == 1) {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } else
+                    finish();
                 break;
             case R.id.complete_tv:
                 cancelOrder();
@@ -106,22 +124,22 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                 if (tvExpand.getText().equals("∧ 收起")) {
                     tvExpand.setText("∨ 展开");
                     List<OrderUser> list = new ArrayList<>();
-                    if(mOrderDetail.getGroup().getOrderUsers()!=null &&mOrderDetail.getGroup().getOrderUsers().size()>5){
+                    if (mOrderDetail.getGroup().getOrderUsers() != null && mOrderDetail.getGroup().getOrderUsers().size() > 5) {
                         list.add(mOrderDetail.getGroup().getOrderUsers().get(0));
                         list.add(mOrderDetail.getGroup().getOrderUsers().get(1));
                         list.add(mOrderDetail.getGroup().getOrderUsers().get(2));
                         list.add(mOrderDetail.getGroup().getOrderUsers().get(3));
                         list.add(mOrderDetail.getGroup().getOrderUsers().get(4));
-                    }else{
+                    } else {
                         list.addAll(mOrderDetail.getGroup().getOrderUsers());
                     }
-                    if(mMemberAdapter!=null &&gvMenber!=null){
+                    if (mMemberAdapter != null && gvMenber != null) {
                         mMemberAdapter.update(list);
                     }
 //                    llMember.setVisibility(View.GONE);
                 } else {
                     tvExpand.setText("∧ 收起");
-                    if(mMemberAdapter!=null &&gvMenber!=null){
+                    if (mMemberAdapter != null && gvMenber != null) {
                         mMemberAdapter.update(mOrderDetail.getGroup().getOrderUsers());
                     }
 //                    llMember.setVisibility(View.VISIBLE);
@@ -133,7 +151,7 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
     }
 
     private void setData(OrderDetail info) {
-        if(info==null){
+        if (info == null) {
             return;
         }
         if (info.getGroup() == null) {
@@ -371,13 +389,13 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
             llOrderDetailSuborderTitle.setTag(tvOrderDetailSuborderExpand);
             tvOrderDetailSuborderExpand.setTag(llOrderDetailSuborderContent);
             List<OrderUser> list = new ArrayList<>();
-            if(info.getGroup().getOrderUsers()!=null &&info.getGroup().getOrderUsers().size()>5){
+            if (info.getGroup().getOrderUsers() != null && info.getGroup().getOrderUsers().size() > 5) {
                 list.add(info.getGroup().getOrderUsers().get(0));
                 list.add(info.getGroup().getOrderUsers().get(1));
                 list.add(info.getGroup().getOrderUsers().get(2));
                 list.add(info.getGroup().getOrderUsers().get(3));
                 list.add(info.getGroup().getOrderUsers().get(4));
-            }else{
+            } else {
                 list.addAll(info.getGroup().getOrderUsers());
             }
             mMemberAdapter = new OrderMemberAdapter(mActivity, list);
