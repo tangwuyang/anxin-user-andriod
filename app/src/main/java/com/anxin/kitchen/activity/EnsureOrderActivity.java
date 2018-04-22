@@ -214,7 +214,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
             mdialog.dismiss();
             clearCache();
             //要修改  跳转到订单活动
-            startNewActivity(MainActivity.class);
+//            startNewActivity(MainActivity.class);
         } else if (requestCode == PAY_MONEY && (!status.equals(Constant.REQUEST_SUCCESS))) {
             Toast.makeText(this, "付款失败" + status, Toast.LENGTH_SHORT).show();
             mdialog.stopAnimation();

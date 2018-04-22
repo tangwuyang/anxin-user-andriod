@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity.order;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.anxin.kitchen.activity.BaseFragmentActivity;
+import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.adapter.OrderTabAdapter;
 import com.anxin.kitchen.fragment.orderfragment.OrderFragment;
 import com.anxin.kitchen.user.R;
@@ -48,6 +50,7 @@ public class OrderActivity extends BaseFragmentActivity implements ViewPager.OnP
     private Fragment[] mFragments;
     private String[] mTab;
     private int chooseType = 0;
+    private int closeType = -1;
 
 
     @Override
@@ -94,7 +97,7 @@ public class OrderActivity extends BaseFragmentActivity implements ViewPager.OnP
 
         tvTitle.setText("我的订单");
         chooseType = getIntent().getIntExtra("type", 0);
-
+        closeType = getIntent().getIntExtra("closeType", 0);
 
     }
 
@@ -169,10 +172,26 @@ public class OrderActivity extends BaseFragmentActivity implements ViewPager.OnP
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (closeType != -1 && closeType == 1) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else
+            finish();
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.back_img:
-                finish();
+                if (closeType != -1 && closeType == 1) {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } else
+                    finish();
                 break;
             case R.id.ll_all:
                 vpOrder.setCurrentItem(0);

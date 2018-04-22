@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.fragment.loginfragment.AddUserDataFragment;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.BaseDialog;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
@@ -74,18 +76,19 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         userWalletBtn.setOnClickListener(this);
         settingBtn.setOnClickListener(this);
         userSetBtn.setOnClickListener(this);
-        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                AddUserDataFragment addUserDataFragment = new AddUserDataFragment();
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.content_frame, addUserDataFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
-                return false;
-            }
-        });
+//        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+////                AddUserDataFragment addUserDataFragment = new AddUserDataFragment();
+////                FragmentTransaction ft = getFragmentManager().beginTransaction();
+////                ft.replace(R.id.content_frame, addUserDataFragment);
+////                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+////                ft.addToBackStack(null);
+////                ft.commit();
+//                BaseDialog dialog = BaseDialog.showDialog(getActivity(), R.layout.orderplay_dialog, Gravity.CENTER, 0);
+//                return false;
+//            }
+//        });
 
         userIcon = (RoundedImageView) view.findViewById(R.id.user_icon);
         userName = (TextView) view.findViewById(R.id.user_name);

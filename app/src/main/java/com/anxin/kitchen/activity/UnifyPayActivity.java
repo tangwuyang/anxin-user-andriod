@@ -3,6 +3,7 @@ package com.anxin.kitchen.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.activity.order.OrderActivity;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.OrderInfoBean;
@@ -21,6 +23,7 @@ import com.anxin.kitchen.bean.RecoverBean;
 import com.anxin.kitchen.bean.TablewareBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.BaseDialog;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.PrefrenceUtil;
@@ -242,12 +245,16 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         }
 
         if (requestCode == PAY_MONEY && (status.equals(Constant.REQUEST_SUCCESS))) {
-            Toast.makeText(this, "付款成功", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "付款成功", Toast.LENGTH_SHORT).show();
+            BaseDialog dialog = BaseDialog.showDialog(this, R.layout.orderplay_dialog, Gravity.TOP, 600);
             mdialog.stopAnimation();
             mdialog.dismiss();
             //要修改  跳转到订单活动
             new PrefrenceUtil(this).setPreserveList("");
-            startNewActivity(MainActivity.class);
+            Intent intent1 = new Intent(this, OrderActivity.class);
+            intent1.putExtra("closeType", 1);
+            startActivity(intent1);
+//            startNewActivity(MainActivity.class);
         } else if (requestCode == PAY_MONEY && (!status.equals(Constant.REQUEST_SUCCESS))) {
             Toast.makeText(this, "付款失败", Toast.LENGTH_SHORT).show();
             mdialog.stopAnimation();

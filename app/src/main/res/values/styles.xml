@@ -97,4 +97,28 @@
         <!-- <item name="android:background">@drawable/nav_page</item> -->
         <item name="android:background">@color/navpage</item>
     </style>
+    <!-- 设置Dialog弹出样式 -->
+    <style name="SubmitDialog" parent="android:Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <!--<item name="android:windowBackground">@drawable/shadow</item>-->
+        <item name="android:windowBackground">@color/transparents</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <!--设置全屏-->
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <style name="dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <!-- 边框 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- 模糊 -->
+    </style>
 </resources>

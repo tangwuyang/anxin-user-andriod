@@ -50,4 +50,6 @@
 
     <color name="hint_color">#cccccc</color>
     <color name="navpage">#FFE1E8EB</color>
+    //颜色透明
+    <color name="transparents">#00000000</color>
 </resources>

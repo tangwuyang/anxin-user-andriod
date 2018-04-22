@@ -236,7 +236,6 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             cal.add(Calendar.DAY_OF_YEAR, +1);
             day = cal.get(Calendar.DAY_OF_MONTH);
             month = (cal.get(Calendar.MONTH) + 1);
-            String nextDate_1 = sf.format(cal.getTime());
             dayOfMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);  //这个月的总天数
 //            android.util.Log.e("aaa", "--------month---------------" + month);
 //            android.util.Log.e("aaa", "--------nextDate_1---------------" + nextDate_1);
