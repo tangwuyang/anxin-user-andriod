@@ -113,6 +113,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         mWaitingDiag = new WaitingDialog(activity, 1000 * 20);
         mWaitingDiag.show();
         mWaitingDiag.startAnimation();
+        initView();
         return view;
     }
 
@@ -516,11 +517,13 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
 
     private void initView() {
-        ((TextView) getActivity().findViewById(R.id.title_tv)).setText("饭团");
-        mMenuImg = getActivity().findViewById(R.id.fantuan_menu_img);
+        TextView title = view.findViewById(R.id.title_tv);
+        title.setText("饭团");
+        mMenuImg = view.findViewById(R.id.fantuan_menu_img);
         mMenuImg.setVisibility(View.VISIBLE);
         mMenuImg.setOnClickListener(this);
-        getActivity().findViewById(R.id.back_img).setVisibility(View.GONE);
+        ImageView back_img = view.findViewById(R.id.back_img);
+        back_img.setVisibility(View.GONE);
 
     }
 
@@ -528,7 +531,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     public void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
-        initView();
+//        initView();
     }
 
     @Override
@@ -560,8 +563,8 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     }
 
     /*
-    * 设置群
-    * */
+     * 设置群
+     * */
     public void setGroup(SearchGroupBean bean) {
         if (null != mWaitingDiag) {
             mWaitingDiag.stopAnimation();

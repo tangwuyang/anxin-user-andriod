@@ -207,9 +207,10 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         //请求附近的菜单
         if (requestCode != null && requestCode.equals(GET_MENU_MEAL)) {
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
-                myLog("--------" + responseBody);
+//                myLog("---GET_MENU_MEAL-----" + responseBody);
                 RecoverBean bean = mGson.fromJson(responseBody, RecoverBean.class);
                 mealList = bean.getData();
+//                myLog("---------mealList-------" + mealList.toString());
                 setContentAdapter();
             }
             return;
@@ -218,7 +219,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         //请求附近的菜单
         if (requestCode != null && requestCode.equals(GET_CA_MENU_MEAL)) {
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
-                myLog("--------" + responseBody);
+//                myLog("----GET_CA_MENU_MEAL----" + responseBody);
                 RecoverBean bean = mGson.fromJson(responseBody, RecoverBean.class);
                 mealList = bean.getData();
                 setContentAdapter();
@@ -583,7 +584,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                         if (null != mChosedMeals.get(String.valueOf(meal.getPackageId())) && 0 != mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()) {
                             mChosedMeals.get(String.valueOf(meal.getPackageId())).setNums(meal.getNums());
                             myLog("----------num---->" + meal.getNums() + "   " + String.valueOf(meal.getPackageId()) + "  " + mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums());
-                          /*  mContentAdapter.notifyDataSetChanged();*/
+                            /*  mContentAdapter.notifyDataSetChanged();*/
                         }
                     }
                     mContentAdapter.notifyDataSetChanged();
@@ -824,17 +825,23 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                 holder.reduceTv = view.findViewById(R.id.reduce_img);
                 holder.numTv = view.findViewById(R.id.nums_tv);
                 holder.priceTv = view.findViewById(R.id.meal_price_tv);
+                holder.add_lv = view.findViewById(R.id.add_lv);
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
             }
 
             holder.titleTv.setText(meal.getPackageName());
-
             for (String name : mChosedMeals.keySet()) {
                 myLog("name-----------" + name + "  " + mChosedMeals.get(name).getNums());
             }
 
+            int lastStock = meal.getLastStock();
+            if (lastStock <= 0) {
+                holder.add_lv.setVisibility(View.GONE);
+            } else {
+                holder.add_lv.setVisibility(View.VISIBLE);
+            }
             if (mChosedMeals.containsKey(String.valueOf(meal.getPackageId()))) {
                 if (null != mChosedMeals.get(String.valueOf(meal.getPackageId())) && 0 != mChosedMeals.get(String.valueOf(meal.getPackageId())).getNums()) {
                     myLog("name--------------包含");
@@ -983,5 +990,6 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         ImageView reduceTv;
         TextView numTv;
         TextView priceTv;
+        LinearLayout add_lv;
     }
 }

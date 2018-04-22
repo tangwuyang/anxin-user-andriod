@@ -19,6 +19,7 @@ import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
@@ -31,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PreserveListActivity extends BaseActivity implements RequestNetListener,View.OnClickListener{
+public class PreserveListActivity extends BaseActivity implements RequestNetListener, View.OnClickListener {
     private static final String REQUEST_MENU = "REQUEST_MENU";
     public static final int AFTER_CHOESE = 200;
     private static final String GET_FOOD_REQ = "GET_FOOD_REQ";  //请求套餐
@@ -53,6 +54,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     private String mToken;
     private int kitchenId;
     private int page = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +64,6 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         isLogin();
         getData();
     }
-
 
 
     private void getData() {
@@ -78,9 +79,9 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     private void getMenu() {
         long kitchenId = prefrenceUtil.getKitchenId();
         String token = mCache.getAMToken();
-        Map<String ,Object> dataMap = new HashMap<>();
-        dataMap.put("token",token);
-        requestNet(SystemUtility.getFoodMenuUrl(),dataMap,REQUEST_MENU);
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("token", token);
+        requestNet(SystemUtility.getFoodMenuUrl(), dataMap, REQUEST_MENU);
     }
 
     @Override
@@ -89,6 +90,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         //setData();
         //setContentAdapter();
     }
+
     private void setContentAdapter(FoodsBean foodsBean) {
         mContentAdapter = new ContentAdapter(foodsBean);
         mContentLv.setAdapter(mContentAdapter);
@@ -96,7 +98,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
 
     private void setCatalogAdapter() {
 
-        if (null == mCatalogAdapter){
+        if (null == mCatalogAdapter) {
             mCatalogAdapter = new CatalogAdapter();
         }
         mMealCatalogLv.setAdapter(mCatalogAdapter);
@@ -114,11 +116,13 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         mCatalogList.add("徽菜");
         mCatalogList.add("其他");
     }
+
     private void setTitleBar() {
         setTitle("选择菜单");
         mSearchImg = findViewById(R.id.search_img);
         mSearchImg.setVisibility(View.VISIBLE);
     }
+
     private void initView() {
         mMealCatalogLv = findViewById(R.id.meal_catalog_lv);
         mContentLv = findViewById(R.id.content_lv);
@@ -134,25 +138,25 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         mCache = new Cache(this);
         mGson = new Gson();
         Intent intent = getIntent();
-        if (null!=intent){
+        if (null != intent) {
             recevieData = intent.getStringExtra("data");
-            day = Long.valueOf(recevieData.substring(0,recevieData.indexOf("-")));
-            type = recevieData.substring(recevieData.indexOf("-")+1);
-            myLog("------------->"+day + "  " + type);
+            day = Long.valueOf(recevieData.substring(0, recevieData.indexOf("-")));
+            type = recevieData.substring(recevieData.indexOf("-") + 1);
+            myLog("------------->" + day + "  " + type);
         }
     }
 
     public boolean isLogin() {
-        if (null == mToken){
+        if (null == mToken) {
             mCache = new Cache(PreserveListActivity.this);
-            mToken =mCache.getAMToken();
+            mToken = mCache.getAMToken();
             kitchenId = new PrefrenceUtil(PreserveListActivity.this).getKitchenId();
         }
-        if (mToken==null){
+        if (mToken == null) {
             login = false;
             SystemUtility.startLoginUser(PreserveListActivity.this);
             return login;
-        }else {
+        } else {
             login = true;
         }
         return login;
@@ -160,7 +164,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.search_img:
                 startNewActivity(SearchMealActivityActivity.class);
                 break;
@@ -198,25 +202,25 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
 
         @Override
         public View getView(final int position, View view, ViewGroup viewGroup) {
-            view = LayoutInflater.from(PreserveListActivity.this).inflate(R.layout.recovery_catalog_item,viewGroup,false);
+            view = LayoutInflater.from(PreserveListActivity.this).inflate(R.layout.recovery_catalog_item, viewGroup, false);
             TextView catalogTv = view.findViewById(R.id.catalog_tv);
             catalogTv.setText(mCatalogList.get(position));
             view.findViewById(R.id.nums_tv).setVisibility(View.GONE);
             //设置背景
-            if (markList.get(position)){
+            if (markList.get(position)) {
                 view.setBackgroundColor(getResources().getColor(R.color.white));
-            }else {
+            } else {
                 view.setBackgroundColor(getResources().getColor(R.color.main_bg_color));
             }
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    for (int i = 0;i<markList.size();i++){
-                        if (i != position){
-                            markList.set(i,false);
-                        }else {
-                            markList.set(position,true);
+                    for (int i = 0; i < markList.size(); i++) {
+                        if (i != position) {
+                            markList.set(i, false);
+                        } else {
+                            markList.set(position, true);
                         }
                     }
                     int id = mMenubean.getData().get(position).getId();
@@ -228,8 +232,9 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
         }
     }
 
-    private class ContentAdapter extends BaseAdapter{
+    private class ContentAdapter extends BaseAdapter {
         private FoodsBean foodsBean;
+
         public ContentAdapter(FoodsBean foodsBean) {
             this.foodsBean = foodsBean;
         }
@@ -262,7 +267,7 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
                 holder.foodPrice = view.findViewById(R.id.meal_price_tv);
                 holder.foodImg = view.findViewById(R.id.food_img);
                 view.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) view.getTag();
             }
             holder.foodImg.setOnClickListener(new View.OnClickListener() {
@@ -278,14 +283,14 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
                     .bitmapConfig(Bitmap.Config.RGB_565)
                     .build();
             String imgSrc = food.getImg();
-            imageLoader.displayImage(imgSrc,holder.foodImg,options);
-            holder.foodPrice.setText("￥"+food.getPrice());
+            imageLoader.displayImage(imgSrc, holder.foodImg, options);
+            holder.foodPrice.setText("￥" + food.getPrice());
             holder.foodTitle.setText(food.getPackageName());
             String foodConten = "";
-            for (int i = 0;i<food.getFoodList().size();i++){
-                if (i != food.getFoodList().size()-1){
-                    foodConten = foodConten + food.getFoodList().get(i).getDishName()+"\r\n";
-                }else {
+            for (int i = 0; i < food.getFoodList().size(); i++) {
+                if (i != food.getFoodList().size() - 1) {
+                    foodConten = foodConten + food.getFoodList().get(i).getDishName() + "\r\n";
+                } else {
                     foodConten = foodConten + food.getFoodList().get(i).getDishName();
                 }
             }
@@ -294,19 +299,19 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent();
-                    intent.putExtra("day",day);
-                    intent.putExtra("type",type);
+                    intent.putExtra("day", day);
+                    intent.putExtra("type", type);
                     //myLog("--------------->"+mGson.toJson(food));
-                    intent.putExtra("food",mGson.toJson(food));
+                    intent.putExtra("food", mGson.toJson(food));
 
-                    setResult(AFTER_CHOESE,intent);
+                    setResult(AFTER_CHOESE, intent);
                     finish();
                 }
             });
             return view;
         }
 
-        class ViewHolder{
+        class ViewHolder {
             private ImageView foodImg;
             private TextView foodTitle;
             private TextView foodContent;
@@ -320,14 +325,13 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     }
 
 
-
     @Override
     public void requestSuccess(String responseString, String requestCode) {
         super.requestSuccess(responseString, requestCode);
         String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
-        if (requestCode==REQUEST_MENU && status.equals(Constant.REQUEST_SUCCESS)){
-            myLog("---------->menu" + responseString);
-            mMenubean = mGson.fromJson(responseString,FoodMenuBean.class);
+        if (requestCode == REQUEST_MENU && status.equals(Constant.REQUEST_SUCCESS)) {
+//            myLog("---------->menu" + responseString);
+            mMenubean = mGson.fromJson(responseString, FoodMenuBean.class);
             List<FoodMenuBean.Data> data = mMenubean.getData();
             List<String> muneList = new ArrayList<>();
             for (FoodMenuBean.Data menu :
@@ -340,8 +344,8 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
             requestFoods(id);
         }
 
-        if (requestCode==GET_FOOD_REQ && status.equals(Constant.REQUEST_SUCCESS)){
-            FoodsBean foodsBean = mGson.fromJson(responseString,FoodsBean.class);
+        if (requestCode == GET_FOOD_REQ && status.equals(Constant.REQUEST_SUCCESS)) {
+            FoodsBean foodsBean = mGson.fromJson(responseString, FoodsBean.class);
             setContentAdapter(foodsBean);
         }
     }
@@ -349,12 +353,12 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
 
     //去请求对应的套餐
     private void requestFoods(int id) {
-        Map<String ,Object> dataMap = new HashMap<>();
-        dataMap.put("page",page);
-        dataMap.put("kitchenId",kitchenId);
-        dataMap.put("cuisineId",id);
-        dataMap.put("token",mToken);
-        requestNet(SystemUtility.getFoodURL(),dataMap,GET_FOOD_REQ);
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("page", page);
+        dataMap.put("kitchenId", kitchenId);
+        dataMap.put("cuisineId", id);
+        dataMap.put("token", mToken);
+        requestNet(SystemUtility.getFoodURL(), dataMap, GET_FOOD_REQ);
     }
 
 

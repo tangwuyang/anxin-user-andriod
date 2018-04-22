@@ -1,5 +1,7 @@
 package com.anxin.kitchen.bean;
 
+import com.anxin.kitchen.MyApplication;
+
 import java.util.List;
 
 /**
@@ -11,29 +13,34 @@ public class FoodsBean {
 
     private String message;
 
-    private List<Data> data ;
+    private List<Data> data;
 
-    public void setCode(int code){
+    public void setCode(int code) {
         this.code = code;
     }
-    public int getCode(){
+
+    public int getCode() {
         return this.code;
     }
-    public void setMessage(String message){
+
+    public void setMessage(String message) {
         this.message = message;
     }
-    public String getMessage(){
+
+    public String getMessage() {
         return this.message;
     }
-    public void setData(List<Data> data){
+
+    public void setData(List<Data> data) {
         this.data = data;
     }
-    public List<Data> getData(){
+
+    public List<Data> getData() {
         return this.data;
     }
 
 
-    public class FoodList{
+    public class FoodList {
         private String dishName;
 
         private int foodId;
@@ -50,52 +57,67 @@ public class FoodsBean {
 
         private String img;
 
-        public void setDishName(String dishName){
+        public void setDishName(String dishName) {
             this.dishName = dishName;
         }
-        public String getDishName(){
+
+        public String getDishName() {
             return this.dishName;
         }
-        public void setFoodId(int foodId){
+
+        public void setFoodId(int foodId) {
             this.foodId = foodId;
         }
-        public int getFoodId(){
+
+        public int getFoodId() {
             return this.foodId;
         }
-        public void setCuisineId(int cuisineId){
+
+        public void setCuisineId(int cuisineId) {
             this.cuisineId = cuisineId;
         }
-        public int getCuisineId(){
+
+        public int getCuisineId() {
             return this.cuisineId;
         }
-        public void setTasteId(int tasteId){
+
+        public void setTasteId(int tasteId) {
             this.tasteId = tasteId;
         }
-        public int getTasteId(){
+
+        public int getTasteId() {
             return this.tasteId;
         }
-        public void setMakeType(int makeType){
+
+        public void setMakeType(int makeType) {
             this.makeType = makeType;
         }
-        public int getMakeType(){
+
+        public int getMakeType() {
             return this.makeType;
         }
-        public void setStatus(int status){
+
+        public void setStatus(int status) {
             this.status = status;
         }
-        public int getStatus(){
+
+        public int getStatus() {
             return this.status;
         }
-        public void setType(int type){
+
+        public void setType(int type) {
             this.type = type;
         }
-        public int getType(){
+
+        public int getType() {
             return this.type;
         }
-        public void setImg(String img){
+
+        public void setImg(String img) {
             this.img = img;
         }
-        public String getImg(){
+
+        public String getImg() {
             return this.img;
         }
 
@@ -114,6 +136,7 @@ public class FoodsBean {
         private int cuisineId;
 
         private double price;
+        private double priceSmall;
 
         private String dashPrice;
 
@@ -125,78 +148,113 @@ public class FoodsBean {
 
         private int lastStock;
 
-        private List<FoodList> foodList ;
+        private List<FoodList> foodList;
 
-        public void setMenuDay(String menuDay){
+        public void setMenuDay(String menuDay) {
             this.menuDay = menuDay;
         }
-        public String getMenuDay(){
+
+        public String getMenuDay() {
             return this.menuDay;
         }
-        public void setKitchenId(int kitchenId){
+
+        public void setKitchenId(int kitchenId) {
             this.kitchenId = kitchenId;
         }
-        public int getKitchenId(){
+
+        public int getKitchenId() {
             return this.kitchenId;
         }
-        public void setPackageId(int packageId){
+
+        public void setPackageId(int packageId) {
             this.packageId = packageId;
         }
-        public int getPackageId(){
+
+        public int getPackageId() {
             return this.packageId;
         }
-        public void setDietId(int dietId){
+
+        public void setDietId(int dietId) {
             this.dietId = dietId;
         }
-        public int getDietId(){
+
+        public int getDietId() {
             return this.dietId;
         }
-        public void setCuisineId(int cuisineId){
+
+        public double getPriceSmall() {
+            return priceSmall;
+        }
+
+        public void setPriceSmall(double priceSmall) {
+            this.priceSmall = priceSmall;
+        }
+
+        public void setCuisineId(int cuisineId) {
             this.cuisineId = cuisineId;
         }
-        public int getCuisineId(){
+
+        public int getCuisineId() {
             return this.cuisineId;
         }
-        public void setPrice(double price){
+
+        public void setPrice(double price) {
             this.price = price;
         }
-        public double getPrice(){
+
+        public double getPrice() {
+            Account account = MyApplication.getInstance().getAccount();
+            if (account != null && account.getUserSize().equals("2")) {
+                return this.priceSmall;
+            }
             return this.price;
         }
-        public void setDashPrice(String dashPrice){
+
+        public void setDashPrice(String dashPrice) {
             this.dashPrice = dashPrice;
         }
-        public String getDashPrice(){
+
+        public String getDashPrice() {
             return this.dashPrice;
         }
-        public void setPackageName(String packageName){
+
+        public void setPackageName(String packageName) {
             this.packageName = packageName;
         }
-        public String getPackageName(){
+
+        public String getPackageName() {
             return this.packageName;
         }
-        public void setImg(String img){
+
+        public void setImg(String img) {
             this.img = img;
         }
-        public String getImg(){
+
+        public String getImg() {
             return this.img;
         }
-        public void setEatType(String eatType){
+
+        public void setEatType(String eatType) {
             this.eatType = eatType;
         }
-        public String getEatType(){
+
+        public String getEatType() {
             return this.eatType;
         }
-        public void setLastStock(int lastStock){
+
+        public void setLastStock(int lastStock) {
             this.lastStock = lastStock;
         }
-        public int getLastStock(){
+
+        public int getLastStock() {
             return this.lastStock;
         }
-        public void setFoodList(List<FoodList> foodList){
+
+        public void setFoodList(List<FoodList> foodList) {
             this.foodList = foodList;
         }
-        public List<FoodList> getFoodList(){
+
+        public List<FoodList> getFoodList() {
             return this.foodList;
         }
 

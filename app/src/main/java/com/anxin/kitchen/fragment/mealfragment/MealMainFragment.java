@@ -39,6 +39,7 @@ import com.anxin.kitchen.event.OnUserAcountEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Cache;
+import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.StringUtils;
@@ -417,6 +418,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 break;
         }
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

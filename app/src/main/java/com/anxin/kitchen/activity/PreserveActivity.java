@@ -118,9 +118,10 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
         String premealCache = new PrefrenceUtil(this).getPreserveList();
         myLog("------------->" + premealCache);
-        if (null!=premealCache &&( !"null".equals(premealCache))){
-            preMealMaps = mGson.fromJson(premealCache,new TypeToken<LinkedHashMap<Long,Map<String ,MealBean.Data>>>(){}.getType());
-        }else {
+        if (null != premealCache && (!"null".equals(premealCache))) {
+            preMealMaps = mGson.fromJson(premealCache, new TypeToken<LinkedHashMap<Long, Map<String, MealBean.Data>>>() {
+            }.getType());
+        } else {
             tellRule();
         }
 
@@ -134,7 +135,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 weakDays.put(day, weekDayBean);
             }
 
-            if (!preMealMaps.containsKey(day)) {
+            if (preMealMaps != null && !preMealMaps.containsKey(day)) {
                 preMealMaps.put(day, new HashMap<String, MealBean.Data>());
             }
         }
@@ -173,9 +174,9 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        String mPreseverSt = mGson.toJson( preserverAdapter.preMealMaps);
-        myLog("---------------->pre"+mPreseverSt);
-       new PrefrenceUtil(this).setPreserveList(mPreseverSt);
+        String mPreseverSt = mGson.toJson(preserverAdapter.preMealMaps);
+        myLog("---------------->pre" + mPreseverSt);
+        new PrefrenceUtil(this).setPreserveList(mPreseverSt);
     }
 
     //获取配送费
@@ -215,11 +216,35 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         int year = now.get(Calendar.YEAR);
         int month = (now.get(Calendar.MONTH) + 1);
         int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
         now.set(year, month, 0);
-        int dayOfMonth = now.get(Calendar.DAY_OF_MONTH);  //这个月的总天数
+        int dayOfMonth = now.getActualMaximum(Calendar.DAY_OF_MONTH);  //这个月的总天数
+//        android.util.Log.e("aaa", "---------------hour-------------" + hour);
+        if (hour >= 17) {
+            //获取当前日期
+            //获取当前日期
+            Date date = new Date();
+            SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
+            String nowDate = sf.format(date);
+            //通过日历获取下一天日期
+            Calendar cal = Calendar.getInstance();
+            try {
+                cal.setTime(sf.parse(nowDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            cal.add(Calendar.DAY_OF_YEAR, +1);
+            day = cal.get(Calendar.DAY_OF_MONTH);
+            month = (cal.get(Calendar.MONTH) + 1);
+            String nextDate_1 = sf.format(cal.getTime());
+            dayOfMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);  //这个月的总天数
+//            android.util.Log.e("aaa", "--------month---------------" + month);
+//            android.util.Log.e("aaa", "--------nextDate_1---------------" + nextDate_1);
+//            android.util.Log.e("aaa", "--------day---------------" + day);
+//            android.util.Log.e("aaa", "--------dayOfMonthw---------------" + dayOfMonth);
+        }
         int sheYuday = dayOfMonth - day;
         int diffDay = 7 - sheYuday;
-
         //这个月还差几天  去下个月中借齐
         //只判断到了月 后期要添加年的逻辑  否则有问题
         if (diffDay <= 0) {
@@ -265,7 +290,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                     dateSt = dateSt + month;
                 }
 
-                if ((i) < 10) {
+                if (i < 10) {
                     dateSt = dateSt + "0" + (day);
                 } else {
                     dateSt = dateSt + (day);
@@ -413,6 +438,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onClick(View view) {
                 closeOrder();
+                popupWindow.dismiss();
             }
         });
     }
@@ -666,7 +692,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
 
             //操作午餐
-            if (preMealMaps.get(day).containsKey("午餐")) {
+            if (preMealMaps != null && preMealMaps.get(day).containsKey("午餐")) {
                 lunchItem.setTag(day + "-午餐");
                 MealBean.Data lunch = preMealMaps.get(day).get("午餐");
                 TextView mealTitle = lunchItem.findViewById(R.id.meal_title_tv);
@@ -761,7 +787,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
 
             //操作晚餐
-            if (preMealMaps.get(day).containsKey("晚餐")) {
+            if (preMealMaps != null && preMealMaps.get(day).containsKey("晚餐")) {
 
                 dinnerItem.setTag(day + "-晚餐");
                 MealBean.Data lunch = preMealMaps.get(day).get("晚餐");
@@ -899,10 +925,10 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             myLog("------------>" + day + "  " + type + "  " + nums);
             boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
             myLog("-------------" + isContain);
-            for (Long key:preserverAdapter.preMealMaps.keySet()
-                 ) {
-                for (String meal:
-                    preserverAdapter.preMealMaps.get(key).keySet()) {
+            for (Long key : preserverAdapter.preMealMaps.keySet()
+                    ) {
+                for (String meal :
+                        preserverAdapter.preMealMaps.get(key).keySet()) {
                     preserverAdapter.preMealMaps.get(key).get(meal).setSetNumsTag(true);
                     preserverAdapter.preMealMaps.get(key).get(meal).setNums(nums);
                     preserverAdapter.preMealMaps.get(key).get(meal).setGrouporderTag(false);
@@ -925,9 +951,9 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     public void choseGroup(long day, String type, int groupId, String groupName, int nums) {
         boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
 
-        for (Long key:preserverAdapter.preMealMaps.keySet()
+        for (Long key : preserverAdapter.preMealMaps.keySet()
                 ) {
-            for (String meal:
+            for (String meal :
                     preserverAdapter.preMealMaps.get(key).keySet()) {
                 preserverAdapter.preMealMaps.get(key).get(meal).setSetNumsTag(false);
                 preserverAdapter.preMealMaps.get(key).get(meal).setNums(0);
@@ -936,7 +962,8 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 preserverAdapter.preMealMaps.get(key).get(meal).setRelatedGroupName(groupName);
                 preserverAdapter.preMealMaps.get(key).get(meal).setNums(nums);
 
-            }}
+            }
+        }
 
         if (isContain) {
 
