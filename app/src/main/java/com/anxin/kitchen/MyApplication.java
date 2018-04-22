@@ -40,6 +40,7 @@ public class MyApplication extends MultiDexApplication {
     private Map<String, AddressListBean> addressNameMap = new HashMap<>();//跟据名称获取地址信息
     private Map<String, AddressListBean> addressIDMap = new HashMap<>();//根据ID获取地址信息
     private List<AddressBean> addressBeanList = new ArrayList<>();//送餐地址信息
+    private String kitchenId = null;
 
 //    {
 //        PlatformConfig.setWeixin("wx634128d6db8c15cd", "75bf85878994d867fd4bcec28ccca5aa");
@@ -116,6 +117,14 @@ public class MyApplication extends MultiDexApplication {
     public final synchronized Account getAccount() {
 //        LOG.e("-----------getAccount------------" + mAccount);
         return mAccount;
+    }
+
+    public String getKitchenId() {
+        return kitchenId;
+    }
+
+    public void setKitchenId(String kitchenId) {
+        this.kitchenId = kitchenId;
     }
 
     /**

@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/main_bg_color"
-    android:layout_height="match_parent">
-    <VideoView
+    android:orientation="vertical">
+
+    <com.anxin.kitchen.medio.IjkVideoView
+        android:id="@+id/video_view"
         android:layout_width="match_parent"
-        android:layout_height="320dp" />
+        android:layout_height="320dp"
+        />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="58.7dp"
         android:background="@color/white"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/bar_left_right_padding"
-        android:textColor="@color/shallow_black"
         android:text="开放时间：14:30-17:30"
-        android:textSize="@dimen/normal_text_size"
-        />
+        android:textColor="@color/shallow_black"
+        android:textSize="@dimen/normal_text_size" />
 </LinearLayout>
