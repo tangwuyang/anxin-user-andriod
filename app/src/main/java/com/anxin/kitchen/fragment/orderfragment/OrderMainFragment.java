@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.anxin.kitchen.activity.MainActivity;
+import com.anxin.kitchen.activity.ViewKitchenActivity;
 import com.anxin.kitchen.activity.order.OrderActivity;
 import com.anxin.kitchen.activity.order.OrderDetailActivity;
 import com.anxin.kitchen.adapter.OrderAdapter;
@@ -46,6 +47,7 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
     private List<OrderInfoBean> myOrderList = new ArrayList<>();//订单集合
     private MyOrderAdaped myOrderAdaped;//订单适配器
     private ListView myOrderListView;//订单列表
+    private TextView kitchen_View;//可视厨房
 
 
     private OrderAdapter mAdapter;
@@ -71,7 +73,6 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.order_main_fragment, null);
-        initView();
         initView();//初始化界面控制
         return view;
     }
@@ -86,9 +87,11 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
         alreadyPaidNumber = (TextView) view.findViewById(R.id.already_paid_number);
         completeNumber = (TextView) view.findViewById(R.id.complete_number);
         refundNumber = (TextView) view.findViewById(R.id.refund_number);
+        kitchen_View = view.findViewById(R.id.kitchen_View);
 
         mAllOrderBtn.setOnClickListener(this);
         mAllOrderBtn2.setOnClickListener(this);
+        kitchen_View.setOnClickListener(this);
         view.findViewById(R.id.pending_payment_rlt).setOnClickListener(this);
         view.findViewById(R.id.already_paid_rlt).setOnClickListener(this);
         view.findViewById(R.id.complete_rlt).setOnClickListener(this);
@@ -168,6 +171,10 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
                 Intent intent4 = new Intent(getActivity(), OrderActivity.class);
                 intent4.putExtra("type", 4);
                 getActivity().startActivity(intent4);
+                break;
+            case R.id.kitchen_View:
+                Intent intent5 = new Intent(getActivity(), ViewKitchenActivity.class);
+                getActivity().startActivity(intent5);
                 break;
             default:
                 break;

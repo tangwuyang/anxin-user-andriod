@@ -103,6 +103,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
     private String amToKen;
     private boolean isGetKitChenID = false;
     private AddressBean addressBean = null;
+    private Map<Long, List<MealBean.Data>> dataList = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -332,6 +333,9 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 return;
             }
             setMyLocation();
+        } else {
+            if (dataList != null)
+                setAdapter(dataList);
         }
         super.onResume();
     }
@@ -542,7 +546,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         //更新首页菜品
         this.mealBean = mealBean;
         mealList = mealBean.getData();
-        Map<Long, List<MealBean.Data>> dataList = new LinkedHashMap<>();
+        dataList = new LinkedHashMap<>();
         List<MealBean.Data> thisDayData = new ArrayList<>();
         long lastDay = 0;
         for (MealBean.Data mel :
