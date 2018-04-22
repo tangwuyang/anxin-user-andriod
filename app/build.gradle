@@ -22,8 +22,18 @@ android {
             signingConfig signingConfigs.debug
             proguardFiles 'proguard-rules.pro'
         }
+        sourceSets {
+            main {
+                jniLibs.srcDirs = ['libs']
+            }
+        }
     }
-
+    repositories {
+        mavenCentral()
+        flatDir {
+            dirs 'libs' //this way we can find the .aar file in libs folder
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('anxin.jks')
@@ -81,4 +91,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation files('libs/alipaySdk-20180403.jar')
     compile 'com.lcodecorex:labellayout:1.0.1'
+    compile(name: 'ijkplayer-java-release', ext: 'aar')
 }

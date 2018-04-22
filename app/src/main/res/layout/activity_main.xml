@@ -28,6 +28,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:button="@null"
+                android:checked="true"
                 android:drawablePadding="5dp"
                 android:drawableTop="@drawable/main_meal_checked"
                 android:gravity="center"

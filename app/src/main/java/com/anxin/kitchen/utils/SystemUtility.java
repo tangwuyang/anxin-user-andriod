@@ -83,6 +83,7 @@ public class SystemUtility {
     public static String RequestFailure = "onFailure";//http方法失败返回标志
     public static final String sendUserInfo = "sendUserInfo";
     public static final String sendUserWallet = "sendUserWallet";
+    public static final String sendGetKitChenId = "sendGetKitChenId";
 
     //发送手机验证码
     public static String sendUserPhoneCode(String phone, String type) {
@@ -513,7 +514,19 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/order/pay_orders";
     }
 
+    /**
+     * 获取附近厨房
+     */
+    public static String getKitchenId(String longitude, String latitude) {
+        return AMUAC_IP + "/v1.0/kitchen/near?longitude=" + longitude + "&latitude=" + latitude;
+    }
 
+    /**
+     * 获取附近厨房视频
+     */
+    public static String getKitchenList(String kitchenId) {
+        return AMUAC_IP + "/v1.0/kitchen/list?kitchenId=" + kitchenId;
+    }
 //请求网络异步方法
 
     /**
@@ -583,6 +596,11 @@ public class SystemUtility {
                             if (code != null && code.equals("1")) {
                                 SystemUtility.loginAnalysisJason(result, requestCode);
                             }
+                        } else if (requestCode.equals(sendGetKitChenId)) {
+                            String code = StringUtils.parserMessage(result, "code");
+                            if (code != null && code.equals("1")) {
+                                kitchenIdJason(result, sendGetKitChenId);
+                            }
                         }
                         EventBusFactory.getInstance().post(new AsyncHttpRequestMessage(requestCode, result, RequestSuccess));
                     }
@@ -606,6 +624,28 @@ public class SystemUtility {
     public static void sendGetUserInfo(String token, String code) {
         String url = getUserInfo(token);
         requestNetGet(url, code);
+    }
+
+    public static void sendGetKitchenId(String longitude, String latitude) {
+        String url = getKitchenId(longitude, latitude);
+        requestNetGet(url, sendGetKitChenId);
+    }
+
+    public static void kitchenIdJason(String jason, String code) {
+        String user = "";
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(jason);
+            String data = jsonObject.getString("data");
+            //解析服务器请求密钥，kitchenId
+            String kitchenId = new JSONObject(data).getString("kitchenId");
+            if (kitchenId != null && kitchenId.length() != 0) {
+//                LOG.e("--------------kitchenId----------------" + kitchenId);
+                MyApplication.getInstance().setKitchenId(kitchenId);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -742,11 +782,11 @@ public class SystemUtility {
      * 验证手机格式
      */
     public static boolean isMobileNO(String mobiles) {
-    /*
-     * 移动：134、135、136、137、138、139、150、151、157(TD)、158、159、187、188
-     * 联通：130、131、132、152、155、156、185、186 电信：133、153、180、189、（1349卫通）
-     * 总结起来就是第一位必定为1，第二位必定为3或5或8，其他位置的可以为0-9
-     */
+        /*
+         * 移动：134、135、136、137、138、139、150、151、157(TD)、158、159、187、188
+         * 联通：130、131、132、152、155、156、185、186 电信：133、153、180、189、（1349卫通）
+         * 总结起来就是第一位必定为1，第二位必定为3或5或8，其他位置的可以为0-9
+         */
         String telRegex = "[1][3456789]\\d{9}";// "[1]"代表第1位为数字1，"[358]"代表第二位可以为3、5、8中的一个，"\\d{9}"代表后面是可以是0～9的数字，有9位。
         if (TextUtils.isEmpty(mobiles))
             return false;
@@ -982,7 +1022,7 @@ public class SystemUtility {
                 }
                 addressListBean.add(addressBean);
             }
-            Collections.sort(addressListBean, comparator);
+//            Collections.sort(addressListBean, comparator);
             MyApplication.getInstance().setAddressBeanList(addressListBean);
             EventBusFactory.getInstance().post(new AddressListEvent());
         } catch (JSONException e) {
@@ -1085,7 +1125,8 @@ public class SystemUtility {
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
-    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+    private static String getDataColumn(Context context, Uri uri, String selection, String[]
+            selectionArgs) {
 
         Cursor cursor = null;
         final String column = "_data";

@@ -120,7 +120,10 @@
         <activity android:name="com.anxin.kitchen.activity.SendMealLocationActivity" />
         <activity android:name="com.anxin.kitchen.activity.AddNewLocationActivity" />
         <activity android:name="com.anxin.kitchen.activity.PreserveListActivity" />
-        <activity android:name="com.anxin.kitchen.activity.ViewKitchenActivity" />
+        <activity
+            android:name="com.anxin.kitchen.activity.ViewKitchenActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"/>
         <activity android:name="com.anxin.kitchen.activity.MealIntroduceActivity" />
         <activity android:name="com.anxin.kitchen.activity.InvateFriendActivity" />
         <activity android:name="com.anxin.kitchen.activity.CreateGroupActivity" />
@@ -134,7 +137,7 @@
         <activity
             android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop" />
         <activity
             android:name="com.tencent.tauth.AuthActivity"
             android:launchMode="singleTask"
@@ -161,15 +164,17 @@
         <activity android:name="com.anxin.kitchen.custom.view.ClipHeaderActivity" />
         <activity android:name="com.anxin.kitchen.activity.EnsureOrderActivity" />
         <activity android:name="com.anxin.kitchen.activity.order.OrderActivity" />
-        <activity android:name="com.anxin.kitchen.activity.order.OrderDetailActivity"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.anxin.kitchen.activity.order.OrderDetailActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name="com.anxin.kitchen.activity.ClipPictureActivity"
             android:screenOrientation="portrait" />
         <activity android:name="com.anxin.kitchen.activity.EditAddressActivity" />
-        <activity android:name="com.anxin.kitchen.activity.UnifyPayActivity"/>
-        <activity android:name="com.anxin.kitchen.activity.order.PayActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity android:name="com.anxin.kitchen.activity.UnifyPayActivity" />
+        <activity
+            android:name="com.anxin.kitchen.activity.order.PayActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -191,15 +196,13 @@
             android:configChanges="orientation|keyboardHidden|navigation|screenSize"
             android:exported="false"
             android:screenOrientation="behind"
-            android:windowSoftInputMode="adjustResize|stateHidden" >
-        </activity>
+            android:windowSoftInputMode="adjustResize|stateHidden"></activity>
         <activity
             android:name="com.alipay.sdk.app.H5AuthActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
             android:exported="false"
             android:screenOrientation="behind"
-            android:windowSoftInputMode="adjustResize|stateHidden" >
-        </activity>
+            android:windowSoftInputMode="adjustResize|stateHidden"></activity>
         <!-- 支付宝支付结束 -->
 
         <activity android:name="com.anxin.kitchen.activity.SearchMealActivityActivity"></activity>
