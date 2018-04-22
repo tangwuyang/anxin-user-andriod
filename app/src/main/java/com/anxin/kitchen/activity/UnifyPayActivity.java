@@ -246,7 +246,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
 
         if (requestCode == PAY_MONEY && (status.equals(Constant.REQUEST_SUCCESS))) {
 //            Toast.makeText(this, "付款成功", Toast.LENGTH_SHORT).show();
-            BaseDialog dialog = BaseDialog.showDialog(this, R.layout.orderplay_dialog, Gravity.TOP, 600);
+            BaseDialog dialog = BaseDialog.showDialog(this, R.layout.orderplay_dialog, Gravity.CENTER, 0);
             mdialog.stopAnimation();
             mdialog.dismiss();
             //要修改  跳转到订单活动
