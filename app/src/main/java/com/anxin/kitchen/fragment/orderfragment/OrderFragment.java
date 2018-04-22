@@ -139,14 +139,14 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
 
             }
             OrderListResponse response = JsonHandler.getHandler().getTarget(responseBody, OrderListResponse.class);
-            if (response == null || response.getData() == null) {
+            if (response == null || response.getData() == null||response.getData().getData()==null) {
                 ToastUtil.showToast("没有更多了");
                 return;
             }
             if (page == 1) {
-                mAdapter = new OrderAdapter(mActivity, response.getData());
+                mAdapter = new OrderAdapter(mActivity, response.getData().getData());
                 lvOrder.setAdapter(mAdapter);
-                if (response.getData().size() > 0) {
+                if (response.getData().getData().size() > 0) {
 
                     rlNoOrders.setVisibility(View.GONE);
                 } else {
@@ -154,7 +154,7 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
                 }
 
             } else {
-                mAdapter.upDate(response.getData());
+                mAdapter.upDate(response.getData().getData());
             }
 
         }

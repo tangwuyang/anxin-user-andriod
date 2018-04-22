@@ -1,8 +1,6 @@
 package com.anxin.kitchen.response;
 
-import com.anxin.kitchen.bean.Order.Order;
-
-import java.util.List;
+import com.anxin.kitchen.bean.Order.OrderInfo;
 
 /**
  * 订单列表响应
@@ -10,14 +8,23 @@ import java.util.List;
  */
 
 public class OrderListResponse extends BaseResponse{
+    private OrderInfo data;
 
-    private List<Order> data;
-
-    public List<Order> getData() {
+    public OrderInfo getData() {
         return data;
     }
 
-    public void setData(List<Order> data) {
+    public void setData(OrderInfo data) {
         this.data = data;
     }
+
+//    private List<Order> data;
+//
+//    public List<Order> getData() {
+//        return data;
+//    }
+//
+//    public void setData(List<Order> data) {
+//        this.data = data;
+//    }
 }
