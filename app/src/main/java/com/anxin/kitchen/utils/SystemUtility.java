@@ -2,7 +2,6 @@ package com.anxin.kitchen.utils;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.ContentUris;
@@ -45,8 +44,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -520,6 +517,12 @@ public class SystemUtility {
     public static String getKitchenId(String longitude, String latitude) {
         return AMUAC_IP + "/v1.0/kitchen/near?longitude=" + longitude + "&latitude=" + latitude;
     }
+    /**
+     * 取消订单url
+     */
+    public static String cancelOrder() {
+        return AMUAC_IP + "/v1.0/order/cancel";
+    }
 
     /**
      * 获取附近厨房视频
@@ -527,6 +530,7 @@ public class SystemUtility {
     public static String getKitchenList(String kitchenId) {
         return AMUAC_IP + "/v1.0/kitchen/list?kitchenId=" + kitchenId;
     }
+
 //请求网络异步方法
 
     /**

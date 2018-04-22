@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -73,8 +74,23 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
 //            }
 //        });
 
+
+
         refreshOrder.setOnLoadListener(this);
         refreshOrder.setOnRefreshListener(this);
+        lvOrder.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+                if (i == 0)
+                    refreshOrder.setEnabled(true);
+                else
+                    refreshOrder.setEnabled(false);
+            }
+        });
 //        getOrderList(page);
     }
 
@@ -93,7 +109,6 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
         } else {
             refreshOrder.setLoading(false);
         }
-
     }
 
     private void getOrderList(int page) {

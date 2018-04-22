@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.adapter.OrderMemberAdapter;
 import com.anxin.kitchen.bean.Order.OrderDetail;
+import com.anxin.kitchen.bean.Order.OrderUser;
+import com.anxin.kitchen.response.BaseResponse;
 import com.anxin.kitchen.response.OrderDetailResponse;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Cache;
@@ -21,7 +23,9 @@ import com.anxin.kitchen.utils.TimeUtil;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.MyGridView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,16 +34,21 @@ import java.util.Map;
 
 public class OrderDetailActivity extends BaseOrderActivity implements View.OnClickListener {
     private final String NET_GET_ORDER_DETAIL = "getOrderDetail";
+    private final String NET_CANCEL_ORDER = "cancelOrder";
     private Activity mActivity;
 
     private ImageView ivBack;
     private TextView tvTitle;
+    private TextView tvCancel;
     private TextView tvOrderDetailHint;
     private LinearLayout llOrderDetailInfo;
     private LinearLayout llOrderDetailPayInfo;
     private TextView tvOrderDetailPayMoney;
     private TextView tvOrderDetailMoneyOther;
     private LinearLayout llOrderDetailPay;
+
+    private MyGridView gvMenber;
+    private OrderMemberAdapter mMemberAdapter;
 
     private long mOrderId;
     private String token;
@@ -60,6 +69,7 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
     private void initView() {
         ivBack = findViewById(R.id.back_img);
         tvTitle = findViewById(R.id.title_tv);
+        tvCancel = findViewById(R.id.complete_tv);
         tvOrderDetailHint = (TextView) findViewById(R.id.tv_order_detail_hint);
         llOrderDetailInfo = (LinearLayout) findViewById(R.id.ll_order_detail_info);
         llOrderDetailPayInfo = (LinearLayout) findViewById(R.id.ll_order_detail_pay_info);
@@ -68,7 +78,10 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
         llOrderDetailPay = (LinearLayout) findViewById(R.id.ll_order_detail_pay);
 
         tvTitle.setText("订单详情");
+        tvCancel.setText("取消");
+
         ivBack.setOnClickListener(this);
+        tvCancel.setOnClickListener(this);
         llOrderDetailPay.setOnClickListener(this);
     }
 
@@ -77,6 +90,9 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
         switch (view.getId()) {
             case R.id.back_img:
                 finish();
+                break;
+            case R.id.complete_tv:
+                cancelOrder();
                 break;
             case R.id.ll_order_detail_pay:
                 Intent intent = new Intent(mActivity, PayActivity.class);
@@ -87,12 +103,28 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
             case R.id.ll_order_detail_suborder_title:
                 TextView tvExpand = (TextView) view.getTag();
                 LinearLayout llMember = (LinearLayout) tvExpand.getTag();
-                if (llMember.getVisibility() == View.VISIBLE) {
+                if (tvExpand.getText().equals("∧ 收起")) {
                     tvExpand.setText("∨ 展开");
-                    llMember.setVisibility(View.GONE);
+                    List<OrderUser> list = new ArrayList<>();
+                    if(mOrderDetail.getGroup().getOrderUsers()!=null &&mOrderDetail.getGroup().getOrderUsers().size()>5){
+                        list.add(mOrderDetail.getGroup().getOrderUsers().get(0));
+                        list.add(mOrderDetail.getGroup().getOrderUsers().get(1));
+                        list.add(mOrderDetail.getGroup().getOrderUsers().get(2));
+                        list.add(mOrderDetail.getGroup().getOrderUsers().get(3));
+                        list.add(mOrderDetail.getGroup().getOrderUsers().get(4));
+                    }else{
+                        list.addAll(mOrderDetail.getGroup().getOrderUsers());
+                    }
+                    if(mMemberAdapter!=null &&gvMenber!=null){
+                        mMemberAdapter.update(list);
+                    }
+//                    llMember.setVisibility(View.GONE);
                 } else {
                     tvExpand.setText("∧ 收起");
-                    llMember.setVisibility(View.VISIBLE);
+                    if(mMemberAdapter!=null &&gvMenber!=null){
+                        mMemberAdapter.update(mOrderDetail.getGroup().getOrderUsers());
+                    }
+//                    llMember.setVisibility(View.VISIBLE);
                 }
                 break;
             default:
@@ -101,6 +133,9 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
     }
 
     private void setData(OrderDetail info) {
+        if(info==null){
+            return;
+        }
         if (info.getGroup() == null) {
             tvTitle.setText("订单详情");
         } else {
@@ -204,12 +239,12 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
 //            tvOrderDetailDeliveryAddress.setText(info.getGroup().getAddress());
 //            tvOrderDetailDeliveryUserName.setText(info.getGroup().getContactName());
 //            tvOrderDetailDeliveryUserPhone.setText(info.getGroup().getContactPhone());
-            tvOrderDetailDeliveryTime.setText(TimeUtil.getInstance().getNowTimeSS(info.getGroup().getDeliveryTime()));
-            if (info.getGroup().getUserId() == info.getUser().getUserId()) {
-
+            if (info.getGroup().getDeliveryTime() > 0) {
+                tvOrderDetailDeliveryTime.setText(TimeUtil.getInstance().getNowTimeSS(info.getGroup().getDeliveryTime()));
             } else {
-
+                tvOrderDetailDeliveryTime.setText("暂未配送");
             }
+
         }
 
         llOrderDetailInfo.addView(viewDelivery);
@@ -224,6 +259,7 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                 case 0:
                     tvOrderDetailOrderStatus.setText("待付款");
                     tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.red));
+                    tvCancel.setVisibility(View.VISIBLE);
                     break;
                 case 1:
                     tvOrderDetailOrderStatus.setText("已付款");
@@ -276,6 +312,7 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                         tvOrderDetailOrderStatus.setText("AA待付款");
                     }
                     tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.red));
+                    tvCancel.setVisibility(View.VISIBLE);
                     break;
                 case 1:
                     tvOrderDetailOrderStatus.setText("已付款");
@@ -329,12 +366,22 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
             LinearLayout llOrderDetailSuborderTitle = (LinearLayout) viewMember.findViewById(R.id.ll_order_detail_suborder_title);
             TextView tvOrderDetailSuborderExpand = (TextView) viewMember.findViewById(R.id.tv_order_detail_suborder_expand);
             LinearLayout llOrderDetailSuborderContent = (LinearLayout) viewMember.findViewById(R.id.ll_order_detail_suborder_content);
-            MyGridView gvMenber = (MyGridView) viewMember.findViewById(R.id.gv_menber);
+            gvMenber = (MyGridView) viewMember.findViewById(R.id.gv_menber);
             llOrderDetailSuborderTitle.setOnClickListener(this);
             llOrderDetailSuborderTitle.setTag(tvOrderDetailSuborderExpand);
             tvOrderDetailSuborderExpand.setTag(llOrderDetailSuborderContent);
-            OrderMemberAdapter memberAdapter = new OrderMemberAdapter(mActivity, info.getGroup().getOrderUsers());
-            gvMenber.setAdapter(memberAdapter);
+            List<OrderUser> list = new ArrayList<>();
+            if(info.getGroup().getOrderUsers()!=null &&info.getGroup().getOrderUsers().size()>5){
+                list.add(info.getGroup().getOrderUsers().get(0));
+                list.add(info.getGroup().getOrderUsers().get(1));
+                list.add(info.getGroup().getOrderUsers().get(2));
+                list.add(info.getGroup().getOrderUsers().get(3));
+                list.add(info.getGroup().getOrderUsers().get(4));
+            }else{
+                list.addAll(info.getGroup().getOrderUsers());
+            }
+            mMemberAdapter = new OrderMemberAdapter(mActivity, list);
+            gvMenber.setAdapter(mMemberAdapter);
 
             llOrderDetailInfo.addView(viewMember);
         }
@@ -346,7 +393,6 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
         if (null == token) {
             token = new Cache(mActivity).getAMToken();
         }
-//        token = "C59B7F78953E2B894FBCFE12ED66E5D9";
         if (token == null) {
             SystemUtility.startLoginUser(mActivity);
         } else {
@@ -358,12 +404,36 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
         }
     }
 
+    private void cancelOrder() {
+        if (null == token) {
+            token = new Cache(mActivity).getAMToken();
+        }
+        if (token == null) {
+            SystemUtility.startLoginUser(mActivity);
+        } else {
+            String url = SystemUtility.cancelOrder();
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("orderId", mOrderId);
+            dataMap.put(Constant.TOKEN, token);
+            requestNet(url, dataMap, NET_CANCEL_ORDER);
+        }
+    }
+
+
     @Override
     public void requestSuccess(String responseBody, String requestCode) {
         if (requestCode.equals(NET_GET_ORDER_DETAIL)) {
             OrderDetailResponse response = JsonHandler.getHandler().getTarget(responseBody, OrderDetailResponse.class);
             mOrderDetail = response.getData();
             setData(mOrderDetail);
+        } else if (requestCode.equals(NET_CANCEL_ORDER)) {
+            BaseResponse response = JsonHandler.getHandler().getTarget(responseBody, BaseResponse.class);
+            if (response.getCode() == 1) {
+                ToastUtil.showToast(response.getMessage());
+                finish();
+            } else {
+                ToastUtil.showToast(response.getMessage());
+            }
         }
     }
 
@@ -371,12 +441,15 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
     public void requestFailure(String responseFailureBody, String requestCode) {
         if (requestCode.equals(NET_GET_ORDER_DETAIL)) {
             ToastUtil.showToast(responseFailureBody);
+        } else if (requestCode.equals(NET_CANCEL_ORDER)) {
+            ToastUtil.showToast(responseFailureBody);
         }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        mOrderId = getIntent().getLongExtra("orderId", 0);
         getOrderDetail();
     }
 

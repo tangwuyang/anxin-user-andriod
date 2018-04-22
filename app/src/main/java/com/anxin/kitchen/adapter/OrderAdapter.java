@@ -55,7 +55,7 @@ public class OrderAdapter extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 3;
+        return 5;
     }
 
     @Override
@@ -100,17 +100,38 @@ public class OrderAdapter extends BaseAdapter {
         } else {
             switch (type) {
                 case TYPE_USER:
-                    holderUser = (HolderUser) view.getTag();
+                    if(view.getTag() instanceof  HolderUser){
+                        holderUser = (HolderUser) view.getTag();
+                    }else{
+                        view = mInflater.inflate(R.layout.adapter_order_user, null);
+                        holderUser = new HolderUser(view);
+                        view.setTag(holderUser);
+                    }
+
                     break;
                 case TYPE_GROUP_LEADER:
-                    holderGroupLeader = (HolderGroupLeader) view.getTag();
+                    if(view.getTag() instanceof  HolderGroupLeader){
+                        holderGroupLeader = (HolderGroupLeader) view.getTag();
+                    }else{
+                        view = mInflater.inflate(R.layout.adapter_order_group_leader, null);
+                        holderGroupLeader = new HolderGroupLeader(view);
+                        view.setTag(holderGroupLeader);
+                    }
                     break;
                 case TYPE_GROUP_MEMBER:
-                    holderGroupRember = (HolderGroupRember) view.getTag();
+                    if(view.getTag() instanceof  HolderGroupRember){
+                        holderGroupRember = (HolderGroupRember) view.getTag();
+                    }else{
+                        view = mInflater.inflate(R.layout.adapter_order_group_member, null);
+                        holderGroupRember = new HolderGroupRember(view);
+                        view.setTag(holderGroupRember);
+                    }
+
                     break;
             }
 
         }
+
 
         switch (type) {
             case TYPE_USER:

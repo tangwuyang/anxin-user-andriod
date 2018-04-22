@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.anxin.kitchen.activity.BaseActivity;
-import com.anxin.kitchen.bean.Order.Order;
 import com.anxin.kitchen.interface_.ListenerBack;
 import com.anxin.kitchen.response.BaseResponse;
 import com.anxin.kitchen.response.OrderPayResponse;
@@ -158,7 +157,7 @@ public class PayActivity extends BaseActivity implements ListenerBack {
             } else if (requestCode.equals(NET_PAY_ORDERS)) {
                 ToastUtil.showToast("支付成功");
                 if (makeType == 1) {
-                    Intent intentPayOrder = new Intent(mActivity, Order.class);
+                    Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
                     intentPayOrder.putExtra("orderId", orderIds);
                     mActivity.startActivity(intentPayOrder);
                 }
@@ -170,7 +169,7 @@ public class PayActivity extends BaseActivity implements ListenerBack {
                 ToastUtil.showToast(response.getMessage());
             }
             if (makeType == 1) {
-                Intent intentPayOrder = new Intent(mActivity, Order.class);
+                Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
                 intentPayOrder.putExtra("orderId", orderIds);
                 mActivity.startActivity(intentPayOrder);
             }
@@ -183,7 +182,7 @@ public class PayActivity extends BaseActivity implements ListenerBack {
     public void requestFailure(String responseFailure, String requestCode) {
         ToastUtil.showToast("支付失败");
         if (makeType == 1) {
-            Intent intentPayOrder = new Intent(mActivity, Order.class);
+            Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
             intentPayOrder.putExtra("orderId", orderIds);
             mActivity.startActivity(intentPayOrder);
         }
@@ -316,7 +315,7 @@ public class PayActivity extends BaseActivity implements ListenerBack {
                 case HANDLER_ZHIFUBAO_PAY:
 //                   getUserInfo(mActivity);
                     if (makeType == 1) {
-                        Intent intentPayOrder = new Intent(mActivity, Order.class);
+                        Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
                         intentPayOrder.putExtra("orderId", orderIds);
                         mActivity.startActivity(intentPayOrder);
                     }
@@ -380,7 +379,7 @@ public class PayActivity extends BaseActivity implements ListenerBack {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (makeType == 1) {
-                Intent intentPayOrder = new Intent(mActivity, Order.class);
+                Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
                 intentPayOrder.putExtra("orderId", orderIds);
                 mActivity.startActivity(intentPayOrder);
             } else {

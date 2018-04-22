@@ -126,6 +126,7 @@ public class OrderActivity extends BaseFragmentActivity implements ViewPager.OnP
 
         mTabAdapter = new OrderTabAdapter(getSupportFragmentManager(), mTab, mFragments);
         vpOrder.setAdapter(mTabAdapter);
+        vpOrder.setOffscreenPageLimit(5);
 //        porderSlidingTab.setViewPager(vpOrder);//绑定pagerSlidingTab和ViewPager
 
         vpOrder.setCurrentItem(chooseType);

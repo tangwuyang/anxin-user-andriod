@@ -103,4 +103,9 @@ public class OrderMemberAdapter extends BaseAdapter {
             tvOrderDetailMemberPayStatus = (TextView) view.findViewById(R.id.tv_order_detail_member_pay_status);
         }
     }
+
+    public void update(List<OrderUser> list){
+        this.mList = list;
+        notifyDataSetChanged();
+    }
 }
