@@ -1,12 +1,15 @@
 package com.anxin.kitchen.activity;
 
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,12 +21,14 @@ import android.widget.Toast;
 
 import com.anxin.kitchen.bean.ContactEntity;
 import com.anxin.kitchen.decoration.IndexStickyViewDecoration;
+import com.anxin.kitchen.interface_.OnGivedPermissionListener;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.view.RequestLocationPermissionDialog;
 import com.bluetooth.tangwuyang.fantuanlibrary.IndexStickyView;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexHeaderFooterAdapter;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexStickyViewAdapter;
@@ -37,6 +42,7 @@ import java.util.Map;
 
 public class ContactsActivity extends BaseActivity implements View.OnClickListener,RequestNetListener{
     private static final String ADD_FRIEND_FROM_CONTACT = "ADD_FRIEND_FROM_CONTACT";
+    private static final int BAIDU_READ_PHONE_STATE = 100;
     private Gson mGson;
     private String mGroupName;
     private int mGroupId;
@@ -59,10 +65,38 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
             mGroupId = intent.getIntExtra("groupId",0);
             mGroupName = intent.getStringExtra("groupName");
         }
+
+        requestPermission();
         mToken = new Cache(this).getAMToken();
         mBackImg.setOnClickListener(this);
         mIndexStickyView = findViewById(R.id.indexStickyView);
         setFriends();
+    }
+
+    private void requestPermission() {
+        boolean hasContactsPermission = getContactsPermission();
+        if (!hasContactsPermission) {
+            popRequestWindow();
+        }
+    }
+
+    private void popRequestWindow() {
+        RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
+            @Override
+            public void onGivedPermssion() {
+                ActivityCompat.requestPermissions(ContactsActivity.this, new String[]{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS}, BAIDU_READ_PHONE_STATE);
+            }
+        });
+        dialog.show();
+    }
+
+
+    private boolean getContactsPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED
+                ) {
+            return false;
+        } else return true;
     }
 
     private void setFriends() {

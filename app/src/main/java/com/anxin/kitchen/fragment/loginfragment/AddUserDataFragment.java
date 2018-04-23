@@ -1,6 +1,7 @@
 package com.anxin.kitchen.fragment.loginfragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -28,6 +29,7 @@ import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.AddNewLocationActivity;
 import com.anxin.kitchen.activity.ClipPictureActivity;
 import com.anxin.kitchen.activity.LocationActivity;
+import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.activity.UserNameActivity;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.custom.view.SelectPicPopupWindow;
@@ -70,7 +72,7 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
     private SelectPicPopupWindow menuWindowSelectPic;
     private MyApplication mApp = null;
     private String username;
-
+    private Activity mActivity;
     private static final String sendUpdateUser_http = "sendUpdateUser";
     private static final int LOCATION_NAME = 103;
     private static final int USER_NAME = 112;
@@ -149,11 +151,19 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
         headClipFile = new File(HEAD_ICON_DIC, "clipIcon.jpg");
     }
 
+    public void finishToLastActivity() {
+        Intent intent = new Intent();
+        intent.putExtra("loginTag",true);
+        mActivity.setResult(201,intent);
+        mActivity.finish();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.skip_btn:
-                getActivity().finish();
+                mActivity = getActivity();
+                finishToLastActivity();
                 break;
             case R.id.completeBtn:
                 userAddress = userAddressEdit.getText().toString();

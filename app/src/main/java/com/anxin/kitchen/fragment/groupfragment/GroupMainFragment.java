@@ -98,6 +98,8 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         super.onActivityCreated(savedInstanceState);
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.group_main_fragment, null);
@@ -105,7 +107,6 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         //initEditData();
         grouplist = new ArrayList<>();
         activity = (MainActivity) getActivity();
-        requestInternetGetData();
         mRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         mIndexStickyView = view.findViewById(R.id.indexStickyView);
         mMenuNames.add("创建饭团");
@@ -126,7 +127,11 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
             token = new Cache(activity).getAMToken();
         }
         if (token == null) {
-            SystemUtility.startLoginUser(getActivity());
+            if (!SystemUtility.isForeground(getContext(), "com.anxin.kitchen.activity.LoginActivity")) {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.putExtra("tag",true);
+                startActivityForResult(intent, 200);
+            }
         } else {
             getAllGroups();
             getAllFriends();
@@ -134,8 +139,11 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     }
 
     public void onEventMainThread(OnUserAcountEvent event) {//用户信息修改监听
-        requestInternetGetData();
+        activity.myLog("----------------->是否刷新");
+       // requestInternetGetData();
     }
+
+
 
     private void getAllGroups() {
         String url = SystemUtility.searchGroupUrl();
@@ -145,19 +153,20 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
     }
 
+
+
     private void getAllFriends() {
         String url = SystemUtility.getFriendsUrl();
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put(Constant.TOKEN, token);
         activity.requestNet(url, dataMap, activity.GET_FRIEND);
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
         setRefresh();
-
+        requestInternetGetData();
     }
 
     //下拉刷新
@@ -531,7 +540,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     public void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
-//        initView();
+
     }
 
     @Override
@@ -653,6 +662,14 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         if (requestCode == GROUP_MAIN_REQEST_CODE && resultCode == Constant.ADD_FRIEND_CODE) {
             getAllGroups();
             getAllFriends();
+            return;
+        }
+
+        if (requestCode==200 && resultCode == 201){
+            activity.myLog("-------------->登录成功");
+            getAllGroups();
+            getAllFriends();
+            return;
         }
     }
 

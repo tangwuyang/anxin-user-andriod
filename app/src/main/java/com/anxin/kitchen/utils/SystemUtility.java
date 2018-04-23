@@ -673,6 +673,7 @@ public class SystemUtility {
                 if (toKen != null && toKen.length() != 0) {
                     AMToken = toKen;
                     userAccount.setUserAMToKen(toKen);
+                    LOG.e("--------------loginAnalysisJason----------------" + toKen);
                     MyApplication.getInstance().getCache().setAMToken(toKen);
                 }
                 //解析用户信息

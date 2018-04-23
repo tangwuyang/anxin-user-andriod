@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.FragmentActivity;
@@ -57,7 +58,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private LinearLayout thirdPartyLogin_lyt;//第三方登陆模块
     private TextView titleCenterName;
     private boolean isLoginMain = true;//是否在登录主界面
-
+    public boolean tag = false  ;  //是否是由唐午阳操作的标志位
     /**
      * http请求标志
      */
@@ -76,6 +77,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         if (mApp == null) {
             mApp = (MyApplication) getApplication();
         }
+
+        Intent intent = getIntent();
+        tag = intent.getBooleanExtra("tag",false);
         initView();
     }
 
@@ -206,6 +210,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             case sendUserPhoneLogin_http:
                 if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
                     LoginMessageAnalysis(responseMsg);
+
                 }
                 break;
             //验证码注册
@@ -253,7 +258,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     UmengHelper.getInstance().setUserAlias(userId);
                 if (null != trueName && !trueName.equals("暂无") && !trueName.equals("null")) {//登陆成功且用户信息不为空
                     ToastUtil.showToast("登陆成功");
-                    finish();
+                    if (tag) finishToLastActivity();
                 } else {//登陆成功需要填写用户信息
                     platId = "0";
                     isLoginMain = true;
@@ -268,6 +273,13 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 }
             }
         }
+    }
+
+    public void finishToLastActivity() {
+        Intent intent = new Intent();
+        intent.putExtra("loginTag",true);
+        setResult(201,intent);
+        finish();
     }
 
     private void sendBindPhoneReport() {
