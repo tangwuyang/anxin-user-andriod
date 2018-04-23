@@ -87,6 +87,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     MainActivity activity;
     private WaitingDialog mWaitingDiag;
     private PopupWindow popWnd;
+    private boolean isLoginResult = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,11 +112,14 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         mIndexStickyView = view.findViewById(R.id.indexStickyView);
         mMenuNames.add("创建饭团");
         mMenuImgs.add(R.drawable.create_new_group_drawale);
+        initView();
+        return view;
+    }
+
+    private void showDialog() {
         mWaitingDiag = new WaitingDialog(activity, 1000 * 20);
         mWaitingDiag.show();
         mWaitingDiag.startAnimation();
-        initView();
-        return view;
     }
 
     /**
@@ -127,7 +131,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
             token = MyApplication.getInstance().getCache().getAMToken();
         }
         if (token == null) {
-            LOG.e("------------requestInternetGetData-------LoginActivity-------");
+//            LOG.e("------------requestInternetGetData-------LoginActivity-------");
             if (!SystemUtility.isForeground(getContext(), "com.anxin.kitchen.activity.LoginActivity")) {
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 intent.putExtra("tag", true);
@@ -136,6 +140,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         } else {
             getAllGroups();
             getAllFriends();
+            showDialog();
         }
     }
 
@@ -165,7 +170,8 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     public void onResume() {
         super.onResume();
 //        LOG.e("--------------onResume--------------");
-        requestInternetGetData();
+        if (!isLoginResult)
+            requestInternetGetData();
     }
 
     @Override
@@ -659,14 +665,19 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        LOG.e("--------------onActivityResult-------Gruop---------");
+//        LOG.e("--------------onActivityResult-------requestCode---------" + requestCode);
+//        LOG.e("--------------onActivityResult-------resultCode---------" + resultCode);
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 188) {
+            isLoginResult = true;
+            return;
+        }
         if (token == null) {
             token = MyApplication.getInstance().getCache().getAMToken();
         }
-        if (token == null) {
-            return;
-        }
+//        if (token == null) {
+//            return;
+//        }
 //        if (requestCode == GROUP_MAIN_REQEST_CODE && resultCode == Constant.ADD_FRIEND_CODE) {
 //            getAllGroups();
 //            getAllFriends();
