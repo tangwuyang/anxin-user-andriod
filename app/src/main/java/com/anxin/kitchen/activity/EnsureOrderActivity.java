@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.menu.MenuAdapter;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.activity.order.OrderDetailActivity;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.OrderInfoBean;
 import com.anxin.kitchen.bean.PreMoneyBean;
@@ -22,6 +24,7 @@ import com.anxin.kitchen.bean.RecoverBean;
 import com.anxin.kitchen.bean.TablewareBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.BaseDialog;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.PrefrenceUtil;
@@ -209,10 +212,15 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         }
 
         if (requestCode == PAY_MONEY && (status.equals(Constant.REQUEST_SUCCESS))) {
-            Toast.makeText(this, "付款成功", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "付款成功", Toast.LENGTH_SHORT).show();
+            BaseDialog dialog = BaseDialog.showDialog(this, R.layout.orderplay_dialog, Gravity.CENTER, 0);
             mdialog.stopAnimation();
             mdialog.dismiss();
             clearCache();
+            Intent intentPayOrder = new Intent(this, OrderDetailActivity.class);
+            intentPayOrder.putExtra("orderId", Long.valueOf(ids));
+            intentPayOrder.putExtra("closeType", 1);
+            startActivity(intentPayOrder);
             //要修改  跳转到订单活动
 //            startNewActivity(MainActivity.class);
         } else if (requestCode == PAY_MONEY && (!status.equals(Constant.REQUEST_SUCCESS))) {
@@ -239,7 +247,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         PrefrenceUtil prefrenceUtil = new PrefrenceUtil(this);
         prefrenceUtil.setRecoverList("");
         prefrenceUtil.setRecoverMenuList("");
-        startNewActivity(MainActivity.class);
+//        startNewActivity(MainActivity.class);
     }
 
     //获取所有餐具
