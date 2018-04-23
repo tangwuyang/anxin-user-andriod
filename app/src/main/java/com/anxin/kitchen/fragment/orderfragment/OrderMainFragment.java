@@ -10,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.activity.MainActivity;
 import com.anxin.kitchen.activity.ViewKitchenActivity;
 import com.anxin.kitchen.activity.order.OrderActivity;
@@ -58,7 +60,7 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
     private TextView alreadyPaidNumber;
     private TextView completeNumber;
     private TextView refundNumber;
-
+    private boolean isLoginResult = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,17 +127,26 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
     public void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
+        if (isLoginResult)
+            return;
+        getOrderData();
+    }
+
+    private void getOrderData() {
         if (null == token) {
             token = new Cache(getActivity()).getAMToken();
         }
 //        token = "C59B7F78953E2B894FBCFE12ED66E5D9";
         if (token == null) {
-            SystemUtility.startLoginUser(getActivity());
+            if (!SystemUtility.isForeground(getContext(), "com.anxin.kitchen.activity.LoginActivity")) {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.putExtra("tag", true);
+                startActivityForResult(intent, 200);
+            }
         } else {
             getRecenctOrders();
             getOrdersNum();
         }
-
     }
 
     /**
@@ -143,6 +154,17 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
      */
     @Override
     public void onClick(View v) {
+        if (null == token) {
+            token = new Cache(activity).getAMToken();
+        }
+        if (token == null) {
+            if (!SystemUtility.isForeground(getContext(), "com.anxin.kitchen.activity.LoginActivity")) {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.putExtra("tag", true);
+                startActivityForResult(intent, 200);
+            }
+            return;
+        }
         switch (v.getId()) {
             case R.id.allOrder_btn://查看所有订单
             case R.id.allOrder_btn2:
@@ -267,6 +289,20 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
             list.add(response.getData());
             mAdapter = new OrderAdapter(getActivity(), list);
             myOrderListView.setAdapter(mAdapter);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        LOG.e("--------------onActivityResult-------requestCode---------" + requestCode);
+//        LOG.e("--------------onActivityResult-------resultCode---------" + resultCode);
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 188) {
+            isLoginResult = true;
+            return;
+        }
+        if (token == null) {
+            token = MyApplication.getInstance().getCache().getAMToken();
         }
     }
 

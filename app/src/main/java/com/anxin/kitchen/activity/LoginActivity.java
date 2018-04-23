@@ -58,7 +58,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private LinearLayout thirdPartyLogin_lyt;//第三方登陆模块
     private TextView titleCenterName;
     private boolean isLoginMain = true;//是否在登录主界面
-    public boolean tag = false  ;  //是否是由唐午阳操作的标志位
+    public boolean tag = false;  //是否是由唐午阳操作的标志位
     /**
      * http请求标志
      */
@@ -103,12 +103,35 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (isLoginMain) {
+            if (tag) {
+                finishToLastActivity(188);
+            } else {
+                finish();
+            }
+        } else {
+            isLoginMain = true;
+            thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
+            titleCenterName.setText("登录注册");
+            loginBtn.setText("登录");
+            userPhoneEdit.setText("");
+            phoneCodeEdit.setText("");
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back_btn://返回
-                if (isLoginMain)
-                    finish();
-                else {
+                if (isLoginMain) {
+                    if (tag) {
+                        finishToLastActivity(188);
+                    } else {
+                        finish();
+                    }
+                } else {
                     isLoginMain = true;
                     thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
                     titleCenterName.setText("登录注册");
@@ -258,8 +281,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     UmengHelper.getInstance().setUserAlias(userId);
                 if (null != trueName && !trueName.equals("暂无") && !trueName.equals("null")) {//登陆成功且用户信息不为空
                     ToastUtil.showToast("登陆成功");
-                    if (tag)
-                        finishToLastActivity();
+                    if (tag) {
+                        finishToLastActivity(201);
+                    } else {
+                        finish();
+                    }
                 } else {//登陆成功需要填写用户信息
                     platId = "0";
                     isLoginMain = true;
@@ -276,10 +302,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
     }
 
-    public void finishToLastActivity() {
+    public void finishToLastActivity(int resultCode) {
         Intent intent = getIntent();
         intent.putExtra("loginTag", true);
-        setResult(201, intent);
+        setResult(resultCode, intent);
         finish();
     }
 
