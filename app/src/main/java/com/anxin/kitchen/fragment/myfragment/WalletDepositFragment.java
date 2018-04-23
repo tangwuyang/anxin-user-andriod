@@ -33,7 +33,7 @@ public class WalletDepositFragment extends HomeBaseFragment implements View.OnCl
     private Log LOG = Log.getLog();
     private View view;
     private ImageView backBtn;//返回
-    private int userDeposit = 0;
+    private Double userDeposit;
     private TextView userDeposit_tv;
     private EditText payUserID_edit, payUserName_rdit;
     private static final String sendReturnDeposit_http = "sendReturnDeposit";
@@ -79,7 +79,7 @@ public class WalletDepositFragment extends HomeBaseFragment implements View.OnCl
         //余额
         String userMoney = account.getUserDeposit();
         if (userMoney != null && userMoney.length() != 0) {
-            this.userDeposit = Integer.valueOf(userMoney);
+            this.userDeposit = Double.parseDouble(userMoney);
             userDeposit_tv.setText(userDeposit + "");
         }
     }
@@ -119,7 +119,7 @@ public class WalletDepositFragment extends HomeBaseFragment implements View.OnCl
 
     }
 
-    private void sendReturnMoney(int money, String alipay, String trueName) {
+    private void sendReturnMoney(Double money, String alipay, String trueName) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("money", money);

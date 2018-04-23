@@ -37,8 +37,8 @@ public class UserWalletSetFragment extends HomeBaseFragment implements View.OnCl
     private TextView TotalAmount_tv;//总金额
     private TextView walletMortgage_tv;//押金
     private TextView UserDeposit_refund;
-    private int userMoney = 0;
-    private int userDeposit = 0;
+    private Double userMoney;
+    private Double userDeposit;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,19 +81,19 @@ public class UserWalletSetFragment extends HomeBaseFragment implements View.OnCl
         //余额
         String userMoney = account.getUserMoney();
         if (userMoney != null && userMoney.length() != 0) {
-            this.userMoney = Integer.valueOf(userMoney);
+            this.userMoney = Double.parseDouble(userMoney);
             TotalAmount_tv.setText(userMoney);
         }
         //押金
         String UserDeposit = account.getUserDeposit();
         if (UserDeposit != null && UserDeposit.length() != 0) {
-            this.userDeposit = Integer.valueOf(UserDeposit);
+            this.userDeposit = Double.parseDouble(UserDeposit);
             walletMortgage_tv.setText(UserDeposit);
         }
-        if (userDeposit > 0)
-            UserDeposit_refund.setVisibility(View.VISIBLE);
-        else
-            UserDeposit_refund.setVisibility(View.GONE);
+//        if (userDeposit > 0)
+//            UserDeposit_refund.setVisibility(View.VISIBLE);
+//        else
+//            UserDeposit_refund.setVisibility(View.GONE);
     }
 
     /**
@@ -144,7 +144,7 @@ public class UserWalletSetFragment extends HomeBaseFragment implements View.OnCl
                 ft.commit();
                 break;
             case R.id.wallet_withdrawals_rlt:
-                if (userMoney == 0)
+                if (userMoney <= 0)
                     return;
                 WalletExtractFragment walletExtractFragment = new WalletExtractFragment();
                 ft.replace(R.id.content_frame, walletExtractFragment);
@@ -153,7 +153,7 @@ public class UserWalletSetFragment extends HomeBaseFragment implements View.OnCl
                 ft.commit();
                 break;
             case R.id.wallet_mortgage_rlt:
-                if (userDeposit == 0)
+                if (userDeposit<= 0)
                     return;
                 WalletDepositFragment walletDepositFragment = new WalletDepositFragment();
                 ft.replace(R.id.content_frame, walletDepositFragment);

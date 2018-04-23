@@ -349,7 +349,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
                 myLog("-------------delte" + responseBody);
                 //重新请求团信息
-                String token = new Cache(this).getAMToken();
+                String token = MyApplication.getInstance().getCache().getAMToken();
                 Map<String, Object> dataMap = new HashMap<>();
                 dataMap.put(Constant.TOKEN, token);
                 requestNet(SystemUtility.searchGroupUrl(), dataMap, RE_GET_GROUP);

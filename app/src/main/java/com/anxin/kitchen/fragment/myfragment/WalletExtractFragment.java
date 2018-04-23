@@ -34,7 +34,7 @@ public class WalletExtractFragment extends HomeBaseFragment implements View.OnCl
     private Log LOG = Log.getLog();
     private View view;
     private ImageView backBtn;//返回
-    private int userMoney = 0;//余额
+    private Double userMoney;//余额
     private EditText payUserID_edit, payUserName_rdit, payRefundNumber_edit;
     private Button determineBtn;//提现
     private TextView allMoney;//全部金额
@@ -82,7 +82,7 @@ public class WalletExtractFragment extends HomeBaseFragment implements View.OnCl
         //余额
         String userMoney = account.getUserMoney();
         if (userMoney != null && userMoney.length() != 0) {
-            this.userMoney = Integer.valueOf(userMoney);
+            this.userMoney = Double.parseDouble(userMoney);
         }
     }
 
@@ -114,7 +114,7 @@ public class WalletExtractFragment extends HomeBaseFragment implements View.OnCl
                     ToastUtil.showToast("请输入您要提现的金额");
                     return;
                 } else {
-                    int returnMoney = Integer.parseInt(money.trim());
+                    Double returnMoney = Double.parseDouble(money);
                     if (returnMoney > userMoney) {
                         ToastUtil.showToast("余额不足，请输入正确的金额");
                         return;
@@ -131,7 +131,7 @@ public class WalletExtractFragment extends HomeBaseFragment implements View.OnCl
         }
     }
 
-    private void sendReturnMoney(int money, String alipay, String trueName) {
+    private void sendReturnMoney(Double money, String alipay, String trueName) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("money", money);

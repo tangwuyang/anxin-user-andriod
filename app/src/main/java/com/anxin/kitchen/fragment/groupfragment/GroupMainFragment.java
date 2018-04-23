@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.AddNewFriendActivity;
 import com.anxin.kitchen.activity.CreateGroupActivity;
 import com.anxin.kitchen.activity.GroupMemberActivity;
@@ -82,7 +83,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     private List<ContactEntity> Friendslist;
     private List<String> mMenuNames = new ArrayList<>();
     private List<Integer> mMenuImgs = new ArrayList<>();
-    String token;
+    String token = null;
     MainActivity activity;
     private WaitingDialog mWaitingDiag;
     private PopupWindow popWnd;
@@ -97,7 +98,6 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
-
 
 
     @Override
@@ -123,13 +123,14 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
      * 以及定参团列表
      */
     private void requestInternetGetData() {
-        if (null == token) {
-            token = new Cache(activity).getAMToken();
+        if (token == null) {
+            token = MyApplication.getInstance().getCache().getAMToken();
         }
         if (token == null) {
+            LOG.e("------------requestInternetGetData-------LoginActivity-------");
             if (!SystemUtility.isForeground(getContext(), "com.anxin.kitchen.activity.LoginActivity")) {
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
-                intent.putExtra("tag",true);
+                intent.putExtra("tag", true);
                 startActivityForResult(intent, 200);
             }
         } else {
@@ -140,9 +141,8 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
     public void onEventMainThread(OnUserAcountEvent event) {//用户信息修改监听
         activity.myLog("----------------->是否刷新");
-       // requestInternetGetData();
+        // requestInternetGetData();
     }
-
 
 
     private void getAllGroups() {
@@ -154,7 +154,6 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     }
 
 
-
     private void getAllFriends() {
         String url = SystemUtility.getFriendsUrl();
         Map<String, Object> dataMap = new HashMap<>();
@@ -163,10 +162,18 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+//        LOG.e("--------------onResume--------------");
+        requestInternetGetData();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
+//        LOG.e("--------------onStart--------------");
         setRefresh();
-        requestInternetGetData();
+//        requestInternetGetData();
     }
 
     //下拉刷新
@@ -536,12 +543,6 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
     }
 
-    @Override
-    public void onResume() {
-        // TODO Auto-generated method stub
-        super.onResume();
-
-    }
 
     @Override
     public void onClick(View v) {
@@ -658,19 +659,26 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        LOG.e("--------------onActivityResult-------Gruop---------");
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == GROUP_MAIN_REQEST_CODE && resultCode == Constant.ADD_FRIEND_CODE) {
-            getAllGroups();
-            getAllFriends();
+        if (token == null) {
+            token = MyApplication.getInstance().getCache().getAMToken();
+        }
+        if (token == null) {
             return;
         }
-
-        if (requestCode==200 && resultCode == 201){
-            activity.myLog("-------------->登录成功");
-            getAllGroups();
-            getAllFriends();
-            return;
-        }
+//        if (requestCode == GROUP_MAIN_REQEST_CODE && resultCode == Constant.ADD_FRIEND_CODE) {
+//            getAllGroups();
+//            getAllFriends();
+//            return;
+//        }
+//
+//        if (requestCode == 200 && resultCode == 201) {
+////            activity.myLog("-------------->登录成功");
+//            getAllGroups();
+//            getAllFriends();
+//            return;
+//        }
     }
 
     @Override

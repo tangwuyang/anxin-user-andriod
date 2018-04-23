@@ -79,7 +79,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
 
         Intent intent = getIntent();
-        tag = intent.getBooleanExtra("tag",false);
+        tag = intent.getBooleanExtra("tag", false);
         initView();
     }
 
@@ -200,8 +200,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     if (code != null && code.equals("1")) {
                         if (data != null && !data.equals("null"))
                             ToastUtil.showToast("发送成功");
-                            loginData = data;
-                    }else if(code.equals("321")){
+                        loginData = data;
+                    } else if (code.equals("321")) {
                         ToastUtil.showToast("请求次数超限");
                     }
                 }
@@ -247,7 +247,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         String code = StringUtils.parserMessage(Msg, "code");
         if (code != null && code.equals("1")) {
             //解析验证码返回
-            Account account = SystemUtility.loginAnalysisJason(Msg,"");
+            Account account = SystemUtility.loginAnalysisJason(Msg, "");
 //            LOG.e("--------sendPhoneLogin--Account--" + account.toString());
 //            LOG.d("--------sendPhoneLogin--token--" + SystemUtility.AMToken);
             if (account != null) {
@@ -258,7 +258,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     UmengHelper.getInstance().setUserAlias(userId);
                 if (null != trueName && !trueName.equals("暂无") && !trueName.equals("null")) {//登陆成功且用户信息不为空
                     ToastUtil.showToast("登陆成功");
-                    if (tag) finishToLastActivity();
+                    if (tag)
+                        finishToLastActivity();
                 } else {//登陆成功需要填写用户信息
                     platId = "0";
                     isLoginMain = true;
@@ -276,9 +277,9 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     public void finishToLastActivity() {
-        Intent intent = new Intent();
-        intent.putExtra("loginTag",true);
-        setResult(201,intent);
+        Intent intent = getIntent();
+        intent.putExtra("loginTag", true);
+        setResult(201, intent);
         finish();
     }
 
