@@ -8,11 +8,14 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.anxin.kitchen.activity.LoginActivity;
+import com.anxin.kitchen.activity.SettingActivity;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.event.OnUserAcountEvent;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
@@ -76,25 +79,26 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         userWalletBtn.setOnClickListener(this);
         settingBtn.setOnClickListener(this);
         userSetBtn.setOnClickListener(this);
-//        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-////                AddUserDataFragment addUserDataFragment = new AddUserDataFragment();
-////                FragmentTransaction ft = getFragmentManager().beginTransaction();
-////                ft.replace(R.id.content_frame, addUserDataFragment);
-////                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-////                ft.addToBackStack(null);
-////                ft.commit();
-//                BaseDialog dialog = BaseDialog.showDialog(getActivity(), R.layout.orderplay_dialog, Gravity.CENTER, 0);
-//                return false;
-//            }
-//        });
+        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+//                AddUserDataFragment addUserDataFragment = new AddUserDataFragment();
+//                FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                ft.replace(R.id.content_frame, addUserDataFragment);
+//                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                ft.addToBackStack(null);
+//                ft.commit();
+//                BaseDialog dialog = BaseDialog.showDialog(getActivity(), R.layout.orderplay_dialog);
+//                Window window = dialog.getWindow();
+//                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+                return false;
+            }
+        });
 
         userIcon = (RoundedImageView) view.findViewById(R.id.user_icon);
         userName = (TextView) view.findViewById(R.id.user_name);
         userPhone = (TextView) view.findViewById(R.id.user_phone);
         Totalamount_tv = view.findViewById(R.id.Totalamount_tv);
-        updateUserAcount();
     }
 
     private void updateUserAcount() {
@@ -132,8 +136,9 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
     @Override
     public void onResume() {
         // TODO Auto-generated method stub
-        showMainBottom();
         super.onResume();
+        updateUserAcount();
+        showMainBottom();
     }
 
     @Override
@@ -145,11 +150,12 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
 //                startActivity(intent);
                 break;
             case R.id.my_setting_btn://设置界面
-                SettingFragment settingFragment = new SettingFragment();
-                ft.replace(R.id.content_frame, settingFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
+//                SettingFragment settingFragment = new SettingFragment();
+//                ft.replace(R.id.content_frame, settingFragment);
+//                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                ft.addToBackStack(null);
+//                ft.commit();
+                startActivity(new Intent(getActivity(), SettingActivity.class));
                 break;
             case R.id.user_set://用户个性化设置
                 if (mApp.getAccount() == null) {

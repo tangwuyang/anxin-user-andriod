@@ -84,11 +84,13 @@ public class SettingFragment extends HomeBaseFragment implements View.OnClickLis
                 ft2.commit();
                 break;
             case R.id.logout_user:
+                if (mApp.getCache().getAMToken() == null)
+                    return;
                 String userId = mApp.getAccount().getUserID();
                 if (userId != null)
                     UmengHelper.getInstance().deleteUserAlias(userId);
                 mApp.setAccount(null);
-                mApp.getCache().setAcount(getActivity(),null);
+                mApp.getCache().setAcount(getActivity(), null);
                 mApp.getCache().setAMToken(null);
                 SystemUtility.AMToken = "";
                 getFragmentManager().popBackStack();
