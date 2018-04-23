@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -53,6 +55,7 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
     private String mToken;
     private boolean isAdd = false;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,18 +76,25 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
         setFriends();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestPermission() {
         boolean hasContactsPermission = getContactsPermission();
+        myLog("-------------->"+hasContactsPermission);
         if (!hasContactsPermission) {
             popRequestWindow();
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void popRequestWindow() {
-        RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
+
+       requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},BAIDU_READ_PHONE_STATE);
+       RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onGivedPermssion() {
-                ActivityCompat.requestPermissions(ContactsActivity.this, new String[]{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS}, BAIDU_READ_PHONE_STATE);
+                //ActivityCompat.requestPermissions(ContactsActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, BAIDU_READ_PHONE_STATE);
+                requestPermissions(new String[]{Manifest.permission.WRITE_CONTACTS},BAIDU_READ_PHONE_STATE);
             }
         });
         dialog.show();
@@ -92,6 +102,8 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
 
 
     private boolean getContactsPermission() {
+
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED
                 ) {

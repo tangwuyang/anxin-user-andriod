@@ -186,10 +186,10 @@ public class IndexStickyView extends RelativeLayout implements SideBar.OnSideBar
             if(secondVisibleEntity.getItemType() == ItemType.ITEM_TYPE_INDEX) {
                 //第二个可见项是索引值视图
                 View secondVisibleItemView = mLinearLayoutManager.findViewByPosition(firstVisiblePosition + 1);
-                if(secondVisibleItemView.getTop() <= mStickyHeaderView.itemView.getHeight() && mStickyIndexValue != null) {
+               // if(secondVisibleItemView.getTop() <= mStickyHeaderView.itemView.getHeight() && mStickyIndexValue != null) {
                     //当secondVisibleItemView距顶部的距离 <= mStickyHeaderView的高度时，mStickyHeaderView开始往上滑出
-                    mStickyHeaderView.itemView.setTranslationY(secondVisibleItemView.getTop() - mStickyHeaderView.itemView.getHeight());
-                }
+                    //mStickyHeaderView.itemView.setTranslationY(secondVisibleItemView.getTop() - mStickyHeaderView.itemView.getHeight());
+               // }
             } else {
                 //第二个可见项不是索引值视图
                 if(mStickyHeaderView.itemView.getTranslationY() != 0) {//有偏移
