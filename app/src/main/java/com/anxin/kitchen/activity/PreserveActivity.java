@@ -1,13 +1,10 @@
 package com.anxin.kitchen.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,11 +28,11 @@ import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.DateUtils;
-import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.ChoseGroupDialog;
+import com.anxin.kitchen.view.DeleteMealDialog;
 import com.anxin.kitchen.view.OrderingRuleDialog;
 import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -732,9 +729,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 deleteImg.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        preMealMaps.get(day).remove("午餐");
-                        PreserverAdapter.this.notifyDataSetChanged();
-                        lunchItem.setTag(day + "-午餐");
+                        deleteMeal(day, dinnerItem,"午餐");
                     }
                 });
                 foodImg1.setOnClickListener(new View.OnClickListener() {
@@ -842,9 +837,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 deleteImg.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        preMealMaps.get(day).remove("晚餐");
-                        dinnerItem.setTag(day + "-晚餐");
-                        PreserverAdapter.this.notifyDataSetChanged();
+                        deleteMeal(day, dinnerItem, "晚餐");
                     }
                 });
 
@@ -893,6 +886,19 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 });
             }
             return view;
+        }
+
+        private void deleteMeal(final long day, final View dinnerItem, final String mealType) {
+            final DeleteMealDialog dialog = new DeleteMealDialog(PreserveActivity.this
+               , new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    preMealMaps.get(day).remove(mealType);
+                    dinnerItem.setTag(day + "-"+mealType);
+                    PreserverAdapter.this.notifyDataSetChanged();
+                }
+            });
+
         }
     }
 

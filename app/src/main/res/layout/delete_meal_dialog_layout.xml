@@ -16,31 +16,23 @@
             android:layout_marginTop="@dimen/bar_left_right_padding"
             android:gravity="center"
             android:padding="0dp"
-            android:text="请选择饭团"
+            android:text="温馨提示"
             android:textColor="@color/black"
             android:textSize="@dimen/title_text_size" />
 
-        <ImageView
-            android:id="@+id/cancel_img"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:padding="@dimen/bar_left_right_padding"
-            android:src="@drawable/close_drawable" />
+
     </RelativeLayout>
 
     <TextView
+        android:gravity="center"
+        android:layout_margin="10dp"
+        android:textColor="@color/shallow_text_color"
         android:layout_width="match_parent"
-        android:layout_height="0.3dp"
+        android:layout_height="wrap_content"
+        android:text="确定删除此菜单吗？"
         android:background="@color/item_divider" />
 
-    <ListView
-        android:id="@+id/group_lv"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:divider="@color/item_divider"
-        android:dividerHeight="0.5dp" />
+
 
     <View
         android:layout_width="match_parent"
@@ -58,7 +50,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="添加份数"
+            android:text="取  消"
             android:textColor="@color/shallow_black"
             android:textSize="@dimen/title_text_size" />
 
@@ -68,12 +60,12 @@
             android:background="@color/item_divider" />
 
         <TextView
-            android:id="@+id/open_right_tv"
+            android:id="@+id/sure_tv"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="创建饭团"
+            android:text="确  定"
             android:textColor="@color/open_color"
             android:textSize="@dimen/title_text_size" />
     </LinearLayout>
