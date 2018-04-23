@@ -129,6 +129,7 @@
         <activity android:name="com.anxin.kitchen.activity.MealIntroduceActivity" />
         <activity android:name="com.anxin.kitchen.activity.InvateFriendActivity" />
         <activity android:name="com.anxin.kitchen.activity.CreateGroupActivity" />
+        <activity android:name="com.anxin.kitchen.activity.SettingActivity" />
         <!-- 注册微信回调 WXEntryActivity -->
         <activity
             android:name=".wxapi.WXEntryActivity"

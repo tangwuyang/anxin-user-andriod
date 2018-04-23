@@ -93,7 +93,6 @@ public class SettingFragment extends HomeBaseFragment implements View.OnClickLis
                 mApp.getCache().setAcount(getActivity(), null);
                 mApp.getCache().setAMToken(null);
                 SystemUtility.AMToken = "";
-                showMainBottom();
                 getFragmentManager().popBackStack();
                 break;
             default:

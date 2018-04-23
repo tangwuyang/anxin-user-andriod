@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.anxin.kitchen.activity.LoginActivity;
+import com.anxin.kitchen.activity.SettingActivity;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.event.OnUserAcountEvent;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
@@ -98,7 +99,6 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         userName = (TextView) view.findViewById(R.id.user_name);
         userPhone = (TextView) view.findViewById(R.id.user_phone);
         Totalamount_tv = view.findViewById(R.id.Totalamount_tv);
-        updateUserAcount();
     }
 
     private void updateUserAcount() {
@@ -137,6 +137,8 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
     public void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
+        updateUserAcount();
+        showMainBottom();
     }
 
     @Override
@@ -148,11 +150,12 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
 //                startActivity(intent);
                 break;
             case R.id.my_setting_btn://设置界面
-                SettingFragment settingFragment = new SettingFragment();
-                ft.replace(R.id.content_frame, settingFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
+//                SettingFragment settingFragment = new SettingFragment();
+//                ft.replace(R.id.content_frame, settingFragment);
+//                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                ft.addToBackStack(null);
+//                ft.commit();
+                startActivity(new Intent(getActivity(), SettingActivity.class));
                 break;
             case R.id.user_set://用户个性化设置
                 if (mApp.getAccount() == null) {
