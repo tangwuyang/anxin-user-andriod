@@ -214,55 +214,44 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         days = new ArrayList<>();
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);
-        int month = (now.get(Calendar.MONTH) + 1);
+        int month =  (now.get(Calendar.MONTH) + 1);
         int day = now.get(Calendar.DAY_OF_MONTH);
-        int hour = now.get(Calendar.HOUR_OF_DAY);
         now.set(year, month, 0);
-        int dayOfMonth = now.getActualMaximum(Calendar.DAY_OF_MONTH);  //这个月的总天数
-//        android.util.Log.e("aaa", "---------------hour-------------" + hour);
-        if (hour >= 17) {
-            //获取当前日期
-            //获取当前日期
-            Date date = new Date();
-            SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
-            String nowDate = sf.format(date);
-            //通过日历获取下一天日期
-            Calendar cal = Calendar.getInstance();
-            try {
-                cal.setTime(sf.parse(nowDate));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            cal.add(Calendar.DAY_OF_YEAR, +1);
-            day = cal.get(Calendar.DAY_OF_MONTH);
-            month = (cal.get(Calendar.MONTH) + 1);
-            dayOfMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);  //这个月的总天数
-//            android.util.Log.e("aaa", "--------month---------------" + month);
-//            android.util.Log.e("aaa", "--------nextDate_1---------------" + nextDate_1);
-//            android.util.Log.e("aaa", "--------day---------------" + day);
-//            android.util.Log.e("aaa", "--------dayOfMonthw---------------" + dayOfMonth);
+        int dayOfMonth = now.get(Calendar.DAY_OF_MONTH);  //这个月的总天数
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        if (hour>17){
+            day = day+1;
         }
-        int sheYuday = dayOfMonth - day;
-        int diffDay = 7 - sheYuday;
+        myLog(dayOfMonth + "--------------->day" + day+ "   " + hour);
+        int sheYuday = 0;
+        int diffDay = 0;
+        if ((day-1)==dayOfMonth){
+            diffDay = 7;
+        }else {
+             sheYuday = dayOfMonth - day+1;
+             diffDay = 7-sheYuday;
+        }
+
+
         //这个月还差几天  去下个月中借齐
         //只判断到了月 后期要添加年的逻辑  否则有问题
-        if (diffDay <= 0) {
-            for (int i = 1; i <= 7; i++) {
+        if (diffDay<=0){
+            for(int i = 1;i<=7;i++){
                 String dateSt = String.valueOf(year);
-                if (month < 10) {
-                    dateSt = dateSt + "0" + month;
-                } else {
-                    dateSt = dateSt + month;
+                if (month<10){
+                    dateSt = dateSt+"0"+month;
+                }else {
+                    dateSt = dateSt+month;
                 }
 
-                if ((day + 1) < 10) {
-                    dateSt = dateSt + "0" + (day + i);
-                } else {
-                    dateSt = dateSt + (day + i);
+                if ((day+1)<10){
+                    dateSt = dateSt + "0"+ (day+i);
+                }else {
+                    dateSt = dateSt + (day+i);
                 }
                 days.add(Long.valueOf(dateSt));
             }
-        } else {
+        }else {
             //需要借的逻辑
             //首先当前月还剩下几天
             for (int i = 1; i <= sheYuday; i++) {
@@ -276,20 +265,20 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 if ((day + 1) < 10) {
                     dateSt = dateSt + "0" + (day + 1);
                 } else {
-                    dateSt = dateSt + (day + 1);
+                    dateSt = dateSt +  (day + 1);
                 }
                 days.add(Long.valueOf(dateSt));
             }
             //补足7天
-            for (int i = 1; i <= 7 - sheYuday; i++) {
+            for(int i = 1; i<=7-sheYuday ; i++){
                 String dateSt = String.valueOf(year);
-                if ((month + 1) < 10) {
-                    dateSt = dateSt + "0" + (month + 1);
+                if ((month+1 )< 10) {
+                    dateSt = dateSt + "0" + (month+1);
                 } else {
                     dateSt = dateSt + month;
                 }
 
-                if (i < 10) {
+                if ((i) < 10) {
                     dateSt = dateSt + "0" + (day);
                 } else {
                     dateSt = dateSt + (day);
@@ -300,9 +289,9 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         }
         for (Long dayl :
                 days) {
-            myLog("-------------->" + year + "  " + month + "  " + day + "   " + dayOfMonth + "  " + dayl);
+            myLog("-------------->"+year+"  " + month + "  " + day + "   " + dayOfMonth + "  " + dayl);
         }
-        myLog("-------------->" + year + "  " + month + "  " + day + "   " + dayOfMonth);
+        myLog("-------------->"+year+"  " + month + "  " + day + "   " + dayOfMonth);
         return null;
     }
 
@@ -338,7 +327,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             case 4:
                 return "周四";
             case 5:
-                return "周日";
+                return "周五";
             case 6:
                 return "周六";
             case 0:
@@ -401,7 +390,10 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         RelativeLayout layout = (RelativeLayout) getLayoutInflater().inflate(R.layout.tableware_popup, null);
         ListView mTablewareLv = layout.findViewById(R.id.chose_tableware_lv);
         getAllnums();
-
+        TextView aaPay = layout.findViewById(R.id.aa_pay_tv);
+        if (isChosedGroup){
+            aaPay.setVisibility(View.VISIBLE);
+        }else aaPay.setVisibility(View.GONE);
         popupWindow = new PopupWindow(layout,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -421,6 +413,12 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
         //添加按键事件监听
         setButtonListeners(layout);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                ColorDrawable dw = new ColorDrawable(getResources().getColor(R.color.white));
+            }
+        });
         //添加pop窗口关闭事件，主要是实现关闭时改变背景的透明度
 //        popupWindow.setOnDismissListener(new poponDismissListener());
         mTablewareLv.setAdapter(new TablewareAdapter(tablewareBean));
@@ -434,6 +432,14 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         });
         TextView unifyPayTv = layout.findViewById(R.id.unify_pay_tv);
         unifyPayTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeOrder();
+                popupWindow.dismiss();
+            }
+        });
+
+        aaPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 closeOrder();
