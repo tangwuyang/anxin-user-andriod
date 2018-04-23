@@ -132,13 +132,12 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
         getOrderData();
     }
 
-    private void getOrderData() {
-        if (null == token) {
+    public void getOrderData() {
             token = new Cache(getActivity()).getAMToken();
-        }
 //        token = "C59B7F78953E2B894FBCFE12ED66E5D9";
         if (token == null) {
             if (!SystemUtility.isForeground(getContext(), "com.anxin.kitchen.activity.LoginActivity")) {
+                isLoginResult = false;
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 intent.putExtra("tag", true);
                 startActivityForResult(intent, 200);

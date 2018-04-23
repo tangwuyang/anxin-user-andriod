@@ -8,6 +8,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -76,19 +78,21 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         userWalletBtn.setOnClickListener(this);
         settingBtn.setOnClickListener(this);
         userSetBtn.setOnClickListener(this);
-//        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-////                AddUserDataFragment addUserDataFragment = new AddUserDataFragment();
-////                FragmentTransaction ft = getFragmentManager().beginTransaction();
-////                ft.replace(R.id.content_frame, addUserDataFragment);
-////                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-////                ft.addToBackStack(null);
-////                ft.commit();
-//                BaseDialog dialog = BaseDialog.showDialog(getActivity(), R.layout.orderplay_dialog, Gravity.CENTER, 0);
-//                return false;
-//            }
-//        });
+        userSetBtn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+//                AddUserDataFragment addUserDataFragment = new AddUserDataFragment();
+//                FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                ft.replace(R.id.content_frame, addUserDataFragment);
+//                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                ft.addToBackStack(null);
+//                ft.commit();
+//                BaseDialog dialog = BaseDialog.showDialog(getActivity(), R.layout.orderplay_dialog);
+//                Window window = dialog.getWindow();
+//                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+                return false;
+            }
+        });
 
         userIcon = (RoundedImageView) view.findViewById(R.id.user_icon);
         userName = (TextView) view.findViewById(R.id.user_name);
@@ -132,7 +136,6 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
     @Override
     public void onResume() {
         // TODO Auto-generated method stub
-        showMainBottom();
         super.onResume();
     }
 

@@ -210,6 +210,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     fragmentTransaction.add(R.id.content_frame, groupMainFragment);
                 } else {
                     fragmentTransaction.show(groupMainFragment);
+                    groupMainFragment.requestInternetGetData();
                 }
                 break;
             case 2:
@@ -218,6 +219,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     fragmentTransaction.add(R.id.content_frame, orderMainFragment);
                 } else {
                     fragmentTransaction.show(orderMainFragment);
+                    orderMainFragment.getOrderData();
                 }
                 break;
             case 3:
