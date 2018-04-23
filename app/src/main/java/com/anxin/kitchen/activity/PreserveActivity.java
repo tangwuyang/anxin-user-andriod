@@ -888,17 +888,19 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             return view;
         }
 
+        DeleteMealDialog dialog1;
         private void deleteMeal(final long day, final View dinnerItem, final String mealType) {
-            final DeleteMealDialog dialog = new DeleteMealDialog(PreserveActivity.this
+              dialog1 = new DeleteMealDialog(PreserveActivity.this
                , new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     preMealMaps.get(day).remove(mealType);
                     dinnerItem.setTag(day + "-"+mealType);
                     PreserverAdapter.this.notifyDataSetChanged();
+                    dialog1.dismiss();
                 }
             });
-
+        dialog1.show();
         }
     }
 

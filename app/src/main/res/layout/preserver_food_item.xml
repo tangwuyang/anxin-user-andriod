@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
+    android:layout_height="120dp"
     android:background="@color/main_bg_color">
 
     <RelativeLayout
@@ -9,15 +9,16 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true">
 
             <ImageView
+                android:scaleType="centerCrop"
                 android:id="@+id/main_img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:src="@drawable/food1" />
