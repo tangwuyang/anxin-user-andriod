@@ -245,15 +245,29 @@
             android:layout_marginRight="15dp"
             android:src="@drawable/enter_message_normal" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@+id/contact_next"
-            android:text="工作日8:00~18:00"
-            android:textColor="#333333"
-            android:textSize="14sp" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="工作日"
+                android:textColor="#333333"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/workTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8:00~18:00"
+                android:textColor="#333333"
+                android:textSize="14sp" />
+        </LinearLayout>
     </RelativeLayout>
 
     <Button

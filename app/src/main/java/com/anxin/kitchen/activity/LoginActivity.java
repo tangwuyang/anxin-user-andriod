@@ -24,6 +24,7 @@ import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.utils.UmengHelper;
+import com.anxin.kitchen.view.WaitingDialog;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -67,6 +68,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private static final String sendUserPhoneRegister_http = "sendUserPhoneRegister";
     private static final String sendUserPhoneLogin_http = "sendUserPhoneLogin";
     private static final String sendUserPhoneLocking_http = "sendUserPhoneLocking";
+    private WaitingDialog mWaitingDiag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,10 +196,16 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         }
         if (platId.equals("1")) {
             sendLogin3(platId, openID);
+            showDialog();
         }
         super.onResume();
     }
 
+    private void showDialog() {
+        mWaitingDiag = new WaitingDialog(this, 1000 * 20);
+        mWaitingDiag.show();
+        mWaitingDiag.startAnimation();
+    }
 
     /**
      * 监听网络请求返回
@@ -252,6 +260,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         thirdPartyLogin_lyt.setVisibility(View.GONE);
                         titleCenterName.setText("绑定手机号码");
                         loginBtn.setText("绑定");
+                        if (null != mWaitingDiag) {
+                            mWaitingDiag.stopAnimation();
+                            mWaitingDiag.dismiss();
+                        }
                     } else if (code != null && code.equals("1")) {
                         LoginMessageAnalysis(responseMsg);
                     }
@@ -280,7 +292,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 if (userId != null && userId.length() != 0)
                     UmengHelper.getInstance().setUserAlias(userId);
                 if (null != trueName && !trueName.equals("暂无") && !trueName.equals("null")) {//登陆成功且用户信息不为空
-                    ToastUtil.showToast("登陆成功");
+//                    ToastUtil.showToast("登陆成功");
+                    if (null != mWaitingDiag) {
+                        mWaitingDiag.stopAnimation();
+                        mWaitingDiag.dismiss();
+                    }
                     if (tag) {
                         finishToLastActivity(201);
                     } else {
@@ -295,6 +311,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                     ft.addToBackStack(null);
                     ft.commit();
+                    if (null != mWaitingDiag) {
+                        mWaitingDiag.stopAnimation();
+                        mWaitingDiag.dismiss();
+                    }
                     if (mc != null)
                         mc.cancel();
                 }

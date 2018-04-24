@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.activity.SettingActivity;
 import com.anxin.kitchen.bean.Account;
+import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.event.OnUserAcountEvent;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
@@ -25,8 +26,13 @@ import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.BaseDialog;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
+import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.RoundedImageView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -47,6 +53,9 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
     private TextView userName;//用户名称
     private TextView userPhone;//用户手机
     private TextView Totalamount_tv;//用户钱包金额
+    private static final String snedGetkitchenPhone_http = "snedGetkitchenPhone";
+    private String contactPhone = "";//联系电话
+    private TextView workTime_tv;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,7 +72,16 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.my_main_fragment, null);
         initView();//初始化界面控制
+        snedGetkitchenPhone();
         return view;
+    }
+
+    /**
+     * 获取联系电话
+     */
+    private void snedGetkitchenPhone() {
+        String urlPhat = SystemUtility.getonfigUrl();
+        SystemUtility.requestNetGet(urlPhat, snedGetkitchenPhone_http);
     }
 
     private void initView() {
@@ -73,6 +91,7 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         userAddressBtn = (RelativeLayout) view.findViewById(R.id.user_address_rlt);
         userInvitationBtn = (RelativeLayout) view.findViewById(R.id.user_invitation_rlt);
         userContactBtn = (RelativeLayout) view.findViewById(R.id.user_contact_rlt);
+        workTime_tv = view.findViewById(R.id.workTime);
         userContactBtn.setOnClickListener(this);
         userInvitationBtn.setOnClickListener(this);
         userAddressBtn.setOnClickListener(this);
@@ -193,8 +212,70 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
             case R.id.user_invitation_rlt://邀请用户
                 break;
             case R.id.user_contact_rlt://联系我们
+//                if (contactPhone == null || contactPhone.length() == 0) {
+//                    return;
+//                }
+                final BaseDialog dialog = BaseDialog.showDialog(getActivity(), R.layout.phone_dialog_layout);
+                dialog.setText(R.id.phone_tv, contactPhone);
+                TextView cancel_tv = dialog.getView(R.id.cancel_tv);
+                cancel_tv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                TextView callPhone = dialog.getView(R.id.open_right_tv);
+                callPhone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        call(contactPhone);
+                    }
+                });
                 break;
             default:
+                break;
+        }
+    }
+
+    /**
+     * 调用拨号界面
+     *
+     * @param phone 电话号码
+     */
+    private void call(String phone) {
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    /**
+     * 监听网络请求返回
+     *
+     * @param asyncHttpRequestMessage
+     */
+    public void onEventMainThread(AsyncHttpRequestMessage asyncHttpRequestMessage) {
+        String requestCode = asyncHttpRequestMessage.getRequestCode();
+        String responseMsg = asyncHttpRequestMessage.getResponseMsg();
+        String requestStatus = asyncHttpRequestMessage.getRequestStatus();
+        switch (requestCode) {
+            //验证码发送
+            case snedGetkitchenPhone_http:
+                //网络请求返回成功
+                if (requestStatus != null && requestStatus.equals(SystemUtility.RequestSuccess)) {
+                    String data = StringUtils.parserMessage(responseMsg, "data");
+//                    LOG.e("-------data---------" + data);
+                    String workTime = null;
+                    try {
+                        contactPhone = new JSONObject(data).getString("contactPhone");
+//                        LOG.e("-------contactPhone---------" + contactPhone);
+                        workTime = new JSONObject(data).getString("workTime");
+//                        LOG.e("-------workTime---------" + workTime);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    if (workTime != null && workTime.length() != 0)
+                        workTime_tv.setText(workTime);
+                }
                 break;
         }
     }

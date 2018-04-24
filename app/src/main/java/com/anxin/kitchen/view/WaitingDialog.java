@@ -1,5 +1,6 @@
 package com.anxin.kitchen.view;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
@@ -39,8 +40,8 @@ public class WaitingDialog extends Dialog {
     class MyCountDownTimer extends CountDownTimer {
         public MyCountDownTimer(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
-            ra = ObjectAnimator.ofFloat(mWaitingImg, "rotationY", 0f, 360f);
-            ra.setDuration(20000);
+            ra = ObjectAnimator.ofFloat(mWaitingImg, "rotationY", 0f, 180f);
+            ra.setDuration(1000);
         }
 
         @Override
@@ -56,6 +57,27 @@ public class WaitingDialog extends Dialog {
     private Handler handler = new Handler();
 
     public void startAnimation() {
+        ra.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                animator.start();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        });
         ra.start();
         mc.start();
     }
