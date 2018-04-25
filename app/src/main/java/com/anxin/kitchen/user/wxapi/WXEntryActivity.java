@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.anxin.kitchen.utils.ToastUtil;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
@@ -57,10 +58,10 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 //        LOG.e("-----onReq");
         switch (req.getType()) {
             case ConstantsAPI.COMMAND_GETMESSAGE_FROM_WX:
-//                LOG.e("-------------COMMAND_GETMESSAGE_FROM_WX");
+                LOG.e("-------------COMMAND_GETMESSAGE_FROM_WX");
                 break;
             case ConstantsAPI.COMMAND_SHOWMESSAGE_FROM_WX:
-//                LOG.e("-------------COMMAND_SHOWMESSAGE_FROM_WX");
+                LOG.e("-------------COMMAND_SHOWMESSAGE_FROM_WX");
                 break;
             default:
                 break;
@@ -75,25 +76,32 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 //        LOG.e("-------------errCode"+resp.errCode);
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
-//                LOG.e("-------ERR_OK");
+                LOG.e("-------ERR_OK");
                 //发送成功
+                String transaction = resp.transaction;
+                if (transaction != null && transaction.equals("kitchen_share")) {
+                    finish();
+                    break;
+                }
                 SendAuth.Resp sendResp = (SendAuth.Resp) resp;
                 if (sendResp != null) {
+                    String state = sendResp.state;
                     String code = sendResp.code;
                     getAccess_token(code);
                 }
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
-//                LOG.e("---------ERR_USER_CANCEL");
+                finish();
+                LOG.e("---------ERR_USER_CANCEL");
                 //发送取消
                 break;
             case BaseResp.ErrCode.ERR_AUTH_DENIED:
-//                LOG.e("------------ERR_AUTH_DENIED");
+                LOG.e("------------ERR_AUTH_DENIED");
                 //发送被拒绝
                 break;
             default:
                 //发送返回
-//                LOG.e("------------发送返回");
+                LOG.e("------------发送返回");
                 break;
         }
 //        finish();

@@ -23,6 +23,7 @@ import com.anxin.kitchen.bean.RecoverBean;
 import com.anxin.kitchen.bean.TablewareBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.user.wxapi.WXEntryActivity;
 import com.anxin.kitchen.utils.BaseDialog;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
@@ -32,6 +33,11 @@ import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.MyListView;
 import com.anxin.kitchen.view.WaitingDialog;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -185,6 +191,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         mCache = new Cache(this);
         mPrefrenceUtil = new PrefrenceUtil(this);
         mTransmitImg.setVisibility(View.VISIBLE);
+        mTransmitImg.setOnClickListener(this);
         mBackImg.setOnClickListener(this);
         mEnsurePayTv.setOnClickListener(this);
         mLocationRl.setOnClickListener(this);
@@ -289,6 +296,22 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
                 this.finish();
                 break;
             case R.id.transmit_img:
+                IWXAPI mApi = WXAPIFactory.createWXAPI(this, WXEntryActivity.WEIXIN_APP_ID, true);
+                mApi.registerApp(WXEntryActivity.WEIXIN_APP_ID);
+                WXMiniProgramObject miniProgramObj = new WXMiniProgramObject();
+                miniProgramObj.webpageUrl = "http://www.qq.com"; // 兼容低版本的网页链接
+                miniProgramObj.userName = "gh_9396f872dca5";     // 小程序原始id
+                miniProgramObj.path = "/pages/index/index";            //小程序页面路径
+                WXMediaMessage msg = new WXMediaMessage(miniProgramObj);
+                msg.title = "小程序消息Title";                    // 小程序消息title
+                msg.description = "小程序消息Desc";               // 小程序消息desc
+//                msg.thumbData = getThumb();                      // 小程序消息封面图片，小于128k
+
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = "kitchen_share";
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneSession;  // 目前支持会话
+                mApi.sendReq(req);
                 break;
             case R.id.ensure_pay_tv:
                 createOrder();
