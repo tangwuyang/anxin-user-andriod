@@ -165,7 +165,6 @@ public class LocationActivity extends Activity implements AMap.OnCameraChangeLis
         }
         geocoderSearch = new GeocodeSearch(this);
         geocoderSearch.setOnGeocodeSearchListener(this);
-
         setUpMap();
         ImageView back_img = (ImageView) findViewById(R.id.back_img);
         back_img.setOnClickListener(new View.OnClickListener() {
@@ -233,8 +232,6 @@ public class LocationActivity extends Activity implements AMap.OnCameraChangeLis
         mRelativePositionLv = findViewById(R.id.relative_position_lv);
         mInputLocationTv = findViewById(R.id.input_edittext);
         mChoseLocationLl = findViewById(R.id.chose_location_ll);
-        TextView titleTv = findViewById(R.id.title_tv);
-        titleTv.setText("请选择您的地址");
         locationTv = findViewById(R.id.location_tv);
         //必须要写
         mapView.onCreate(savedInstanceState);

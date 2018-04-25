@@ -114,6 +114,13 @@ public class SystemUtility {
         return AMUAC_IP + "/v1.0/order/pre_order_pay";
     }
 
+    /**
+     * 获取联系电话
+     */
+
+    public static String getonfigUrl() {
+        return AMUAC_IP + "/v1.0/system/system_config";
+    }
 
     /**
      * 支付
@@ -517,6 +524,7 @@ public class SystemUtility {
     public static String getKitchenId(String longitude, String latitude) {
         return AMUAC_IP + "/v1.0/kitchen/near?longitude=" + longitude + "&latitude=" + latitude;
     }
+
     /**
      * 取消订单url
      */

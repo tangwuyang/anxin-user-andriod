@@ -146,7 +146,8 @@ public class SendMealLocationActivity extends Activity implements View.OnClickLi
     };
 
     private void initView() {
-        setTitle("送餐地址");
+        TextView titleTv = findViewById(R.id.title_tv);
+        titleTv.setText("送餐地址");
         mLocationsLv = findViewById(R.id.send_location_lv);
         mBackImg = findViewById(R.id.back_img);
         mRelocationLl = findViewById(R.id.re_location_ll);
