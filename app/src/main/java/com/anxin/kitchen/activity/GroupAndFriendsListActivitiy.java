@@ -1,6 +1,8 @@
 package com.anxin.kitchen.activity;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -56,12 +58,33 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
     MyIndexStickyViewAdapter mAdapter;
     IndexHeaderFooterAdapter mBannerAdapter;
     private GroupAdapter groupAdapter = null;
-    private String mToken;
     private Cache mCache;
     private ArrayList<ContactEntity> Friendslist;
     private List<MenuEntity> grouplist;
     private List<ContactEntity> chosedFriendList;
     private int groupId;
+    private String mToken;
+    public static final String SEARCH_GROUP = "SEARCH_GROUP";
+    private PrefrenceUtil prefrenceUtil;
+    public static final String GET_FRIEND = "GET_FRIEND";
+
+    private Handler mHander = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:
+                    mAdapter = new MyIndexStickyViewAdapter(Friendslist);
+                    mIndexStickyView.setAdapter(mAdapter);
+                    mIndexStickyView.addItemDecoration(new IndexStickyViewDecoration(GroupAndFriendsListActivitiy.this));
+                    //添加饭团组
+                    setSearch();
+                    mAdapter.setOnItemClickListener(GroupAndFriendsListActivitiy.this);
+                    mAdapter.setOnItemLongClickListener(GroupAndFriendsListActivitiy.this);
+                    break;
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +126,45 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
             String friends = mGson.toJson(chosedFriendList);
             finish();
         }
+
+
+        //查询所有好友
+        if (requestCode != null && requestCode.equals(GET_FRIEND)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                String gsonSt = StringUtils.parserMessage(responseString, "data");
+                myLog("------------>" + gsonSt);
+                Gson gson = new Gson();
+                FriendsBean bean = gson.fromJson(responseString, FriendsBean.class);
+                if (null != bean.getData() && bean.getData().size() > 0) {
+                    if (!gsonSt.equals(Constant.NULL)) {
+                        myLog(bean.getData().size() + "--------" + gsonSt);
+                        mPrefrenceUtil.putFrinends(responseString);
+                        List<FriendsBean.Data> friendList = bean.getData();
+                        myLog("---------------" + friendList.size());
+                        if (null != Friendslist) {
+                            Friendslist.clear();
+                        } else {
+                            Friendslist = new ArrayList<>();
+                        }
+                        if (null != Friendslist) {
+                            for (int i = 0; i < friendList.size(); i++) {
+                                ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(), friendList.get(i).getPhone());
+                                Friendslist.add(contactEntity);
+                            }
+                        }
+                        myLog("----------->重新请求的");
+                        Message message = new Message();
+                        message.what = 1;
+                        mHander.sendMessage(message);
+                    }
+                } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
+                    SystemUtility.startLoginUser(GroupAndFriendsListActivitiy.this);
+                }
+
+
+                return;
+            }
+        }
     }
 
     @Override
@@ -124,13 +186,7 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
     }
 
     private void setGroupAndFriends() {
-        mAdapter = new MyIndexStickyViewAdapter(getFrindList());
-        mIndexStickyView.setAdapter(mAdapter);
-        mIndexStickyView.addItemDecoration(new IndexStickyViewDecoration(this));
-        //添加饭团组
-        setSearch();
-        mAdapter.setOnItemClickListener(this);
-        mAdapter.setOnItemLongClickListener(this);
+        getFrindList();
     }
 
     private void setSearch() {
@@ -215,21 +271,33 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
      * */
     private List<ContactEntity> getFrindList() {
         String friendsSt = mPrefrenceUtil.getFriends();
-        FriendsBean bean = mGson.fromJson(friendsSt,FriendsBean.class);
-        List<FriendsBean.Data> friendList =  bean.getData();
-        myLog("---------------"+friendList.size());
-        if (null!=Friendslist) {
-            Friendslist.clear();
-        }else {
-            Friendslist = new ArrayList<>();
-        }
-        if(null != Friendslist){
-            for (int i = 0;i<friendList.size();i++){
-                ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),friendList.get(i).getPhone());
-                Friendslist.add(contactEntity);
+        FriendsBean bean = null;
+        if ((!"null".equals(friendsSt))&&null!=friendsSt) {
+            bean = mGson.fromJson(friendsSt, FriendsBean.class);
+            List<FriendsBean.Data> friendList =  bean.getData();
+            myLog("---------------"+friendList.size());
+            if (null!=Friendslist) {
+                Friendslist.clear();
+            }else {
+                Friendslist = new ArrayList<>();
             }
+            if(null != Friendslist){
+                for (int i = 0;i<friendList.size();i++){
+                    ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),friendList.get(i).getPhone());
+                    Friendslist.add(contactEntity);
+                }
+            }
+            Message message = new Message();
+            message.what = 1;
+            mHander.sendMessage(message);
+            return Friendslist;
+        }else {
+            String url = SystemUtility.getFriendsUrl();
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put(Constant.TOKEN, mToken);
+            requestNet(url, dataMap, GET_FRIEND);
         }
-        return Friendslist;
+       return null;
     }
 
     private void setTitleBar() {

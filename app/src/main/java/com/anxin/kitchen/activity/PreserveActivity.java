@@ -222,14 +222,14 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         myLog(dayOfMonth + "--------------->day" + day+ "   " + hour);
         int sheYuday = 0;
         int diffDay = 0;
-        if ((day-1)==dayOfMonth){
+        if ((day)==dayOfMonth || (day-1)==dayOfMonth){
             diffDay = 7;
         }else {
-             sheYuday = dayOfMonth - day+1;
+             sheYuday = dayOfMonth - day;
              diffDay = 7-sheYuday;
         }
 
-
+        myLog("------------------>剩余天数" + diffDay);
         //这个月还差几天  去下个月中借齐
         //只判断到了月 后期要添加年的逻辑  否则有问题
         if (diffDay<=0){
@@ -260,29 +260,28 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 }
 
                 if ((day + 1) < 10) {
-                    dateSt = dateSt + "0" + (day + 1);
+                    dateSt = dateSt + "0" + (day + i);
                 } else {
-                    dateSt = dateSt +  (day + 1);
+                    dateSt = dateSt +  (day + i);
                 }
                 days.add(Long.valueOf(dateSt));
             }
             //补足7天
-            for(int i = 1; i<=7-sheYuday ; i++){
+            for(int i = 1; i<=diffDay ; i++){
                 String dateSt = String.valueOf(year);
-                if ((month+1 )< 10) {
+                if ((month )< 10) {
                     dateSt = dateSt + "0" + (month+1);
                 } else {
                     dateSt = dateSt + month;
                 }
 
                 if ((i) < 10) {
-                    dateSt = dateSt + "0" + (day);
+                    dateSt = dateSt + "0" + (i);
                 } else {
-                    dateSt = dateSt + (day);
+                    dateSt = dateSt + (i);
                 }
                 days.add(Long.valueOf(dateSt));
             }
-
         }
         for (Long dayl :
                 days) {
