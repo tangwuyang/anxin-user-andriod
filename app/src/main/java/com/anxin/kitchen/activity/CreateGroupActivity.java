@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.bean.GroupBean;
+import com.anxin.kitchen.bean.GroupBean2;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Cache;
@@ -28,11 +29,13 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
     private String mGroupName;
     private EditText mGroupNameEt;
     private boolean isAdd = false;
+    private boolean preserve = false;
     private static final String CREATE_GROUP = "CREATE_GROUP";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
+        preserve = getIntent().getBooleanExtra("preserve",false);
         initView();
     }
 
@@ -118,7 +121,13 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constant.GROUP_MAIN_REQEST_CODE && resultCode == Constant.ADD_FRIEND_CODE){
             Intent intent = new Intent();
+            String groupInfo = data.getStringExtra("groupInfo");
             intent.putExtra("isAdd",isAdd);
+            GroupBean2 groupBean = mGson.fromJson(groupInfo,GroupBean2.class);
+            intent.putExtra("groupInfo",groupInfo);
+            intent.putExtra("groupId",groupBean.getData().get(0).getGroupId());
+            intent.putExtra("nums",groupBean.getData().size());
+            intent.putExtra("groupName",mGroupName);
             setResult(Constant.ADD_FRIEND_CODE,intent);
             finish();
         }

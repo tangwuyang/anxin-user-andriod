@@ -119,12 +119,14 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
     public void requestSuccess(String responseString, String requestCode) {
         super.requestSuccess(responseString, requestCode);
         String status = StringUtils.parserMessage(responseString,Constant.REQUEST_STATUS);
-        if (null!=status && status.equals(Constant.REQUEST_SUCCESS)){
+        if (requestCode.equals(ADD_FRIENDS)&&null!=status && status.equals(Constant.REQUEST_SUCCESS)){
             myLog("--------->"+responseString);
             Intent intent1 = new Intent();
+            intent1.putExtra("groupInfo",responseString);
             setResult(Constant.ADD_FRIEND_CODE,intent1);
             String friends = mGson.toJson(chosedFriendList);
             finish();
+            return;
         }
 
 
@@ -331,13 +333,14 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
                     phonesBf.append(friend.getMobile()+",");
                     namesBf.append(friend.getName()+", ");
                 }
-                String phones = phonesBf.substring(0,phonesBf.length());
-                String names = namesBf.substring(0,namesBf.length());
+                String phones = phonesBf.substring(0,phonesBf.length()-1);
+                String names = namesBf.substring(0,namesBf.length()-1);
                 myLog("-----"+phones + "   " +names);
                 dataMap.put("groupId",groupId);
                 dataMap.put("token",mToken);
                 dataMap.put("phones",phones);
                 dataMap.put("names",names);
+                myLog("------------>" + groupId + "   " + mToken +"  " + phones + "  " + names);
                 requestNet(SystemUtility.addFriendsToGroupUrl(),dataMap,ADD_FRIENDS);
 
                 break;

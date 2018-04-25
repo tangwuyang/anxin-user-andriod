@@ -18,10 +18,14 @@ import com.anxin.kitchen.activity.SetCountActivity;
 import com.anxin.kitchen.bean.SearchGroupBean;
 import com.anxin.kitchen.interface_.OnGivedPermissionListener;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.PrefrenceUtil;
+import com.anxin.kitchen.utils.SystemUtility;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 唐午阳 on 2018/3/1.
@@ -36,9 +40,11 @@ public class ChoseGroupDialog extends Dialog{
     private SearchGroupBean bean;
     private long day;
     private String type;
+    private PreserveActivity activity;
     public ChoseGroupDialog(Context context, View.OnClickListener setCountListener, String tag) {
         super(context);
         mContext = context;
+
         this.setCountListener = setCountListener;
         day = Long.valueOf(tag.substring(0,tag.indexOf("-")));
         type = tag.substring(tag.indexOf("-")+1);
@@ -52,12 +58,19 @@ public class ChoseGroupDialog extends Dialog{
         setContentView(R.layout.chose_group_dialog_layout);
         prefrenceUtil = new PrefrenceUtil(mContext);
         mGroupList = prefrenceUtil.getGroups();
-        ((PreserveActivity)mContext).myLog("---------------->"+mGroupList);
+        activity = ((PreserveActivity)mContext);
+        activity.myLog("---------------->"+mGroupList);
         Gson gson = new Gson();
         if (null != mGroupList && !mGroupList.equals("null")){
         bean = gson.fromJson(mGroupList,SearchGroupBean.class);
             ListView groupLv = findViewById(R.id.group_lv);
             groupLv.setAdapter(new GroupAdapter());
+        }else {
+            //从新请求团
+            String url = SystemUtility.searchGroupUrl();
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put(Constant.TOKEN, activity.mToken);
+            activity.requestNet(url, dataMap, activity.SEARCH_GROUP);
         }
             ImageView cancelImg = findViewById(R.id.cancel_img);
             TextView setcount = (TextView) findViewById(R.id.cancel_tv);
@@ -87,9 +100,11 @@ public class ChoseGroupDialog extends Dialog{
 
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(mContext, CreateGroupActivity.class);
-            mContext.startActivity(intent);
+           /* Intent intent = new Intent(mContext, CreateGroupActivity.class);
+            mContext.startActivity(intent);*/
             ChoseGroupDialog.this.dismiss();
+            activity.toCreatGroupAct();
+
         }
     };
 

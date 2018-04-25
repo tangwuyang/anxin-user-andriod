@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.anxin.kitchen.bean.FoodsBean;
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.MealBean.FoodList;
+import com.anxin.kitchen.bean.SearchGroupBean;
 import com.anxin.kitchen.bean.SendBean;
 import com.anxin.kitchen.bean.TablewareBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
@@ -34,6 +35,7 @@ import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.ChoseGroupDialog;
 import com.anxin.kitchen.view.DeleteMealDialog;
 import com.anxin.kitchen.view.OrderingRuleDialog;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
@@ -50,8 +52,10 @@ import java.util.Map;
 public class PreserveActivity extends BaseActivity implements View.OnClickListener, RequestNetListener {
     private static final String GET_TABLEWARE = "GET_TABLEWARE";
     private static final String GET_SEND_COST = "GET_SEND_COST";
+    public static final String SEARCH_GROUP = "SEARCH_GROUP";
     private static final int CHOSE_MEAL = 100;
     private static final int SET_NUMS = 102;   //设置套餐数量
+    private static final int CREAT_GROUP = 200;
     private ListView mAddPreserveLv;
     private List mDayList = new ArrayList();
     private TextView viewKitchen;
@@ -74,7 +78,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private String tablewareName;    //餐具名
     private double sendCost;   // 配送费
     private String tablewareType = "";
-
+    private String mGroupList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +89,21 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         getNextDayOfWeek();
         initData();
         getSendCost();
+        setGroup();
+    }
+
+    private void setGroup() {
+        /*mGroupList = new PrefrenceUtil(this).getGroups();
+        if (null != mGroupList && !mGroupList.equals("null")){
+
+        }else {
+            //从新请求团*/
+            String url = SystemUtility.searchGroupUrl();
+            Map<String, Object> dataMap = new HashMap<>();
+            isLogin();
+            dataMap.put(Constant.TOKEN, mToken);
+            requestNet(url, dataMap, SEARCH_GROUP);
+        //}
     }
 
 
@@ -191,11 +210,32 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             String tempSt = responseString.substring(responseString.indexOf("\"data\":"), responseString.lastIndexOf("}"));
             String tablewareSt = tempSt.substring(tempSt.indexOf(":", 0) + 1);
             tablewareBean = mGson.fromJson(tablewareSt, TablewareBean.class);
+            return;
         }
 
         if (requestCode == GET_SEND_COST && status.equals(Constant.REQUEST_SUCCESS)) {
             SendBean bean = mGson.fromJson(responseString, SendBean.class);
             sendCost = bean.getData().getDeliveryGroupPrice();
+            return;
+        }
+
+
+        //查询所有创建的团
+        if (requestCode != null && requestCode.equals(SEARCH_GROUP)) {
+            if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                String gsonSt = StringUtils.parserMessage(responseString, "data");
+                myLog("------------>" + gsonSt);
+                Gson gson = new Gson();
+                SearchGroupBean bean = gson.fromJson(gsonSt, SearchGroupBean.class);
+                if (!gsonSt.equals(Constant.NULL)) {
+                    myLog(bean.getData().size() + "--------" + gsonSt);
+                    new PrefrenceUtil(this).putGroups(gsonSt);
+
+                }
+            } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
+                SystemUtility.startLoginUser(this);
+            }
+            return;
         }
     }
 
@@ -462,6 +502,12 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 myLog("-----------day---->" + allNums);
             }
         }
+    }
+
+    public void toCreatGroupAct() {
+        Intent intent = new Intent(this,CreateGroupActivity.class);
+        intent.putExtra("preserve",true);
+        startActivityForResult(intent,CREAT_GROUP);
     }
 
 
@@ -958,11 +1004,25 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             }*/
             preserverAdapter.notifyDataSetChanged();
         }
+
+        if (requestCode == CREAT_GROUP && resultCode == Constant.ADD_FRIEND_CODE) {
+            //long day, String type, int groupId, String groupName, int nums, boolean isContain
+            int groupId = data.getIntExtra("groupId",1);
+            int nums = data.getIntExtra("nums",1);
+            String groupName = data.getStringExtra("groupName");
+            myLog("-------------->" + groupId +  " " + nums +  "  " + groupName);
+            updataGroup(1,"1",groupId,groupName,nums,true);
+        }
+
     }
 
     public void choseGroup(long day, String type, int groupId, String groupName, int nums) {
         boolean isContain = preserverAdapter.preMealMaps.get(day).containsKey(String.valueOf(type));
 
+        updataGroup(day, type, groupId, groupName, nums, isContain);
+    }
+
+    private void updataGroup(long day, String type, int groupId, String groupName, int nums, boolean isContain) {
         for (Long key : preserverAdapter.preMealMaps.keySet()
                 ) {
             for (String meal :
@@ -985,7 +1045,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelativeGroupId(groupId);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelatedGroupName(groupName);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(nums);*/
-            myLog("--------------->fen:" + preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
+           // myLog("--------------->fen:" + preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
         }
         preserverAdapter.notifyDataSetChanged();
     }
