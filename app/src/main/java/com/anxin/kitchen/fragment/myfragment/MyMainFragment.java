@@ -212,9 +212,9 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
             case R.id.user_invitation_rlt://邀请用户
                 break;
             case R.id.user_contact_rlt://联系我们
-//                if (contactPhone == null || contactPhone.length() == 0) {
-//                    return;
-//                }
+                if (contactPhone == null || contactPhone.length() == 0) {
+                    return;
+                }
                 final BaseDialog dialog = BaseDialog.showDialog(getActivity(), R.layout.phone_dialog_layout);
                 dialog.setText(R.id.phone_tv, contactPhone);
                 TextView cancel_tv = dialog.getView(R.id.cancel_tv);
@@ -265,14 +265,10 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                     String data = StringUtils.parserMessage(responseMsg, "data");
 //                    LOG.e("-------data---------" + data);
                     String workTime = null;
-                    try {
-                        contactPhone = new JSONObject(data).getString("contactPhone");
-//                        LOG.e("-------contactPhone---------" + contactPhone);
-                        workTime = new JSONObject(data).getString("workTime");
-//                        LOG.e("-------workTime---------" + workTime);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    contactPhone = data.substring(data.indexOf("contactPhone:") + 13, data.indexOf("}"));
+//                    LOG.e("-------contactPhone---------" + contactPhone);
+                    workTime = data.substring(data.indexOf("workTime:") + 9, data.indexOf(","));
+//                    LOG.e("-------workTime---------" + workTime);
                     if (workTime != null && workTime.length() != 0)
                         workTime_tv.setText(workTime);
                 }
