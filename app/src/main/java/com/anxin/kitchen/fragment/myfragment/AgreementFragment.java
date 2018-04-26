@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 协议界面
@@ -36,15 +37,20 @@ public class AgreementFragment extends HomeBaseFragment implements View.OnClickL
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("AgreementFragment");
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("AgreementFragment");
+    }
+
     private void initView() {
         backBtn = (ImageView) view.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(this);
-    }
-
-    @Override
-    public void onResume() {
-        // TODO Auto-generated method stub
-        super.onResume();
     }
 
     @Override

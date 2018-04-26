@@ -20,6 +20,7 @@ import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.utils.UmengHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,8 +89,13 @@ public class WalletExtractFragment extends HomeBaseFragment implements View.OnCl
 
     @Override
     public void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
+        MobclickAgent.onPageStart("WalletExtractFragment");
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("WalletExtractFragment");
     }
 
     @Override

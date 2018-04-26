@@ -4,6 +4,7 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
+import com.umeng.analytics.MobclickAgent;
 
 public class ToastUtil {
 
@@ -33,7 +34,7 @@ public class ToastUtil {
             }
             toast.show();
         } catch (Exception e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 
@@ -48,7 +49,7 @@ public class ToastUtil {
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
         } catch (Exception e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 
@@ -62,7 +63,7 @@ public class ToastUtil {
             }
             toast.show();
         } catch (Exception e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 }

@@ -10,6 +10,9 @@ import android.text.TextUtils;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.anxin.kitchen.MyApplication;
+import com.umeng.analytics.MobclickAgent;
+
 /**
  * Created by Luojingjing on 2017/11/3.
  */
@@ -63,7 +66,7 @@ public class CommonUtil {
                 rotation = getImageRotationFromUrl(path);
             }
         } catch (Exception e) {
-
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -100,7 +103,7 @@ public class CommonUtil {
                     orientation = 0;
             }
         } catch (Exception e) {
-
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
             orientation = 0;
         }
         return orientation;

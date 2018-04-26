@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.user.R;
@@ -17,6 +18,7 @@ import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,8 +51,15 @@ public class EditAddressActivity extends BaseActivity implements View.OnClickLis
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void initView() {
@@ -222,7 +231,7 @@ public class EditAddressActivity extends BaseActivity implements View.OnClickLis
             jsonObject.put("longitude", addressBean.getLongitude());
             jsonObject.put("latitude", addressBean.getLatitude());
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         String urlPath = SystemUtility.sendUpdateAddress();
         Map<String, Object> dataMap = new HashMap();

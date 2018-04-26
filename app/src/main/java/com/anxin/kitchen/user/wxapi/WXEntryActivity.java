@@ -18,6 +18,7 @@ import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.socialize.weixin.view.WXCallbackActivity;
 
 
@@ -67,6 +68,18 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                 break;
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     //发送到微信请求的响应结果
@@ -140,7 +153,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                     String access_token = jsonObject.getString("access_token").toString().trim();
                     getUserMesg(access_token, openid);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    MobclickAgent.reportError(WXEntryActivity.this, e);
                 }
 
             }
@@ -192,7 +205,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                     LoginActivity.userNickName = nickname;
                     LoginActivity.userLogoPath = headimgurl;
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    MobclickAgent.reportError(WXEntryActivity.this, e);
                 }
                 finish();
             }

@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.AddressListBean;
 import com.anxin.kitchen.bean.MessageBean;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -384,7 +386,7 @@ public class Cache {
             sharedata.putString(key, bytesToHexString);
             sharedata.commit();
         } catch (IOException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
             Log.e("", "保存obj失败");
         }
     }
@@ -439,13 +441,13 @@ public class Cache {
             }
         } catch (StreamCorruptedException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         } catch (ClassNotFoundException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         //所有异常返回null
         return null;

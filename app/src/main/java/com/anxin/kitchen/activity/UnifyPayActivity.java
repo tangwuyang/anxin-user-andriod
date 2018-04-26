@@ -38,6 +38,7 @@ import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -371,7 +372,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             return dateSt.substring(0, 10);
         } catch (ParseException e) {
             myLog("------------------>异常");
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         return null;
     }
@@ -401,6 +402,18 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             allMealMoney += (mealMoney + tablewareUseMoney1 + sendCosts);
             allTablewareMoeny += tablewareDeMoney;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     int position = -1;

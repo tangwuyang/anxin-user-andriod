@@ -26,6 +26,7 @@ import com.anxin.kitchen.utils.SystemUtility;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,10 +86,15 @@ public class PreserveListActivity extends BaseActivity implements RequestNetList
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        //setData();
-        //setContentAdapter();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void setContentAdapter(FoodsBean foodsBean) {

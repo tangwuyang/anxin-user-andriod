@@ -16,6 +16,7 @@ import com.anxin.kitchen.bean.Message;
 import com.anxin.kitchen.bean.MessageBean;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.DateUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,16 @@ public class MessageCenterActivity extends BaseActivity {
         messageBeanList.add(new MessageBean());
         messageBeanList.add(new MessageBean());
     }
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
     private void initView() {
         mMessageLv = findViewById(R.id.message_lv);
         mMessageAdapter = new MessageAdapter();

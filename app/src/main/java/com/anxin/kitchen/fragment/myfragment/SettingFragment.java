@@ -14,6 +14,7 @@ import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.UmengHelper;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 设置界面
@@ -57,10 +58,14 @@ public class SettingFragment extends HomeBaseFragment implements View.OnClickLis
 
     @Override
     public void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
+        MobclickAgent.onPageStart("SettingFragment");
     }
 
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("SettingFragment");
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

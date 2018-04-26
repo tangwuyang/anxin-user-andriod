@@ -34,7 +34,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.user.R;
+import com.umeng.analytics.MobclickAgent;
 
 import static com.anxin.kitchen.view.RoundedDrawable.CORNER_BOTTOM_LEFT;
 import static com.anxin.kitchen.view.RoundedDrawable.CORNER_BOTTOM_RIGHT;
@@ -261,6 +263,7 @@ public class RoundedImageView extends ImageView {
       try {
         d = rsrc.getDrawable(mResource);
       } catch (Exception e) {
+        MobclickAgent.reportError(MyApplication.getInstance(), e);
         Log.w(TAG, "Unable to find resource: " + mResource, e);
         // Don't try again.
         mResource = 0;

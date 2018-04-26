@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.view.MyGridView;
 import com.anxin.kitchen.view.MyListView;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.SimpleTimeZone;
 /**
  * 订餐详细介绍
  * created by tangwuyang
- * */
+ */
 public class MealIntroduceActivity extends BaseActivity {
     private List<String> nameLists = new ArrayList<>();
     private List<String> nunmsLists = new ArrayList<>();
@@ -30,6 +31,7 @@ public class MealIntroduceActivity extends BaseActivity {
 
     private MyGridView meterialGv;
     private MyListView stepsLv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +56,19 @@ public class MealIntroduceActivity extends BaseActivity {
         stepsLv.setAdapter(new StepAdapter());
     }
 
-    class StepAdapter extends  BaseAdapter{
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    class StepAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
@@ -73,14 +87,15 @@ public class MealIntroduceActivity extends BaseActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            view = LayoutInflater.from(MealIntroduceActivity.this).inflate(R.layout.cook_step_item,viewGroup,false);
+            view = LayoutInflater.from(MealIntroduceActivity.this).inflate(R.layout.cook_step_item, viewGroup, false);
             TextView step = view.findViewById(R.id.step_tv);
             step.setText(stepLists.get(i));
 
             return view;
         }
     }
-    class MeterialGv extends BaseAdapter{
+
+    class MeterialGv extends BaseAdapter {
 
         @Override
         public int getCount() {
@@ -99,7 +114,7 @@ public class MealIntroduceActivity extends BaseActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            view = LayoutInflater.from(MealIntroduceActivity.this).inflate(R.layout.material_item,viewGroup,false);
+            view = LayoutInflater.from(MealIntroduceActivity.this).inflate(R.layout.material_item, viewGroup, false);
             TextView name = view.findViewById(R.id.material_name_tv);
             name.setText(nameLists.get(i));
             TextView nums = view.findViewById(R.id.nums_tv);
@@ -107,6 +122,7 @@ public class MealIntroduceActivity extends BaseActivity {
             return view;
         }
     }
+
     private void initData() {
         nameLists.add("大闸蟹");
         nameLists.add("香辣酱");

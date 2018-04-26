@@ -21,12 +21,13 @@ import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.WaitingDialog;
 import com.lcodecore.ILabel;
 import com.lcodecore.LabelLayout;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SearchMealActivityActivity extends BaseActivity implements View.OnClickListener,RequestNetListener {
+public class SearchMealActivityActivity extends BaseActivity implements View.OnClickListener, RequestNetListener {
 
     private static final String HOT_FOOD = "HOT_FOOD";
     private EditText mSearchView;
@@ -35,6 +36,7 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
     private LinearLayout mSignLl;
     private LabelLayout mHotLabelLy;
     private WaitingDialog mDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,20 +47,32 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
         requestHotMeals();
     }
 
-    private void showDialog(){
-        if (null == mDialog){
-            mDialog = new WaitingDialog(this,100);
+    private void showDialog() {
+        if (null == mDialog) {
+            mDialog = new WaitingDialog(this, 100);
             mDialog.show();
             mDialog.startAnimation();
-        }else {
+        } else {
             mDialog.startAnimation();
             mDialog.show();
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
     //请求热搜商品
     private void requestHotMeals() {
-        requestNet(SystemUtility.getHotFoodsUrl(),null,HOT_FOOD);
+        requestNet(SystemUtility.getHotFoodsUrl(), null, HOT_FOOD);
     }
 
     private void initView() {
@@ -81,7 +95,7 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
             @Override
             public void afterTextChanged(Editable editable) {
                 String numSt = mSearchView.getText().toString();
-                if (numSt==null || numSt.length()<1){
+                if (numSt == null || numSt.length() < 1) {
                     mNoContentsImg.setVisibility(View.GONE);
                     mHotLabelLy.setVisibility(View.VISIBLE);
                     return;
@@ -93,7 +107,7 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.search_tv:
                 mHotLabelLy.setVisibility(View.GONE);
                 mNoContentsImg.setVisibility(View.VISIBLE);
@@ -106,8 +120,8 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
         super.requestSuccess(responseString, requestCode);
         closeDialog();
         String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
-        if (requestCode==HOT_FOOD && status.equals(Constant.REQUEST_SUCCESS)){
-            HotBean bean = mGson.fromJson(responseString,HotBean.class);
+        if (requestCode == HOT_FOOD && status.equals(Constant.REQUEST_SUCCESS)) {
+            HotBean bean = mGson.fromJson(responseString, HotBean.class);
             List<ILabel> lableList = new ArrayList<>();
             for (HotBean.Data data :
                     bean.getData()) {
@@ -121,10 +135,10 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
             mHotLabelLy.setOnCheckChangedListener(new LabelLayout.OnCheckChangeListener() {
                 @Override
                 public void onCheckChanged(ILabel label, boolean isChecked) {
-                    if (isChecked){
-                    mHotLabelLy.setVisibility(View.GONE);
-                    mNoContentsImg.setVisibility(View.VISIBLE);
-                    mHotLabelLy.setSelected(false);
+                    if (isChecked) {
+                        mHotLabelLy.setVisibility(View.GONE);
+                        mNoContentsImg.setVisibility(View.VISIBLE);
+                        mHotLabelLy.setSelected(false);
 
                     }
                 }
@@ -138,7 +152,7 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
     }
 
     private void closeDialog() {
-        if (null!=mDialog){
+        if (null != mDialog) {
             mDialog.stopAnimation();
             mDialog.dismiss();
         }

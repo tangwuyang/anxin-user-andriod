@@ -31,6 +31,7 @@ import com.anxin.kitchen.utils.SharedPreferencesUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.WaitingDialog;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,13 +128,19 @@ public class OrderMainFragment extends HomeBaseFragment implements View.OnClickL
     public void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
+        MobclickAgent.onPageStart("OrderMainFragment");
         if (isLoginResult)
             return;
         getOrderData();
     }
 
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("OrderMainFragment");
+    }
+
     public void getOrderData() {
-            token = new Cache(getActivity()).getAMToken();
+        token = new Cache(getActivity()).getAMToken();
 //        token = "C59B7F78953E2B894FBCFE12ED66E5D9";
         if (token == null) {
             if (!SystemUtility.isForeground(getContext(), "com.anxin.kitchen.activity.LoginActivity")) {

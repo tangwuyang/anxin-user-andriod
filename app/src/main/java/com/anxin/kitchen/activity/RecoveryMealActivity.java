@@ -43,6 +43,7 @@ import com.anxin.kitchen.view.MyListView;
 import com.anxin.kitchen.view.RefreshLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,6 +107,7 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         if (isLogin()) {
             Map<String, Object> dataMap = new HashMap<>();
             mToken = mCache.getAMToken();
@@ -134,7 +136,11 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
         }
     }
 
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

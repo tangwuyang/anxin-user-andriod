@@ -38,13 +38,14 @@ import com.bluetooth.tangwuyang.fantuanlibrary.entity.BaseEntity;
 import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemClickListener;
 import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemLongClickListener;
 import com.google.gson.Gson;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GroupAndFriendsListActivitiy extends BaseActivity implements View.OnClickListener,OnItemClickListener,OnItemLongClickListener,RequestNetListener{
+public class GroupAndFriendsListActivitiy extends BaseActivity implements View.OnClickListener, OnItemClickListener, OnItemLongClickListener, RequestNetListener {
     private static final String ADD_FRIENDS = "ADD_FRIENDS";
     private TextView mCancelTv;
     private ImageView mBackImg;
@@ -68,11 +69,11 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
     private PrefrenceUtil prefrenceUtil;
     public static final String GET_FRIEND = "GET_FRIEND";
 
-    private Handler mHander = new Handler(){
+    private Handler mHander = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case 1:
                     mAdapter = new MyIndexStickyViewAdapter(Friendslist);
                     mIndexStickyView.setAdapter(mAdapter);
@@ -85,6 +86,7 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
             }
         }
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +96,7 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
         mToken = mCache.getAMToken();
         mGson = new Gson();
         Intent intent = getIntent();
-        groupId = intent.getIntExtra("groupId",-1);
+        groupId = intent.getIntExtra("groupId", -1);
         initView();
         setGroupAndFriends();
     }
@@ -104,26 +106,37 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
         //弹出等待
         popLoad();
         //根据团查询每个团的好友
-        for (MenuEntity group:
-             grouplist) {
+        for (MenuEntity group :
+                grouplist) {
             int groupId = group.getGroupId();
-            Map<String ,Object> dataMap = new HashMap<>();
-            dataMap.put("groupId",groupId);
-            dataMap.put("token",mToken);
-            requestNet(SystemUtility.getFriendsUrl(),dataMap,group.getMenuTitle());
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("groupId", groupId);
+            dataMap.put("token", mToken);
+            requestNet(SystemUtility.getFriendsUrl(), dataMap, group.getMenuTitle());
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     @Override
     public void requestSuccess(String responseString, String requestCode) {
         super.requestSuccess(responseString, requestCode);
-        String status = StringUtils.parserMessage(responseString,Constant.REQUEST_STATUS);
-        if (requestCode.equals(ADD_FRIENDS)&&null!=status && status.equals(Constant.REQUEST_SUCCESS)){
-            myLog("--------->"+responseString);
+        String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
+        if (requestCode.equals(ADD_FRIENDS) && null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+            myLog("--------->" + responseString);
             Intent intent1 = new Intent();
-            intent1.putExtra("groupInfo",responseString);
-            setResult(Constant.ADD_FRIEND_CODE,intent1);
+            intent1.putExtra("groupInfo", responseString);
+            setResult(Constant.ADD_FRIEND_CODE, intent1);
             String friends = mGson.toJson(chosedFriendList);
             finish();
             return;
@@ -251,13 +264,14 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
 
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, BaseEntity itemData) {
-                ((ImageViewVH)holder).groupLv.setAdapter(groupAdapter);
-                ((ImageViewVH)holder).groupTV.setText("饭团");
+                ((ImageViewVH) holder).groupLv.setAdapter(groupAdapter);
+                ((ImageViewVH) holder).groupTV.setText("饭团");
             }
 
             class ImageViewVH extends RecyclerView.ViewHolder {
                 MyListView groupLv;
                 TextView groupTV;
+
                 public ImageViewVH(View itemView) {
                     super(itemView);
                     groupLv = (MyListView) itemView.findViewById(R.id.group_lv);
@@ -270,22 +284,22 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
 
     /**
      * 获取缓存中的好友列表
-     * */
+     */
     private List<ContactEntity> getFrindList() {
         String friendsSt = mPrefrenceUtil.getFriends();
         FriendsBean bean = null;
-        if ((!"null".equals(friendsSt))&&null!=friendsSt) {
+        if ((!"null".equals(friendsSt)) && null != friendsSt) {
             bean = mGson.fromJson(friendsSt, FriendsBean.class);
-            List<FriendsBean.Data> friendList =  bean.getData();
-            myLog("---------------"+friendList.size());
-            if (null!=Friendslist) {
+            List<FriendsBean.Data> friendList = bean.getData();
+            myLog("---------------" + friendList.size());
+            if (null != Friendslist) {
                 Friendslist.clear();
-            }else {
+            } else {
                 Friendslist = new ArrayList<>();
             }
-            if(null != Friendslist){
-                for (int i = 0;i<friendList.size();i++){
-                    ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(),friendList.get(i).getPhone());
+            if (null != Friendslist) {
+                for (int i = 0; i < friendList.size(); i++) {
+                    ContactEntity contactEntity = new ContactEntity(friendList.get(i).getTrueName(), friendList.get(i).getPhone());
                     Friendslist.add(contactEntity);
                 }
             }
@@ -293,13 +307,13 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
             message.what = 1;
             mHander.sendMessage(message);
             return Friendslist;
-        }else {
+        } else {
             String url = SystemUtility.getFriendsUrl();
             Map<String, Object> dataMap = new HashMap<>();
             dataMap.put(Constant.TOKEN, mToken);
             requestNet(url, dataMap, GET_FRIEND);
         }
-       return null;
+        return null;
     }
 
     private void setTitleBar() {
@@ -314,56 +328,55 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.cancel_tv:
                 Intent intent = new Intent();
-                setResult(Constant.ADD_FRIEND_CODE,intent);
+                setResult(Constant.ADD_FRIEND_CODE, intent);
                 finish();
-               break;
+                break;
             case R.id.complete_bottom_tv:
-                if (chosedFriendList.size()==0){
+                if (chosedFriendList.size() == 0) {
                     Toast.makeText(this, "请选择好友", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Map<String,Object> dataMap = new HashMap<>();
+                Map<String, Object> dataMap = new HashMap<>();
                 StringBuffer phonesBf = new StringBuffer();
                 StringBuffer namesBf = new StringBuffer();
                 for (ContactEntity friend :
                         chosedFriendList) {
-                    phonesBf.append(friend.getMobile()+",");
-                    namesBf.append(friend.getName()+", ");
+                    phonesBf.append(friend.getMobile() + ",");
+                    namesBf.append(friend.getName() + ", ");
                 }
-                String phones = phonesBf.substring(0,phonesBf.length()-1);
-                String names = namesBf.substring(0,namesBf.length()-1);
-                myLog("-----"+phones + "   " +names);
-                dataMap.put("groupId",groupId);
-                dataMap.put("token",mToken);
-                dataMap.put("phones",phones);
-                dataMap.put("names",names);
-                myLog("------------>" + groupId + "   " + mToken +"  " + phones + "  " + names);
-                requestNet(SystemUtility.addFriendsToGroupUrl(),dataMap,ADD_FRIENDS);
+                String phones = phonesBf.substring(0, phonesBf.length() - 1);
+                String names = namesBf.substring(0, namesBf.length() - 1);
+                myLog("-----" + phones + "   " + names);
+                dataMap.put("groupId", groupId);
+                dataMap.put("token", mToken);
+                dataMap.put("phones", phones);
+                dataMap.put("names", names);
+                myLog("------------>" + groupId + "   " + mToken + "  " + phones + "  " + names);
+                requestNet(SystemUtility.addFriendsToGroupUrl(), dataMap, ADD_FRIENDS);
 
                 break;
         }
     }
 
 
-
     public List<MenuEntity> getGroupList() {
         String groupSt = mPrefrenceUtil.getGroups();
-        myLog("-------groupst--->"+groupSt);
-        SearchGroupBean bean = mGson.fromJson(groupSt,SearchGroupBean.class);
+        myLog("-------groupst--->" + groupSt);
+        SearchGroupBean bean = mGson.fromJson(groupSt, SearchGroupBean.class);
         List<SearchGroupBean.Data> groupList = bean.getData();
-        if (null == this.grouplist){
+        if (null == this.grouplist) {
             this.grouplist = new ArrayList<>();
         }
         this.grouplist.clear();
-        myLog("----------------"+groupList.size());
-        for (int i=0;i<groupList.size();i++){
-            myLog("-----------gro-----"+groupList.get(i).getGroupDesc());
-            this.grouplist.add(new MenuEntity(groupList.get(i).getGroupDesc(),R.drawable.vector_contact_focus));
+        myLog("----------------" + groupList.size());
+        for (int i = 0; i < groupList.size(); i++) {
+            myLog("-----------gro-----" + groupList.get(i).getGroupDesc());
+            this.grouplist.add(new MenuEntity(groupList.get(i).getGroupDesc(), R.drawable.vector_contact_focus));
         }
-        myLog("------------------->"+this.grouplist.size());
+        myLog("------------------->" + this.grouplist.size());
         return this.grouplist;
     }
 
@@ -412,17 +425,17 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
             contentViewHolder.mSelectImg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (contentViewHolder.isChose){
+                    if (contentViewHolder.isChose) {
                         contentViewHolder.isChose = false;
                         chosedFriendList.remove(itemData);
                         contentViewHolder.mSelectImg.setImageDrawable(GroupAndFriendsListActivitiy.this.getResources().getDrawable(R.drawable.unselected_drawable));
-                    }else {
+                    } else {
                         contentViewHolder.isChose = true;
                         chosedFriendList.add(itemData);
                         contentViewHolder.mSelectImg.setImageDrawable(GroupAndFriendsListActivitiy.this.getResources().getDrawable(R.drawable.selected_drawable));
                     }
 
-                    mChosedTv.setText(chosedFriendList.size()+"人");
+                    mChosedTv.setText(chosedFriendList.size() + "人");
                 }
             });
         }
@@ -435,6 +448,7 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
         ImageView mAvatar;
         ImageView mSelectImg;
         boolean isChose;
+
         public ContentViewHolder(View itemView) {
             super(itemView);
             isChose = false;
@@ -444,6 +458,7 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
             mAvatar = (ImageView) itemView.findViewById(R.id.img_avatar);
         }
     }
+
     class IndexViewHolder extends RecyclerView.ViewHolder {
         TextView mTextView;
 
@@ -477,12 +492,12 @@ public class GroupAndFriendsListActivitiy extends BaseActivity implements View.O
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            view = LayoutInflater.from(GroupAndFriendsListActivitiy.this).inflate(R.layout.indexsticky_item_contact,viewGroup,false);
+            view = LayoutInflater.from(GroupAndFriendsListActivitiy.this).inflate(R.layout.indexsticky_item_contact, viewGroup, false);
             ImageView selectImg = view.findViewById(R.id.select_img);
             selectImg.setVisibility(View.VISIBLE);
             TextView nameTv = view.findViewById(R.id.tv_name);
             String groupName = dataList.get(i).getMenuTitle();
-            myLog("------------name:"+groupName);
+            myLog("------------name:" + groupName);
             nameTv.setText(dataList.get(i).getMenuTitle());
 
             return view;

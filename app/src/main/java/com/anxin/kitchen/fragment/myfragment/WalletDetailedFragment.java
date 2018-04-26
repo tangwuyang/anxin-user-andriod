@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.AddressListBean;
 import com.anxin.kitchen.bean.MoneyLogBean;
 import com.anxin.kitchen.custom.view.slipview.PullToRefreshBase;
@@ -25,6 +26,7 @@ import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.utils.UmengHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -102,8 +104,13 @@ public class WalletDetailedFragment extends HomeBaseFragment implements View.OnC
 
     @Override
     public void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
+        MobclickAgent.onPageStart("WalletDetailedFragment");
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("WalletDetailedFragment");
     }
 
     @Override
@@ -226,7 +233,7 @@ public class WalletDetailedFragment extends HomeBaseFragment implements View.OnC
             recordsListView.onRefreshComplete();
             myAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 

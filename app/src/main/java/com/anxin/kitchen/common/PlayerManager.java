@@ -20,9 +20,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.medio.IRenderView;
 import com.anxin.kitchen.medio.IjkVideoView;
 import com.anxin.kitchen.user.R;
+import com.umeng.analytics.MobclickAgent;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -131,6 +133,7 @@ public class PlayerManager {
             IjkMediaPlayer.native_profileBegin("libijkplayer.so");
             playerSupport=true;
         } catch (Throwable e) {
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
             Log.e("GiraffePlayer", "loadLibraries error", e);
         }
         this.activity=activity;

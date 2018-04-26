@@ -36,13 +36,14 @@ import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexHeaderFooterAdapter;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexStickyViewAdapter;
 import com.bluetooth.tangwuyang.fantuanlibrary.entity.BaseEntity;
 import com.google.gson.Gson;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ContactsActivity extends BaseActivity implements View.OnClickListener,RequestNetListener{
+public class ContactsActivity extends BaseActivity implements View.OnClickListener, RequestNetListener {
     private static final String ADD_FRIEND_FROM_CONTACT = "ADD_FRIEND_FROM_CONTACT";
     private static final int BAIDU_READ_PHONE_STATE = 100;
     private Gson mGson;
@@ -64,8 +65,8 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
         mBackImg = findViewById(R.id.back_img);
         mGson = new Gson();
         Intent intent = getIntent();
-        if (null != intent){
-            mGroupId = intent.getIntExtra("groupId",0);
+        if (null != intent) {
+            mGroupId = intent.getIntExtra("groupId", 0);
             mGroupName = intent.getStringExtra("groupName");
         }
 
@@ -79,7 +80,7 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestPermission() {
         boolean hasContactsPermission = getContactsPermission();
-        myLog("-------------->"+hasContactsPermission);
+        myLog("-------------->" + hasContactsPermission);
         if (!hasContactsPermission) {
             popRequestWindow();
         }
@@ -88,18 +89,29 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void popRequestWindow() {
 
-       requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},BAIDU_READ_PHONE_STATE);
-       RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
+        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, BAIDU_READ_PHONE_STATE);
+        RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onGivedPermssion() {
                 //ActivityCompat.requestPermissions(ContactsActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, BAIDU_READ_PHONE_STATE);
-                requestPermissions(new String[]{Manifest.permission.WRITE_CONTACTS},BAIDU_READ_PHONE_STATE);
+                requestPermissions(new String[]{Manifest.permission.WRITE_CONTACTS}, BAIDU_READ_PHONE_STATE);
             }
         });
         dialog.show();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     private boolean getContactsPermission() {
 
@@ -120,7 +132,7 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.back_img:
                 Intent intent = new Intent();
                 // 获取用户计算后的结果
@@ -168,10 +180,10 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
             contentViewHolder.mAddTv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    boolean addStatus = addFriendToThisGroup(itemData.getMobile(),itemData.getName(),contentViewHolder);
-                    if (addStatus){
+                    boolean addStatus = addFriendToThisGroup(itemData.getMobile(), itemData.getName(), contentViewHolder);
+                    if (addStatus) {
                         //刷新ui改变边框背景，变成不能点击
-                    }else {
+                    } else {
                         //提示添加失败
                         // Toast.makeText(ContactsActivity.this,"请求异常，请稍后再试",Toast.LENGTH_SHORT).show();
                     }
@@ -182,20 +194,23 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
 
 
     private ContentViewHolder mHolder;
-    private boolean addFriendToThisGroup(String mobile, String name,ContentViewHolder holder) {
+
+    private boolean addFriendToThisGroup(String mobile, String name, ContentViewHolder holder) {
         mHolder = holder;
-        Map<String,Object> dataMap = new HashMap<>();
-        dataMap.put("token",mToken);
-        Map<String ,Object> formData = new HashMap<>();
-        formData.put("groupId",mGroupId);
-        formData.put("phone",mobile);
-        formData.put("trueName",name);
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("token", mToken);
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("groupId", mGroupId);
+        formData.put("phone", mobile);
+        formData.put("trueName", name);
         String formDataSt = mGson.toJson(formData);
-        myLog("--------form---"+formDataSt);
-        dataMap.put("formData",formDataSt);
-        requestNet(SystemUtility.addFriendToGroupUrl(),dataMap,ADD_FRIEND_FROM_CONTACT);
+        myLog("--------form---" + formDataSt);
+        dataMap.put("formData", formDataSt);
+        requestNet(SystemUtility.addFriendToGroupUrl(), dataMap, ADD_FRIEND_FROM_CONTACT);
         return false;
-    };
+    }
+
+    ;
 
     class IndexViewHolder extends RecyclerView.ViewHolder {
         TextView mTextView;
@@ -211,6 +226,7 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
         TextView mMobile;
         ImageView mAvatar;
         TextView mAddTv;
+
         public ContentViewHolder(View itemView) {
             super(itemView);
             mAddTv = itemView.findViewById(R.id.add_tv);
@@ -228,28 +244,28 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
         ContentResolver contentResolver = this.getContentResolver();
         //查询数据，返回Cursor
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
-        List<Map<String,Object>> list1 = new ArrayList<Map<String,Object>>();
+        List<Map<String, Object>> list1 = new ArrayList<Map<String, Object>>();
 
-            while (cursor!=null&&cursor.moveToNext()) {
+        while (cursor != null && cursor.moveToNext()) {
 
-                //获取联系人的ID
-                String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                //获取联系人的姓名
-                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            //获取联系人的ID
+            String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            //获取联系人的姓名
+            String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
-                //查询电话类型的数据操作
-                Cursor phones = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                        null,
-                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId,
-                        null, null);
-                while (phones.moveToNext()) {
-                    String phoneNumber = phones.getString(phones.getColumnIndex(
-                            ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    ContactEntity contactEntity = new ContactEntity(name, phoneNumber);
-                    list.add(contactEntity);
-                }
-                phones.close();
+            //查询电话类型的数据操作
+            Cursor phones = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId,
+                    null, null);
+            while (phones.moveToNext()) {
+                String phoneNumber = phones.getString(phones.getColumnIndex(
+                        ContactsContract.CommonDataKinds.Phone.NUMBER));
+                ContactEntity contactEntity = new ContactEntity(name, phoneNumber);
+                list.add(contactEntity);
             }
+            phones.close();
+        }
 
         return list;
     }
@@ -303,15 +319,15 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
     @Override
     public void requestSuccess(String responseString, String requestCode) {
         super.requestSuccess(responseString, requestCode);
-        if (null!=responseString && requestCode.equals(ADD_FRIEND_FROM_CONTACT)){
+        if (null != responseString && requestCode.equals(ADD_FRIEND_FROM_CONTACT)) {
             String status = StringUtils.parserMessage(responseString, Constant.REQUEST_STATUS);
-            if (status.equals(Constant.REQUEST_SUCCESS)){
+            if (status.equals(Constant.REQUEST_SUCCESS)) {
                 isAdd = true;
                 mHolder.mAddTv.setBackgroundColor(getResources().getColor(R.color.white));
                 mHolder.mAddTv.setText("已添加");
                 mHolder.mAddTv.setTextColor(getResources().getColor(R.color.shallow_black));
                 mHolder.mAddTv.setClickable(false);
-            }else {
+            } else {
                 Toast.makeText(this, "添加失败", Toast.LENGTH_SHORT).show();
             }
         }

@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
+import com.anxin.kitchen.MyApplication;
+import com.umeng.analytics.MobclickAgent;
+
 /**
  * Created by 唐午阳 on 2018/2/17.
  */
@@ -78,7 +81,7 @@ public class WeDroidAlignTextView extends TextView {
             }
             first = false;
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) getLayoutParams();
-            int totalHeight = (int) (lines*textLineHeight+textLineHeight*2 + getPaddingBottom()+getPaddingTop()+layoutParams.bottomMargin+layoutParams.topMargin);
+            int totalHeight = (int) (lines * textLineHeight + textLineHeight * 2 + getPaddingBottom() + getPaddingTop() + layoutParams.bottomMargin + layoutParams.topMargin);
             setHeight(totalHeight);
         }
     }
@@ -88,7 +91,7 @@ public class WeDroidAlignTextView extends TextView {
         bottom = getBottom();
         int drawTotalLine = lines;
 
-        if(maxLine!=0&&drawTotalLine>maxLine){
+        if (maxLine != 0 && drawTotalLine > maxLine) {
             drawTotalLine = maxLine;
         }
 
@@ -117,26 +120,27 @@ public class WeDroidAlignTextView extends TextView {
                     mLeft += singleWordWidth;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             }
         }
     }
 
     int maxLine;
 
-    public void setMaxLines(int max){
+    public void setMaxLines(int max) {
         this.maxLine = max;
     }
 
-    public void setLineSpacingExtra(int lineSpacingExtra){
+    public void setLineSpacingExtra(int lineSpacingExtra) {
         this.lineSpacingExtra = lineSpacingExtra;
     }
 
     /**
      * 判断是否为中文
+     *
      * @return
      */
-    public static boolean containChinese(String string){
+    public static boolean containChinese(String string) {
         boolean flag = false;
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);

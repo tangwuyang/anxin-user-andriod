@@ -6,6 +6,7 @@ import android.os.Message;
 
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.message.UmengNotifyClickActivity;
 
 import org.android.agoo.common.AgooConstants;
@@ -18,6 +19,18 @@ public class MipushActivity extends UmengNotifyClickActivity {
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_mipush_);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

@@ -23,6 +23,7 @@ import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.TimeUtil;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.MyGridView;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,6 +86,18 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
         ivBack.setOnClickListener(this);
         tvCancel.setOnClickListener(this);
         llOrderDetailPay.setOnClickListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

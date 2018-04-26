@@ -16,6 +16,7 @@ import com.anxin.kitchen.fragment.mealfragment.MealMainFragment;
 import com.anxin.kitchen.fragment.myfragment.MyMainFragment;
 import com.anxin.kitchen.fragment.orderfragment.OrderMainFragment;
 import com.anxin.kitchen.user.R;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 主界面
@@ -50,6 +51,18 @@ public class AllOrderActivity extends FragmentActivity implements View.OnClickLi
     }
 
     private Handler handler = new Handler();
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     private void initView() {
         //初始化底部导航栏的控件

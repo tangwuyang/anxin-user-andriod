@@ -18,11 +18,12 @@ import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateGroupActivity extends BaseActivity implements View.OnClickListener,RequestNetListener{
+public class CreateGroupActivity extends BaseActivity implements View.OnClickListener, RequestNetListener {
     private static final String TAG = "CreateGroupActivity";
     private ImageView mBackImg;
     private TextView mSureBt;
@@ -31,18 +32,26 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
     private boolean isAdd = false;
     private boolean preserve = false;
     private static final String CREATE_GROUP = "CREATE_GROUP";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
-        preserve = getIntent().getBooleanExtra("preserve",false);
+        preserve = getIntent().getBooleanExtra("preserve", false);
         initView();
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         initListeners();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void initListeners() {
@@ -52,7 +61,7 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
 
     private void initView() {
         setTitle("创建饭团");
-        mSureBt = ((TextView)findViewById(R.id.complete_tv));
+        mSureBt = ((TextView) findViewById(R.id.complete_tv));
         mSureBt.setVisibility(View.VISIBLE);
         mSureBt.setText("创建");
         mBackImg = findViewById(R.id.back_img);
@@ -61,7 +70,7 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.back_img:
                 onBackPressed();
                 break;
@@ -74,21 +83,21 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
     //创建饭团
     private void CreateGroup() {
         mGroupName = mGroupNameEt.getText().toString();
-        if (!(null!=mGroupName&&mGroupName.length()>0)){
+        if (!(null != mGroupName && mGroupName.length() > 0)) {
             Toast.makeText(this, "请输入饭团名", Toast.LENGTH_SHORT).show();
             return;
         }
         String token = new Cache(this).getAMToken();
-        if (token==null){
+        if (token == null) {
             SystemUtility.startLoginUser(CreateGroupActivity.this);
-        }else {
+        } else {
           /*  Map<String,Object> dataMap= new HashMap<>();
             dataMap.put("groupName",mGroupName);
             dataMap.put("token",token);*/
 
-            String url = SystemUtility.CreateGroup()+"?groupName="+mGroupName+"&token="+token;
-            Log.i(TAG, "CreateGroup: --------->"+url);
-            requestNet(url,null,CREATE_GROUP);
+            String url = SystemUtility.CreateGroup() + "?groupName=" + mGroupName + "&token=" + token;
+            Log.i(TAG, "CreateGroup: --------->" + url);
+            requestNet(url, null, CREATE_GROUP);
         }
     }
 
@@ -101,17 +110,17 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void requestSuccess(String responseString, String requestCode) {
         super.requestSuccess(responseString, requestCode);
-        if (requestCode==CREATE_GROUP){
-            String status = StringUtils.parserMessage(responseString,"message");
-            if (status.equals(Constant.LOGIN_FIRST)){
+        if (requestCode == CREATE_GROUP) {
+            String status = StringUtils.parserMessage(responseString, "message");
+            if (status.equals(Constant.LOGIN_FIRST)) {
                 SystemUtility.startLoginUser(CreateGroupActivity.this);
-            }else if (status.equals(Constant.REQUEST_SUCCESS)){
-                GroupBean bean = mGson.fromJson(responseString,GroupBean.class);
+            } else if (status.equals(Constant.REQUEST_SUCCESS)) {
+                GroupBean bean = mGson.fromJson(responseString, GroupBean.class);
                 isAdd = true;
-                Intent intent = new Intent(CreateGroupActivity.this,GroupAndFriendsListActivitiy.class);
+                Intent intent = new Intent(CreateGroupActivity.this, GroupAndFriendsListActivitiy.class);
                 int groupId = bean.getData().getId();
-                intent.putExtra("groupId",groupId);
-                startActivityForResult(intent,Constant.GROUP_MAIN_REQEST_CODE);
+                intent.putExtra("groupId", groupId);
+                startActivityForResult(intent, Constant.GROUP_MAIN_REQEST_CODE);
             }
         }
     }
@@ -119,16 +128,16 @@ public class CreateGroupActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constant.GROUP_MAIN_REQEST_CODE && resultCode == Constant.ADD_FRIEND_CODE){
+        if (requestCode == Constant.GROUP_MAIN_REQEST_CODE && resultCode == Constant.ADD_FRIEND_CODE) {
             Intent intent = new Intent();
             String groupInfo = data.getStringExtra("groupInfo");
-            intent.putExtra("isAdd",isAdd);
-            GroupBean2 groupBean = mGson.fromJson(groupInfo,GroupBean2.class);
-            intent.putExtra("groupInfo",groupInfo);
-            intent.putExtra("groupId",groupBean.getData().get(0).getGroupId());
-            intent.putExtra("nums",groupBean.getData().size());
-            intent.putExtra("groupName",mGroupName);
-            setResult(Constant.ADD_FRIEND_CODE,intent);
+            intent.putExtra("isAdd", isAdd);
+            GroupBean2 groupBean = mGson.fromJson(groupInfo, GroupBean2.class);
+            intent.putExtra("groupInfo", groupInfo);
+            intent.putExtra("groupId", groupBean.getData().get(0).getGroupId());
+            intent.putExtra("nums", groupBean.getData().size());
+            intent.putExtra("groupName", mGroupName);
+            setResult(Constant.ADD_FRIEND_CODE, intent);
             finish();
         }
     }

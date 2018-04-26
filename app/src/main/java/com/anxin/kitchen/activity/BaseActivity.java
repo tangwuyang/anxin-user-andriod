@@ -17,6 +17,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.message.PushAgent;
 
 import java.util.Map;
@@ -32,6 +33,7 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     public static final String PREFERENCE_NAME = "ANXIN_ANDROID";
     public Gson mGson;
     public ImageLoader imageLoader = ImageLoader.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,27 +43,28 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     }
 
     //修改标题
-    protected void setTitle(String title){
-        titleTv =  findViewById(R.id.title_tv);
+    protected void setTitle(String title) {
+        titleTv = findViewById(R.id.title_tv);
         titleTv.setText(title);
 
     }
+
     public String mToken;
-    public boolean isLogin(){
-        if (null == mToken){
+
+    public boolean isLogin() {
+        if (null == mToken) {
             mToken = new Cache(this).getAMToken();
         }
-        if (mToken==null){
+        if (mToken == null) {
             SystemUtility.startLoginUser(this);
         }
         return true;
     }
 
-
     //调试打印
-    public void myLog(String msg){
-        if (isDebug){
-            android.util.Log.i(getClass().getSimpleName(),msg);
+    public void myLog(String msg) {
+        if (isDebug) {
+            android.util.Log.i(getClass().getSimpleName(), msg);
         }
     }
 
@@ -71,47 +74,46 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     }
 
     //请求网络异步方法
+
     /**
      * post公共方法
      * urlPath 请求地址
      * dataMap 请求参数map
      * requestCode 请求标识
-     * */
-    public void requestNet(String urlPath, Map<String,Object> dataMap, final String requestCode){
-        if (null != urlPath && urlPath.length()>0){
-            myLog("------------------>"+urlPath);
+     */
+    public void requestNet(String urlPath, Map<String, Object> dataMap, final String requestCode) {
+        if (null != urlPath && urlPath.length() > 0) {
+            myLog("------------------>" + urlPath);
             AsyncHttpClient client = new AsyncHttpClient();
             RequestParams params = new RequestParams();
-            if (null != dataMap){
+            if (null != dataMap) {
                 Set<String> paraNames = dataMap.keySet();
-                for (String para:
+                for (String para :
                         paraNames) {
-                    myLog("---------->"+para + "  " + dataMap.get(para));
-                    params.put(para,dataMap.get(para));
+                    myLog("---------->" + para + "  " + dataMap.get(para));
+                    params.put(para, dataMap.get(para));
                 }
             }
-            client.post(urlPath,params, new AsyncHttpResponseHandler() {
+            client.post(urlPath, params, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int i, cz.msebera.android.httpclient.Header[] headers, byte[] bytes) {
                     String result = "";
                     String head = "";
-                    if (bytes != null){
+                    if (bytes != null) {
                         result = new String(bytes);
-                        myLog(requestCode+"----------->请求成功" + result);
-                        requestSuccess(result,requestCode);
+                        myLog(requestCode + "----------->请求成功" + result);
+                        requestSuccess(result, requestCode);
                     }
                 }
 
                 @Override
-                public void onFailure(int i,Header[] headers, byte[] bytes, Throwable throwable) {
+                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
                     String result = "";
                     if (bytes != null) {
                         result = new String(bytes);
-                        myLog("--------->请求失败" +result);
+                        myLog("--------->请求失败" + result);
                     }
                 }
-
-
 
 
             });
@@ -123,16 +125,17 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
 
     //网咯请求成功
     @Override
-    public void requestSuccess(String responseString,String requestCode) {
+    public void requestSuccess(String responseString, String requestCode) {
         //请求成功后的操作
     }
+
     //网咯请求失败
     @Override
-    public void requestFailure(String responseFailure,String requestCode) {
+    public void requestFailure(String responseFailure, String requestCode) {
 
     }
 
-    public void setImg(ImageView view, String src){
+    public void setImg(ImageView view, String src) {
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.food1)
                 .cacheInMemory(true)
@@ -140,6 +143,6 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .build();
         // holder.BackgroundImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        imageLoader.displayImage(src,view,options);
+        imageLoader.displayImage(src, view, options);
     }
 }

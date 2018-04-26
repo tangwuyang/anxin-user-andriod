@@ -29,6 +29,7 @@ import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -184,9 +185,14 @@ public class SendMealLocationActivity extends Activity implements View.OnClickLi
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         defaultAddress = MyApplication.getInstance().getCache().getDefaultAddress(this);
     }
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
     private void setListeners() {
         mRelocationLl.setOnClickListener(this);
         mBackImg.setOnClickListener(this);

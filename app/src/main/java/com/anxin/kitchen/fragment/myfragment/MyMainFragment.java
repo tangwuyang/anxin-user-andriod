@@ -36,6 +36,7 @@ import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -177,8 +178,13 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         super.onResume();
         updateUserAcount();
         showMainBottom();
+        MobclickAgent.onPageStart("MyMainFragment");
     }
 
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MyMainFragment");
+    }
     @Override
     public void onClick(View v) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();

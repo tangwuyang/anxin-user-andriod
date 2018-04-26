@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 设置界面
@@ -44,9 +45,15 @@ public class MyHomeFragment extends HomeBaseFragment implements View.OnClickList
 
     @Override
     public void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
+        MobclickAgent.onPageStart("MyHomeFragment");
     }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MyHomeFragment");
+    }
+
 
     @Override
     public void onClick(View v) {

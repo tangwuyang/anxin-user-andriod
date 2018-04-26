@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Log;
+import com.umeng.analytics.MobclickAgent;
 
 
 /**
@@ -84,8 +85,14 @@ public class UserNameActivity extends Activity implements View.OnClickListener {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
 

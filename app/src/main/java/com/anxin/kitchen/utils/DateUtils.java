@@ -1,6 +1,9 @@
 package com.anxin.kitchen.utils;
 
 
+import com.anxin.kitchen.MyApplication;
+import com.umeng.analytics.MobclickAgent;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -149,7 +152,7 @@ public class DateUtils {
             res = String.valueOf(ts);
         } catch (ParseException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         return res;
     }
