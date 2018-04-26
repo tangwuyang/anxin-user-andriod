@@ -43,6 +43,7 @@ import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.RoundedImageView;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -196,9 +197,14 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
 
     @Override
     public void onResume() {
-        // TODO Auto-generated method stub
-        initHeadIconFile();
         super.onResume();
+        initHeadIconFile();
+        MobclickAgent.onPageStart("UserSettingsFragment");
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("UserSettingsFragment");
     }
 
     /**
@@ -238,7 +244,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
                 if (UserName == null && UserDate == null && UserSex == 0 && cropImageUri == null)
                     return;
                 if (cropImageUri != null) {
-                    SystemUtility.setHeadIcon(cropImageUri,getActivity());
+                    SystemUtility.setHeadIcon(cropImageUri, getActivity());
                 } else
                     sendUpdateAccount(null);
                 break;
@@ -290,7 +296,7 @@ public class UserSettingsFragment extends HomeBaseFragment implements View.OnCli
 //            jsonObject.put("phone", phone);
 //            jsonObject.put("province", Integer.valueOf(addressBean.getProvinceID()));
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         String urlPath = SystemUtility.sendUpdateUser();
         Map<String, Object> dataMap = new HashMap();

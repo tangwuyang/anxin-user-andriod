@@ -26,6 +26,7 @@ import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,11 +82,6 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
         addressListView.setAdapter(myAdaped);
     }
 
-    @Override
-    public void onResume() {
-        // TODO Auto-generated method stub
-        super.onResume();
-    }
 
     @Override
     public void onClick(View v) {
@@ -100,6 +96,17 @@ public class UserAddressFragment extends HomeBaseFragment implements View.OnClic
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("UserAddressFragment");
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("UserAddressFragment");
     }
 
     /**

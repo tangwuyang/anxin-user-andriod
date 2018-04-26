@@ -16,6 +16,7 @@ import com.anxin.kitchen.adapter.OrderTabAdapter;
 import com.anxin.kitchen.fragment.orderfragment.OrderFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.view.PagerSlidingTab;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 订单页面
@@ -99,6 +100,18 @@ public class OrderActivity extends BaseFragmentActivity implements ViewPager.OnP
         chooseType = getIntent().getIntExtra("type", 0);
         closeType = getIntent().getIntExtra("closeType", 0);
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void initData() {

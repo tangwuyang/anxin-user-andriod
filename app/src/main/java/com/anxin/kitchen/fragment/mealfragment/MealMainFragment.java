@@ -51,6 +51,7 @@ import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.umeng.analytics.MobclickAgent;
 import com.youth.banner.Banner;
 
 import org.json.JSONArray;
@@ -339,8 +340,13 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 setAdapter(dataList);
         }
         super.onResume();
+        MobclickAgent.onPageStart("MealMain");
     }
 
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MealMain");
+    }
     private void setListener() {
         mMessageImg.setOnClickListener(this);
         mPreserverMealImg.setOnClickListener(this);

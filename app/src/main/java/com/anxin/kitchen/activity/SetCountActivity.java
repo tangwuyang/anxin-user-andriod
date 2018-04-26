@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.anxin.kitchen.user.R;
+import com.umeng.analytics.MobclickAgent;
 
 public class SetCountActivity extends BaseActivity implements View.OnClickListener {
     public static final int SET_COUNT = 202;  //设置数量
@@ -102,5 +103,16 @@ public class SetCountActivity extends BaseActivity implements View.OnClickListen
                 finish();
                 break;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

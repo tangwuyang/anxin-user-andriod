@@ -92,4 +92,6 @@ dependencies {
     implementation files('libs/alipaySdk-20180403.jar')
     compile 'com.lcodecorex:labellayout:1.0.1'
     compile(name: 'ijkplayer-java-release', ext: 'aar')
+    compile 'com.umeng.sdk:common:1.5.0'
+    compile 'com.umeng.sdk:analytics:7.5.0'
 }

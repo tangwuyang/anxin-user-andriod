@@ -59,6 +59,7 @@ import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.PoiBean;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.ToastUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -151,7 +152,6 @@ public class LocationActivity extends Activity implements AMap.OnCameraChangeLis
     public AMapLocationClientOption mLocationOption = null;
     private double lat;
     private double lon;
-
 
     /**
      * * 初始化AMap对象
@@ -253,14 +253,15 @@ public class LocationActivity extends Activity implements AMap.OnCameraChangeLis
     protected void onResume() {
         super.onResume();
         mapView.onResume();
+        MobclickAgent.onResume(this);
     }
-
     /**
      * 方法必须重写
      */
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPause(this);
         mapView.onPause();
     }
 

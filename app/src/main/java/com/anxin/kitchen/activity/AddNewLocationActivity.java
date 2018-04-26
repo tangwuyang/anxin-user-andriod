@@ -21,6 +21,7 @@ import com.anxin.kitchen.utils.MyService;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,9 +50,16 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         setListeners();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void setListeners() {
@@ -189,7 +197,7 @@ public class AddNewLocationActivity extends BaseActivity implements View.OnClick
             jsonObject.put("longitude", addressBean.getLongitude());
             jsonObject.put("latitude", addressBean.getLatitude());
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         String urlPath = SystemUtility.sendAddAddress();
         Map<String, Object> dataMap = new HashMap();

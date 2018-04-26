@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.event.OnUserWalletEvent;
@@ -19,6 +20,7 @@ import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.utils.UmengHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,8 +88,13 @@ public class WalletDepositFragment extends HomeBaseFragment implements View.OnCl
 
     @Override
     public void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
+        MobclickAgent.onPageStart("WalletDepositFragment");
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("WalletDepositFragment");
     }
 
     @Override
@@ -127,7 +134,7 @@ public class WalletDepositFragment extends HomeBaseFragment implements View.OnCl
             jsonObject.put("trueName", trueName);
             jsonObject.put("type", 2);
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         String urlPath = SystemUtility.sendUserWithdraw();
         Map<String, Object> dataMap = new HashMap();

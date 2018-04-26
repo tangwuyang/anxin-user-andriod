@@ -33,6 +33,7 @@ import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.MyListView;
 import com.anxin.kitchen.view.WaitingDialog;
 import com.google.gson.reflect.TypeToken;
+import com.umeng.analytics.MobclickAgent;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -94,11 +95,22 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
                     mLocationTv.setText(addressBean.getStreetName());
                 }
             }
-        }else {
+        } else {
             mLocationTv.setText(addressBean.getStreetName());
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     /**
      * 获取后台计算的关于这个单的钱

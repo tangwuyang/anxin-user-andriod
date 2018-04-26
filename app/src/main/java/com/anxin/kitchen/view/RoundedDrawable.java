@@ -37,6 +37,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ImageView.ScaleType;
 
+import com.anxin.kitchen.MyApplication;
+import com.umeng.analytics.MobclickAgent;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -142,7 +145,7 @@ public class RoundedDrawable extends Drawable {
       drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
       drawable.draw(canvas);
     } catch (Exception e) {
-      e.printStackTrace();
+      MobclickAgent.reportError(MyApplication.getInstance(), e);
       Log.w(TAG, "Failed to create bitmap from drawable!");
       bitmap = null;
     }

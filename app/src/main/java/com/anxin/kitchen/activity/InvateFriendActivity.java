@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.user.R;
+import com.umeng.analytics.MobclickAgent;
 //import com.umeng.socialize.ShareAction;
 //import com.umeng.socialize.UMAuthListener;
 //import com.umeng.socialize.UMShareAPI;
@@ -25,7 +26,7 @@ import java.util.Map;
 
 import static android.os.Build.VERSION.*;
 
-public class InvateFriendActivity extends BaseActivity implements View.OnClickListener{
+public class InvateFriendActivity extends BaseActivity implements View.OnClickListener {
     private ImageView mBackImg;
     private LinearLayout mShareWechatLl;
     private LinearLayout mShareFriendGroupLl;
@@ -68,7 +69,7 @@ public class InvateFriendActivity extends BaseActivity implements View.OnClickLi
 //        }
 //    };
 
-//    UMAuthListener authListener = new UMAuthListener() {
+    //    UMAuthListener authListener = new UMAuthListener() {
 //        @Override
 //        public void onStart(SHARE_MEDIA platform) {
 //            //授权开始的回调，可以用来处理等待框，或相关的文字提示
@@ -97,22 +98,28 @@ public class InvateFriendActivity extends BaseActivity implements View.OnClickLi
     }
 
 
-    private void requestPermission(){
+    private void requestPermission() {
         String[] mPermissionList =
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.CALL_PHONE,Manifest.permission.READ_LOGS,
+                        Manifest.permission.CALL_PHONE, Manifest.permission.READ_LOGS,
                         Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.SET_DEBUG_APP,Manifest.permission.SYSTEM_ALERT_WINDOW,
-                        Manifest.permission.GET_ACCOUNTS,Manifest.permission.WRITE_APN_SETTINGS};
-        ActivityCompat.requestPermissions(this,mPermissionList,123);
+                        Manifest.permission.SET_DEBUG_APP, Manifest.permission.SYSTEM_ALERT_WINDOW,
+                        Manifest.permission.GET_ACCOUNTS, Manifest.permission.WRITE_APN_SETTINGS};
+        ActivityCompat.requestPermissions(this, mPermissionList, 123);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        initListeners();
+    }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        initListeners();
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void initListeners() {
@@ -132,7 +139,7 @@ public class InvateFriendActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.back_img:
                 onBackPressed();
                 break;

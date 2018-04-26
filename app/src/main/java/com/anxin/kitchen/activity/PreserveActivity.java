@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.bean.FoodsBean;
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.MealBean.FoodList;
@@ -38,6 +39,7 @@ import com.anxin.kitchen.view.OrderingRuleDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -79,6 +81,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private double sendCost;   // 配送费
     private String tablewareType = "";
     private String mGroupList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,11 +101,11 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
         }else {
             //从新请求团*/
-            String url = SystemUtility.searchGroupUrl();
-            Map<String, Object> dataMap = new HashMap<>();
-            isLogin();
-            dataMap.put(Constant.TOKEN, mToken);
-            requestNet(url, dataMap, SEARCH_GROUP);
+        String url = SystemUtility.searchGroupUrl();
+        Map<String, Object> dataMap = new HashMap<>();
+        isLogin();
+        dataMap.put(Constant.TOKEN, mToken);
+        requestNet(url, dataMap, SEARCH_GROUP);
         //}
     }
 
@@ -251,44 +254,44 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         days = new ArrayList<>();
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);
-        int month =  (now.get(Calendar.MONTH) + 1);
+        int month = (now.get(Calendar.MONTH) + 1);
         int day = now.get(Calendar.DAY_OF_MONTH);
         now.set(year, month, 0);
         int dayOfMonth = now.get(Calendar.DAY_OF_MONTH);  //这个月的总天数
         int hour = now.get(Calendar.HOUR_OF_DAY);
-        if (hour>17){
-            day = day+1;
+        if (hour > 17) {
+            day = day + 1;
         }
-        myLog(dayOfMonth + "--------------->day" + day+ "   " + hour);
+        myLog(dayOfMonth + "--------------->day" + day + "   " + hour);
         int sheYuday = 0;
         int diffDay = 0;
-        if ((day)==dayOfMonth || (day-1)==dayOfMonth){
+        if ((day) == dayOfMonth || (day - 1) == dayOfMonth) {
             diffDay = 7;
-        }else {
-             sheYuday = dayOfMonth - day;
-             diffDay = 7-sheYuday;
+        } else {
+            sheYuday = dayOfMonth - day;
+            diffDay = 7 - sheYuday;
         }
 
         myLog("------------------>剩余天数" + diffDay);
         //这个月还差几天  去下个月中借齐
         //只判断到了月 后期要添加年的逻辑  否则有问题
-        if (diffDay<=0){
-            for(int i = 1;i<=7;i++){
+        if (diffDay <= 0) {
+            for (int i = 1; i <= 7; i++) {
                 String dateSt = String.valueOf(year);
-                if (month<10){
-                    dateSt = dateSt+"0"+month;
-                }else {
-                    dateSt = dateSt+month;
+                if (month < 10) {
+                    dateSt = dateSt + "0" + month;
+                } else {
+                    dateSt = dateSt + month;
                 }
 
-                if ((day+1)<10){
-                    dateSt = dateSt + "0"+ (day+i);
-                }else {
-                    dateSt = dateSt + (day+i);
+                if ((day + 1) < 10) {
+                    dateSt = dateSt + "0" + (day + i);
+                } else {
+                    dateSt = dateSt + (day + i);
                 }
                 days.add(Long.valueOf(dateSt));
             }
-        }else {
+        } else {
             //需要借的逻辑
             //首先当前月还剩下几天
             for (int i = 1; i <= sheYuday; i++) {
@@ -302,15 +305,15 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 if ((day + 1) < 10) {
                     dateSt = dateSt + "0" + (day + i);
                 } else {
-                    dateSt = dateSt +  (day + i);
+                    dateSt = dateSt + (day + i);
                 }
                 days.add(Long.valueOf(dateSt));
             }
             //补足7天
-            for(int i = 1; i<=diffDay ; i++){
+            for (int i = 1; i <= diffDay; i++) {
                 String dateSt = String.valueOf(year);
-                if ((month )< 10) {
-                    dateSt = dateSt + "0" + (month+1);
+                if ((month) < 10) {
+                    dateSt = dateSt + "0" + (month + 1);
                 } else {
                     dateSt = dateSt + month;
                 }
@@ -325,14 +328,26 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         }
         for (Long dayl :
                 days) {
-            myLog("-------------->"+year+"  " + month + "  " + day + "   " + dayOfMonth + "  " + dayl);
+            myLog("-------------->" + year + "  " + month + "  " + day + "   " + dayOfMonth + "  " + dayl);
         }
-        myLog("-------------->"+year+"  " + month + "  " + day + "   " + dayOfMonth);
+        myLog("-------------->" + year + "  " + month + "  " + day + "   " + dayOfMonth);
         return null;
     }
 
     private void updateUI(List<Long> days, LinkedHashMap<Long, WeekDayBean> weakDays, LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps) {
         setAdapter(days, weakDays, preMealMaps);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private String transToWeekDay(long thisDay) {
@@ -349,7 +364,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         try {
             d = new SimpleDateFormat("yyyy-MM-dd").parse(dataSt);
         } catch (ParseException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         int day = d.getDay();
         myLog("---------------d" + day);
@@ -390,10 +405,6 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         mCloseAcountTv.setOnClickListener(this);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     private void setAdapter(List<Long> days, LinkedHashMap<Long, WeekDayBean> weakDays, LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps) {
         preserverAdapter = new PreserverAdapter(days, weakDays, preMealMaps);
@@ -427,9 +438,9 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         ListView mTablewareLv = layout.findViewById(R.id.chose_tableware_lv);
         getAllnums();
         TextView aaPay = layout.findViewById(R.id.aa_pay_tv);
-        if (isChosedGroup){
+        if (isChosedGroup) {
             aaPay.setVisibility(View.VISIBLE);
-        }else aaPay.setVisibility(View.GONE);
+        } else aaPay.setVisibility(View.GONE);
         popupWindow = new PopupWindow(layout,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -505,9 +516,9 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     }
 
     public void toCreatGroupAct() {
-        Intent intent = new Intent(this,CreateGroupActivity.class);
-        intent.putExtra("preserve",true);
-        startActivityForResult(intent,CREAT_GROUP);
+        Intent intent = new Intent(this, CreateGroupActivity.class);
+        intent.putExtra("preserve", true);
+        startActivityForResult(intent, CREAT_GROUP);
     }
 
 
@@ -774,7 +785,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
                 deleteImg.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        deleteMeal(day, dinnerItem,"午餐");
+                        deleteMeal(day, dinnerItem, "午餐");
                     }
                 });
                 foodImg1.setOnClickListener(new View.OnClickListener() {
@@ -934,18 +945,19 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         }
 
         DeleteMealDialog dialog1;
+
         private void deleteMeal(final long day, final View dinnerItem, final String mealType) {
-              dialog1 = new DeleteMealDialog(PreserveActivity.this
-               , new View.OnClickListener() {
+            dialog1 = new DeleteMealDialog(PreserveActivity.this
+                    , new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     preMealMaps.get(day).remove(mealType);
-                    dinnerItem.setTag(day + "-"+mealType);
+                    dinnerItem.setTag(day + "-" + mealType);
                     PreserverAdapter.this.notifyDataSetChanged();
                     dialog1.dismiss();
                 }
             });
-        dialog1.show();
+            dialog1.show();
         }
     }
 
@@ -1007,11 +1019,11 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
         if (requestCode == CREAT_GROUP && resultCode == Constant.ADD_FRIEND_CODE) {
             //long day, String type, int groupId, String groupName, int nums, boolean isContain
-            int groupId = data.getIntExtra("groupId",1);
-            int nums = data.getIntExtra("nums",1);
+            int groupId = data.getIntExtra("groupId", 1);
+            int nums = data.getIntExtra("nums", 1);
             String groupName = data.getStringExtra("groupName");
-            myLog("-------------->" + groupId +  " " + nums +  "  " + groupName);
-            updataGroup(1,"1",groupId,groupName,nums,true);
+            myLog("-------------->" + groupId + " " + nums + "  " + groupName);
+            updataGroup(1, "1", groupId, groupName, nums, true);
         }
 
     }
@@ -1045,7 +1057,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelativeGroupId(groupId);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setRelatedGroupName(groupName);
             preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).setNums(nums);*/
-           // myLog("--------------->fen:" + preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
+            // myLog("--------------->fen:" + preserverAdapter.preMealMaps.get(day).get(String.valueOf(type)).getNums());
         }
         preserverAdapter.notifyDataSetChanged();
     }

@@ -34,6 +34,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
 import com.loopj.android.http.RequestParams;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -287,7 +288,7 @@ public class SystemUtility {
             fos.flush();
             fos.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 
@@ -656,7 +657,7 @@ public class SystemUtility {
                 MyApplication.getInstance().setKitchenId(kitchenId);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 
@@ -750,7 +751,7 @@ public class SystemUtility {
                 }
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         MyApplication.getInstance().setAccount(userAccount);
         if (code.equals(sendUserWallet)) {
@@ -836,18 +837,19 @@ public class SystemUtility {
             sf.setHostnameVerifier(cz.msebera.android.httpclient.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
         } catch (UnsupportedEncodingException e) {
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         } catch (KeyStoreException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         } catch (CertificateException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         } catch (KeyManagementException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         return sf;
     }
@@ -973,7 +975,7 @@ public class SystemUtility {
             mApp.setAddressIDMap(addressIDMap);
             mApp.setAddressNameMap(addressNameMap);
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 
@@ -1039,7 +1041,7 @@ public class SystemUtility {
             MyApplication.getInstance().setAddressBeanList(addressListBean);
             EventBusFactory.getInstance().post(new AddressListEvent());
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 
@@ -1061,7 +1063,7 @@ public class SystemUtility {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
             return bitmap;
         } catch (Exception e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
             return null;
         }
     }

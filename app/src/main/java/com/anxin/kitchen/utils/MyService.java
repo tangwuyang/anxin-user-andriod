@@ -16,6 +16,7 @@ import com.anxin.kitchen.bean.Account;
 import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.event.OnSaveBitmapEvent;
 import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -101,7 +102,7 @@ public class MyService extends Service {
                 //创建文件
                 file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             }
         }
         try {
@@ -110,7 +111,7 @@ public class MyService extends Service {
             fos.flush();
             fos.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 

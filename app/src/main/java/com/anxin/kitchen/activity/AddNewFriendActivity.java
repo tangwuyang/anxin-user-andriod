@@ -15,6 +15,7 @@ import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.google.gson.Gson;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +39,16 @@ public class AddNewFriendActivity extends BaseActivity implements View.OnClickLi
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         initListeners();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void initListeners() {
@@ -126,9 +134,9 @@ public class AddNewFriendActivity extends BaseActivity implements View.OnClickLi
             if (status.equals(Constant.REQUEST_SUCCESS)) {
                 //关闭按钮 返回前一个界面刷新界面
                 Intent intent = new Intent();
-                setResult(500,intent);
+                setResult(500, intent);
                 finish();
-            }else {
+            } else {
                 Toast.makeText(this, "添加失败", Toast.LENGTH_SHORT).show();
             }
         }

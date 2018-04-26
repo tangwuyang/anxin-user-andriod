@@ -23,6 +23,7 @@ import com.anxin.kitchen.event.ViewUpdateHeadIconEvent;
 import com.anxin.kitchen.fragment.HomeBaseFragment;
 import com.anxin.kitchen.fragment.loginfragment.AddUserDataFragment;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.user.wxapi.WXEntryActivity;
 import com.anxin.kitchen.utils.BaseDialog;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
@@ -30,6 +31,12 @@ import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.RoundedImageView;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -107,9 +114,22 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
 //                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 //                ft.addToBackStack(null);
 //                ft.commit();
-//                BaseDialog dialog = BaseDialog.showDialog(getActivity(), R.layout.orderplay_dialog);
-//                Window window = dialog.getWindow();
-//                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+//                IWXAPI mApi = WXAPIFactory.createWXAPI(getActivity(), WXEntryActivity.WEIXIN_APP_ID, true);
+//                mApi.registerApp(WXEntryActivity.WEIXIN_APP_ID);
+//                WXMiniProgramObject miniProgramObj = new WXMiniProgramObject();
+//                miniProgramObj.webpageUrl = "http://www.qq.com"; // 兼容低版本的网页链接
+//                miniProgramObj.userName = "gh_9396f872dca5";     // 小程序原始id
+//                miniProgramObj.path = "/pages/index/index";            //小程序页面路径
+//                WXMediaMessage msg = new WXMediaMessage(miniProgramObj);
+//                msg.title = "小程序消息Title";                    // 小程序消息title
+//                msg.description = "小程序消息Desc";               // 小程序消息desc
+////                msg.thumbData = getThumb();                      // 小程序消息封面图片，小于128k
+//
+//                SendMessageToWX.Req req = new SendMessageToWX.Req();
+//                req.transaction = "kitchen_share";
+//                req.message = msg;
+//                req.scene = SendMessageToWX.Req.WXSceneSession;  // 目前支持会话
+//                mApi.sendReq(req);
                 return false;
             }
         });
@@ -158,8 +178,13 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
         super.onResume();
         updateUserAcount();
         showMainBottom();
+        MobclickAgent.onPageStart("MyMainFragment");
     }
 
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MyMainFragment");
+    }
     @Override
     public void onClick(View v) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -212,9 +237,9 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
             case R.id.user_invitation_rlt://邀请用户
                 break;
             case R.id.user_contact_rlt://联系我们
-//                if (contactPhone == null || contactPhone.length() == 0) {
-//                    return;
-//                }
+                if (contactPhone == null || contactPhone.length() == 0) {
+                    return;
+                }
                 final BaseDialog dialog = BaseDialog.showDialog(getActivity(), R.layout.phone_dialog_layout);
                 dialog.setText(R.id.phone_tv, contactPhone);
                 TextView cancel_tv = dialog.getView(R.id.cancel_tv);
@@ -265,14 +290,10 @@ public class MyMainFragment extends HomeBaseFragment implements View.OnClickList
                     String data = StringUtils.parserMessage(responseMsg, "data");
 //                    LOG.e("-------data---------" + data);
                     String workTime = null;
-                    try {
-                        contactPhone = new JSONObject(data).getString("contactPhone");
-//                        LOG.e("-------contactPhone---------" + contactPhone);
-                        workTime = new JSONObject(data).getString("workTime");
-//                        LOG.e("-------workTime---------" + workTime);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    contactPhone = data.substring(data.indexOf("contactPhone:") + 13, data.indexOf("}"));
+//                    LOG.e("-------contactPhone---------" + contactPhone);
+                    workTime = data.substring(data.indexOf("workTime:") + 9, data.indexOf(","));
+//                    LOG.e("-------workTime---------" + workTime);
                     if (workTime != null && workTime.length() != 0)
                         workTime_tv.setText(workTime);
                 }

@@ -16,7 +16,9 @@ import android.view.ViewConfiguration;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.user.R;
+import com.umeng.analytics.MobclickAgent;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -228,11 +230,11 @@ public class RefreshLayout extends SwipeRefreshLayout implements
                 setRefreshing.setAccessible(true);
                 setRefreshing.invoke(refreshLayout, refreshing, notify);
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             }
         }
     }

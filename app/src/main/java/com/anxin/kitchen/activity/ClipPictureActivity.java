@@ -30,6 +30,7 @@ import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.ClipView;
 import com.anxin.kitchen.utils.CommonUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -168,6 +169,7 @@ public class ClipPictureActivity extends BaseActivity {
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
                         bitmap.getHeight(), m, true);
             } catch (OutOfMemoryError e) {
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             }
         }
 
@@ -213,6 +215,18 @@ public class ClipPictureActivity extends BaseActivity {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
     /**
      * 压缩图片,并设置图片宽高
      *
@@ -251,9 +265,11 @@ public class ClipPictureActivity extends BaseActivity {
                     + "|" + options.outHeight);
             return val;
         } catch (Exception e) {
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
             Log.e(TAG, "decodeSampledBitmapFromFile - Exception"
                     + e);
         } catch (OutOfMemoryError e) {
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
             Log.e(TAG, "decodeSampledBitmapFromFile - OutOfMemoryError"
                     + e);
         } finally {
@@ -333,8 +349,8 @@ public class ClipPictureActivity extends BaseActivity {
     }
 
     /*
-       *Android保存图片到系统
-       */
+     *Android保存图片到系统
+     */
     public static void onSaveBitmap(Bitmap mBitmap, final Context context, String fileName) {
         // 第一步：首先保存图片
         File file = new File(fileName);
@@ -345,7 +361,7 @@ public class ClipPictureActivity extends BaseActivity {
                 //创建文件
                 file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             }
         }
         try {
@@ -354,7 +370,7 @@ public class ClipPictureActivity extends BaseActivity {
             fos.flush();
             fos.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 
@@ -386,10 +402,12 @@ public class ClipPictureActivity extends BaseActivity {
             Log.e(TAG, "getBitmap()  finalBitmap=" + finalBitmap);
             return getCircleBitmap(finalBitmap);
         } catch (OutOfMemoryError err) {
+            MobclickAgent.reportError(MyApplication.getInstance(), err);
             Toast.makeText(this, "保存头像失败", Toast.LENGTH_SHORT).show();
             Log.e(TAG, err.getMessage());
             return null;
         } catch (Exception e) {
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
             Toast.makeText(this, "保存头像失败!", Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.getMessage());
             return null;
@@ -440,24 +458,24 @@ public class ClipPictureActivity extends BaseActivity {
                 file.createNewFile();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         mBitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
         try {
             fOut.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         try {
             fOut.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 
@@ -479,6 +497,7 @@ public class ClipPictureActivity extends BaseActivity {
             v.draw(c);
             return screenshot;
         } catch (OutOfMemoryError err) {
+            MobclickAgent.reportError(MyApplication.getInstance(), err);
         }
         return null;
     }

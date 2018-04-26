@@ -11,7 +11,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.user.R;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -79,7 +81,7 @@ public class CustomDatePicker {
                 startCalendar.setTime(sdf.parse(startDate));
                 endCalendar.setTime(sdf.parse(endDate));
             } catch (ParseException e) {
-                e.printStackTrace();
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             }
             initDialog();
             initView();

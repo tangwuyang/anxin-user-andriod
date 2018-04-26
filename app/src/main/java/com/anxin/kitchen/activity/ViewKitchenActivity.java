@@ -26,6 +26,7 @@ import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.HorizontalScrollMenu;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -84,6 +85,18 @@ public class ViewKitchenActivity extends BaseActivity implements View.OnClickLis
         String kitchenId = MyApplication.getInstance().getKitchenId();
         if (kitchenId != null && kitchenId.length() != 0)
             SystemUtility.requestNetGet(SystemUtility.getKitchenList(kitchenId), GET_KITCHEN_LIST);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     /**
@@ -227,7 +240,7 @@ public class ViewKitchenActivity extends BaseActivity implements View.OnClickLis
 //            LOG.e("------nameList--------" + nameList);
 //            LOG.e("------names--------" + names.toString());
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
     }
 

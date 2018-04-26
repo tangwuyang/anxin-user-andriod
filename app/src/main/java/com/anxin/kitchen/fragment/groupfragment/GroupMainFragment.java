@@ -51,6 +51,7 @@ import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexStickyViewAdapter;
 import com.bluetooth.tangwuyang.fantuanlibrary.entity.BaseEntity;
 import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemClickListener;
 import com.bluetooth.tangwuyang.fantuanlibrary.listener.OnItemLongClickListener;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -169,9 +170,15 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
     @Override
     public void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("GroupMain");
         LOG.e("--------------onResume-----------isLoginResult---" + isLoginResult);
         if (!isLoginResult)
             requestInternetGetData();
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("GroupMain");
     }
 
     @Override

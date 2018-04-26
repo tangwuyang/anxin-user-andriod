@@ -9,6 +9,7 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.adapter.OrderAdapter;
 import com.anxin.kitchen.fragment.BaseFragment;
 import com.anxin.kitchen.response.OrderListResponse;
@@ -19,6 +20,7 @@ import com.anxin.kitchen.utils.JsonHandler;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.RefreshLayout;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +75,6 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
 //                mActivity.startActivity(intent);
 //            }
 //        });
-
 
 
         refreshOrder.setOnLoadListener(this);
@@ -136,10 +137,10 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
                 refreshOrder.setRefreshing(false);
                 refreshOrder.setLoading(false);
             } catch (Exception e) {
-
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             }
             OrderListResponse response = JsonHandler.getHandler().getTarget(responseBody, OrderListResponse.class);
-            if (response == null || response.getData() == null||response.getData().getData()==null) {
+            if (response == null || response.getData() == null || response.getData().getData() == null) {
                 ToastUtil.showToast("没有更多了");
                 return;
             }
@@ -167,7 +168,7 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
                 refreshOrder.setRefreshing(false);
                 refreshOrder.setLoading(false);
             } catch (Exception e) {
-
+                MobclickAgent.reportError(MyApplication.getInstance(), e);
             }
 
             if (page == 1) {
@@ -185,6 +186,12 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
     @Override
     public void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("OrderFragment");
         onRefresh();
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("OrderFragment");
     }
 }

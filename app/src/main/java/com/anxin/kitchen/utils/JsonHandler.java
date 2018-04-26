@@ -1,7 +1,9 @@
 package com.anxin.kitchen.utils;
 
+import com.anxin.kitchen.MyApplication;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.umeng.analytics.MobclickAgent;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -37,6 +39,7 @@ public class JsonHandler {
             Gson e = new Gson();
             return e.fromJson(jsonString, cls);
         } catch (Exception var4) {
+            MobclickAgent.reportError(MyApplication.getInstance(), var4);
             System.err.println("错误：" + var4.getMessage());
             return null;
         }
@@ -49,6 +52,7 @@ public class JsonHandler {
             Gson gson = e.create();
             return (List) gson.fromJson(jsonString, type);
         } catch (Exception var5) {
+            MobclickAgent.reportError(MyApplication.getInstance(), var5);
             System.err.println("错误：" + var5.getMessage());
             return null;
         }

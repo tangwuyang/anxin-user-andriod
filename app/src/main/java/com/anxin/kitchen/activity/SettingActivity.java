@@ -30,6 +30,7 @@ import com.anxin.kitchen.utils.UmengHelper;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -108,8 +109,14 @@ public class SettingActivity extends FragmentActivity implements View.OnClickLis
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

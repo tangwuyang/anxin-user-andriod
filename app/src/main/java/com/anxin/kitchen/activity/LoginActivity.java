@@ -28,6 +28,7 @@ import com.anxin.kitchen.view.WaitingDialog;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +44,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private Log LOG = Log.getLog();
     private ImageView WXloginBtn;//微信登陆按钮
     private IWXAPI mApi;//微信登陆API
-    public static String openID;//第三方登陆ID
+    public static String openID = null;//第三方登陆ID
     public static String userNickName;//第三方登陆名称
     public static String userLogoPath;//第三方登陆用户头像URL
     private TextView sendPhoneCodeBtn;//发送验证码
@@ -195,10 +196,20 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             loginBtn.setText("绑定");
         }
         if (platId.equals("1")) {
-            sendLogin3(platId, openID);
-            showDialog();
+            if (openID != null && openID.length() != 0) {
+                showDialog();
+                sendLogin3(platId, openID);
+            }
+
         }
         super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void showDialog() {
@@ -345,7 +356,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             jsonObject.put("model", carrier + " " + model);
             jsonObject.put("deviceId", deviceID);
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         String urlPath = SystemUtility.sendPhoneReportDevice();
         Map<String, Object> dataMap = new HashMap();
@@ -409,7 +420,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             jsonObject.put("phone", userPhone);
             jsonObject.put("userLogo", userLogoPath);
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         String urlPath = SystemUtility.sendUserPhoneLocking();
         Map<String, Object> dataMap = new HashMap();

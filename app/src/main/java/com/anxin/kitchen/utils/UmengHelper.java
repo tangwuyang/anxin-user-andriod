@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.user.R;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.MsgConstant;
@@ -55,6 +56,7 @@ public class UmengHelper {
         mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
         mPushAgent.setResourcePackageName("com.anxin.kitchen.user");
         UMConfigure.init(MyApplication.getInstance(), "5a940df18f4a9d7d7b000197", "Channel ID", UMConfigure.DEVICE_TYPE_PHONE, "1dfe594cb7ca354ec036dbb62c297190");
+        MobclickAgent.setScenarioType(MyApplication.getInstance(), MobclickAgent.EScenarioType.E_UM_NORMAL);
         mPushAgent.register(new IUmengRegisterCallback() {
             @Override
             public void onSuccess(String deviceToken) {

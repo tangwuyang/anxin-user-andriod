@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.BaseActivity;
 import com.anxin.kitchen.interface_.ListenerBack;
 import com.anxin.kitchen.response.BaseResponse;
@@ -28,6 +29,7 @@ import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.utils.UtilHandler;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -108,6 +110,17 @@ public class PayActivity extends BaseActivity implements ListenerBack {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     @Override
     public void requestSuccess(String responseString, String requestCode) {
@@ -397,7 +410,7 @@ public class PayActivity extends BaseActivity implements ListenerBack {
             unregisterReceiver(mReciverSucceed);
             unregisterReceiver(mReciverFailed);
         } catch (Exception e) {
-
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         super.onDestroy();
     }

@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.view.RefreshLayout;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,16 @@ public class TestRefreshActivity extends BaseActivity implements SwipeRefreshLay
         setListener();
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
     /**
      * 设置监听
      */

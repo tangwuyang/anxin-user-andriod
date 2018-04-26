@@ -31,6 +31,7 @@ import com.anxin.kitchen.utils.SystemUtility;
 import com.bluetooth.tangwuyang.fantuanlibrary.IndexStickyView;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexStickyViewAdapter;
 import com.google.gson.Gson;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -300,5 +301,16 @@ public class GroupMemberActivity extends BaseActivity implements View.OnClickLis
             super(itemView);
             mTextView = (TextView) itemView.findViewById(R.id.tv_index);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

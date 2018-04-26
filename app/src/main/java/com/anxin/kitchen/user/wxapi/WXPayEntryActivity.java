@@ -16,6 +16,7 @@ import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 
@@ -48,6 +49,18 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
     @Override
     public void onReq(BaseReq baseReq) {
         System.out.println("---微信支付:" + JsonHandler.getHandler().toJson(baseReq));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

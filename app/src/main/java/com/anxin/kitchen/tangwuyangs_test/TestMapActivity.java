@@ -11,6 +11,7 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.MapView;
 import com.anxin.kitchen.user.R;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -124,14 +125,15 @@ public class TestMapActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mapView.onResume();
+        MobclickAgent.onResume(this);
     }
-
     /**
      * 方法必须重写
      */
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPause(this);
         mapView.onPause();
     }
 

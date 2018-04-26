@@ -45,6 +45,7 @@ import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.utils.ToastUtil;
 import com.anxin.kitchen.view.RoundedImageView;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -136,9 +137,14 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onResume() {
-        // TODO Auto-generated method stub
-        initHeadIconFile();
         super.onResume();
+        MobclickAgent.onPageStart("AddUserdata");
+        initHeadIconFile();
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("AddUserdata");
     }
 
     private void initHeadIconFile() {
@@ -240,7 +246,7 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
 //            jsonObject.put("phone", phone);
 //            jsonObject.put("province", Integer.valueOf(addressBean.getProvinceID()));
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         String urlPath = SystemUtility.sendUpdateUser();
         Map<String, Object> dataMap = new HashMap();
@@ -484,7 +490,7 @@ public class AddUserDataFragment extends Fragment implements View.OnClickListene
             jsonObject.put("longitude", addressBean.getLongitude());
             jsonObject.put("latitude", addressBean.getLatitude());
         } catch (JSONException e) {
-            e.printStackTrace();
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
         }
         String urlPath = SystemUtility.sendAddAddress();
         Map<String, Object> dataMap = new HashMap();
