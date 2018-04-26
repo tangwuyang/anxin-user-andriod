@@ -206,7 +206,7 @@
                 android:paddingLeft="@dimen/bar_left_right_padding"
                 android:paddingRight="@dimen/bar_left_right_padding"
                 android:paddingTop="5dp"
-                android:visibility="gone">
+                >
 
                 <TextView
                     android:layout_width="0dp"
