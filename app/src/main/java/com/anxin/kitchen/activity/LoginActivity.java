@@ -19,6 +19,7 @@ import com.anxin.kitchen.event.AsyncHttpRequestMessage;
 import com.anxin.kitchen.fragment.loginfragment.AddUserDataFragment;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.user.wxapi.WXEntryActivity;
+import com.anxin.kitchen.utils.Constant;
 import com.anxin.kitchen.utils.EventBusFactory;
 import com.anxin.kitchen.utils.Log;
 import com.anxin.kitchen.utils.StringUtils;
