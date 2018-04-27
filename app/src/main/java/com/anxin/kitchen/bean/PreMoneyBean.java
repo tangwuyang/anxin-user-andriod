@@ -31,27 +31,27 @@ public class PreMoneyBean {
 
     public class Data {
 
-        private int payDeposit;
-        private int totalPay;
-        private int wantPay;
-        public void setPayDeposit(int payDeposit) {
+        private double payDeposit;
+        private double totalPay;
+        private double wantPay;
+        public void setPayDeposit(double payDeposit) {
             this.payDeposit = payDeposit;
         }
-        public int getPayDeposit() {
+        public double getPayDeposit() {
             return payDeposit;
         }
 
-        public void setTotalPay(int totalPay) {
+        public void setTotalPay(double totalPay) {
             this.totalPay = totalPay;
         }
-        public int getTotalPay() {
+        public double getTotalPay() {
             return totalPay;
         }
 
-        public void setWantPay(int wantPay) {
+        public void setWantPay(double wantPay) {
             this.wantPay = wantPay;
         }
-        public int getWantPay() {
+        public double getWantPay() {
             return wantPay;
         }
 

@@ -219,7 +219,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
 
         if (requestCode == GET_PRO_MOENY && status.equals(Constant.REQUEST_SUCCESS)) {
             PreMoneyBean bean = mGson.fromJson(responseString, PreMoneyBean.class);
-            mAllMoneyTv.setText("￥" + bean.getData().getTotalPay() + ".00");
+            mAllMoneyTv.setText("￥" + bean.getData().getTotalPay());
             mTablewareMoneyTv.setText("其中餐具押金" + bean.getData().getPayDeposit() + "元");
         }
 

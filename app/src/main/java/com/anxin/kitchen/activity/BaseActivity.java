@@ -64,7 +64,7 @@ public class BaseActivity extends FragmentActivity implements RequestNetListener
     //调试打印
     public void myLog(String msg) {
         if (isDebug) {
-            android.util.Log.i(getClass().getSimpleName(), msg);
+            android.util.Log.e(getClass().getSimpleName(), msg);
         }
     }
 

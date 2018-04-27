@@ -181,7 +181,9 @@
                 android:id="@+id/tableware_use_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
                 android:text="铁牌保温餐具(使用费)"
+                android:gravity="left"
                 android:textColor="@color/shallow_text_color"
                 android:textSize="@dimen/mid_text_size" />
 
@@ -189,6 +191,7 @@
                 android:id="@+id/tablew_u_m_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="（使用费23.00元/份）"
                 android:textColor="@color/shallow_text_color"
                 android:textSize="@dimen/small_text_size" />

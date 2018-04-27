@@ -57,7 +57,7 @@ public class TablewareBean {
         private int orderType;
         private String brand;
         private String model;
-        private int cost;
+        private double cost;
         private int usePrice;
         private double deposit;
         private String img;
@@ -111,10 +111,10 @@ public class TablewareBean {
             return model;
         }
 
-        public void setCost(int cost) {
+        public void setCost(double cost) {
             this.cost = cost;
         }
-        public int getCost() {
+        public double getCost() {
             return cost;
         }
 

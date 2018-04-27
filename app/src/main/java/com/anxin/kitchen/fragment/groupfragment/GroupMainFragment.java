@@ -586,14 +586,18 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
         popWnd.showAsDropDown(mMenuImg, 550, 10);
     }
 
-    /*
-     * 设置群
-     * */
-    public void setGroup(SearchGroupBean bean) {
+    public void closeWaitDialog(){
         if (null != mWaitingDiag) {
             mWaitingDiag.stopAnimation();
             mWaitingDiag.dismiss();
         }
+    }
+
+    /*
+     * 设置群
+     * */
+    public void setGroup(SearchGroupBean bean) {
+        closeWaitDialog();
         List<SearchGroupBean.Data> groupList = bean.getData();
         if (null == this.grouplist) {
             this.grouplist = new ArrayList<>();

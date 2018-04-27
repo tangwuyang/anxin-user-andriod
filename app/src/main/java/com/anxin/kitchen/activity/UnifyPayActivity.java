@@ -41,6 +41,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -326,6 +327,10 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
 
     private void createOrder() {
         //获取所有套餐信息
+        if (null == addressBean){
+            Toast.makeText(this, "请选择送餐地址", Toast.LENGTH_SHORT).show();
+            return;
+        }
         mdialog.show();
         mdialog.startAnimation();
         Map<String, Object> dataMap = new HashMap<>();
@@ -348,7 +353,8 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             double littlePrice = meal.getPrice() * meal.getNums();
             BigDecimal b = new BigDecimal(meal.getPrice() * meal.getNums());
             double price = b.setScale(2, BigDecimal.ROUND_UP).doubleValue();
-            String dateTem = transToWeekDay(meal.getMenuDay());
+            String dateTem = getDate(meal.getMenuDay());
+
             String dateSt = null;
             if (meal.getEatType() == 1) {
                 dateSt = transData(dateTem + " 12:00");
@@ -378,7 +384,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-    private String transToWeekDay(long thisDay) {
+    private String getDate(long thisDay) {
         myLog("-------w------>" + thisDay);
         String dataSt = String.valueOf(thisDay);
         StringBuffer dateBf = new StringBuffer();
@@ -391,6 +397,35 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         return dataSt;
     }
 
+
+    private String transToWeekDay(String dataSt) {
+        Date d = null;
+        try {
+            d = new SimpleDateFormat("yyyy-MM-dd").parse(dataSt);
+        } catch (ParseException e) {
+            MobclickAgent.reportError(MyApplication.getInstance(), e);
+        }
+        int day = d.getDay();
+        myLog("---------------d" + day);
+        switch (day) {
+            case 1:
+                return "周一";
+            case 2:
+                return "周二";
+            case 3:
+                return "周三";
+            case 4:
+                return "周四";
+            case 5:
+                return "周五";
+            case 6:
+                return "周六";
+            case 0:
+                return "周日";
+
+        }
+        return null;
+    }
     private void getAllMoney() {
         for (int i = 0; i < mMeals.size(); i++) {
             MealBean.Data meal = mMeals.get(i);
@@ -455,7 +490,21 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
                 holder = (ViewHolder) view.getTag();
                 view.setTag(R.id.position, position);
             }
-            holder.sendTimeTv.setText(meal.getMenuDay() + "");
+            String date = getDate(meal.getMenuDay());
+
+            String type = null;
+            switch (meal.getEatType()){
+                case 1:
+                    type = "午餐";
+                    break;
+                case 2:
+                    type = "晚餐";
+                    break;
+                default:
+                    type = "错误";
+                    break;
+            }
+            holder.sendTimeTv.setText( date + " " + transToWeekDay(date) + " " +type);
             holder.mealNums.setText("✘" + meal.getNums());
             holder.mealTitleTv.setText(meal.getPackageName());
             holder.mealContentTv.setText(meal.getFoodList().get(0).getDishName());
@@ -480,7 +529,8 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
                 holder.tablewareDeMoneyTv.setText("￥" + tablewareDeMoney);
                 holder.tablewareUseMoneyTv.setText("￥" + tablewareUseMoney1);
                 holder.sendMoneyTv.setText("￥" + sendCosts);
-                holder.allMoneyTfv.setText("￥" + (sendCosts + tablewareUseMoney1 + tablewareDeMoney + mealMoney));
+                String allMoney = transDouble(sendCosts + tablewareUseMoney1 + tablewareDeMoney + mealMoney);
+                holder.allMoneyTfv.setText("￥" + allMoney);
             }
 
             if (!mark) {
@@ -492,6 +542,13 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             return view;
         }
     }
+
+
+    private String transDouble(double num){
+        DecimalFormat    df   = new DecimalFormat("######0.00");
+       return df.format(num);
+
+}
 
     class ViewHolder {
         View view;

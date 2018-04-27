@@ -330,6 +330,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         //查询所有创建的团
         if (requestCode != null && requestCode.equals(SEARCH_GROUP)) {
             if (null != status && status.equals(Constant.REQUEST_SUCCESS)) {
+                groupMainFragment.closeWaitDialog();
                 String gsonSt = StringUtils.parserMessage(responseBody, "data");
                 myLog("------------>" + gsonSt);
                 Gson gson = new Gson();
@@ -340,6 +341,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     groupMainFragment.setGroup(bean);
                 }
             } else if (null != status && status.equals(Constant.LOGIN_FIRST)) {
+                groupMainFragment.closeWaitDialog();
                 SystemUtility.startLoginUser(MainActivity.this);
             }
             return;

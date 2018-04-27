@@ -136,8 +136,9 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         LinkedHashMap<Long, Map<String, MealBean.Data>> preMealMaps = new LinkedHashMap<>();
 
         String premealCache = new PrefrenceUtil(this).getPreserveList();
-        myLog("------------->" + premealCache);
-        if (null != premealCache && (!"null".equals(premealCache))) {
+        myLog("-------------缓存内容>" + premealCache);
+        if (null != premealCache && (!"null".equals(premealCache)) && premealCache.length()>0) {
+            myLog("----------------走了缓存");
             preMealMaps = mGson.fromJson(premealCache, new TypeToken<LinkedHashMap<Long, Map<String, MealBean.Data>>>() {
             }.getType());
         } else {
@@ -185,7 +186,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         } else {
 
         }*/
-
+        myLog("------------------>pre_be" + preMealMaps.size());
         updateUI(days, weakDays, preMealMaps);
 
     }
@@ -212,6 +213,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         if (requestCode == GET_TABLEWARE && status.equals(Constant.REQUEST_SUCCESS)) {
             String tempSt = responseString.substring(responseString.indexOf("\"data\":"), responseString.lastIndexOf("}"));
             String tablewareSt = tempSt.substring(tempSt.indexOf(":", 0) + 1);
+            myLog("---------->" + tablewareSt);
             tablewareBean = mGson.fromJson(tablewareSt, TablewareBean.class);
             return;
         }
@@ -497,7 +499,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
 
 
     private void getAllnums() {
-
+        allNums = 0;
         for (Long day :
                 preserverAdapter.preMealMaps.keySet()) {
             myLog("-----------day---->" + day);
@@ -703,18 +705,25 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             this.days = days;
             this.weakDays = weakDays;
             this.preMealMaps = preMealMaps;
+            myLog("------------->map大小"+preMealMaps.size());
         }
 
-        public void updateData(long day, String type, MealBean.Data meal, FoodsBean.Data food) {
-            boolean isContain = preMealMaps.get(day).containsKey(type);
-            if (isContain) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    preMealMaps.get(day).replace(type, meal);
+        public void updateData(Long day, String type, MealBean.Data meal, FoodsBean.Data food) {
+            if (null !=preMealMaps) {
+                boolean hasTheDay = preMealMaps.containsKey(day);
+                myLog("---------------->是够包含" + hasTheDay);
+                boolean isContain = preMealMaps.get(day).containsKey(type);
+                if (isContain) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        preMealMaps.get(day).replace(type, meal);
+                    }
+                } else {
+                    preMealMaps.get(day).put(type, meal);
                 }
-            } else {
-                preMealMaps.get(day).put(type, meal);
+                PreserverAdapter.this.notifyDataSetChanged();
+            }else {
+                myLog("-------------------map为空");
             }
-            PreserverAdapter.this.notifyDataSetChanged();
         }
 
         @Override
