@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.anxin.kitchen.activity.SearchMealActivityActivity">
-<include layout="@layout/title_bar"/>
+    <include layout="@layout/title_bar"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -74,15 +74,46 @@
             android:src="@drawable/no_contents_img"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-           />
-
-        <com.lcodecore.LabelLayout
-            android:layout_margin="@dimen/bar_left_right_padding"
-            android:background="@color/white"
-            android:id="@+id/hot_layout"
+            />
+        <LinearLayout
+            android:id="@+id/tag_ll"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-           ></com.lcodecore.LabelLayout>
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="热点"
+                android:paddingLeft="@dimen/bar_left_right_padding"
+                android:textColor="@color/shallow_text_color"
+
+                />
+
+            <com.lcodecore.LabelLayout
+                android:layout_margin="@dimen/bar_left_right_padding"
+                android:background="@color/white"
+                android:id="@+id/history_layout"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                ></com.lcodecore.LabelLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="热点"
+                android:paddingLeft="@dimen/bar_left_right_padding"
+                android:textColor="@color/shallow_text_color"
+
+
+                />
+            <com.lcodecore.LabelLayout
+                android:layout_margin="@dimen/bar_left_right_padding"
+                android:background="@color/white"
+                android:id="@+id/hot_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                ></com.lcodecore.LabelLayout>
+        </LinearLayout>
+
 
     </FrameLayout>
 

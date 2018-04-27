@@ -29,6 +29,7 @@ import com.anxin.kitchen.activity.GroupMemberActivity;
 import com.anxin.kitchen.activity.InvateFriendActivity;
 import com.anxin.kitchen.activity.LoginActivity;
 import com.anxin.kitchen.activity.MainActivity;
+import com.anxin.kitchen.activity.SearchFrinedActivity;
 import com.anxin.kitchen.bean.ContactEntity;
 import com.anxin.kitchen.bean.FriendsBean;
 import com.anxin.kitchen.bean.MenuEntity;
@@ -223,8 +224,9 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
                 ((ImageViewVH) holder).search_rl.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        activity.myLog("----------------开始搜索");
-                        Toast.makeText(activity, "search", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(mContext, SearchFrinedActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                     }
                 });
             }
@@ -238,7 +240,7 @@ public class GroupMainFragment extends HomeBaseFragment implements View.OnClickL
                     search_rl.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(activity, "search", Toast.LENGTH_SHORT).show();
+
                         }
                     });
                 }

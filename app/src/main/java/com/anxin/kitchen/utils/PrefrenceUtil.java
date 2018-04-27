@@ -95,4 +95,17 @@ public class PrefrenceUtil {
         String groupSt = preferences.getString(Constant.RECAVOR_MENU,"null");
         return groupSt;
     }
+
+
+    public void setHisSearchList(String recoverBeanListSt){
+        SharedPreferences.Editor editor = getPreference().edit();
+        editor.putString(Constant.HIS_SEARCH,recoverBeanListSt);
+        editor.commit();
+    }
+
+    public String getHisSearchList(){
+        SharedPreferences preferences =  getPreference();
+        String groupSt = preferences.getString(Constant.HIS_SEARCH,"null");
+        return groupSt;
+    }
 }

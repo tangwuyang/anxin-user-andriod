@@ -1,5 +1,6 @@
 package com.anxin.kitchen.activity;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -16,9 +17,11 @@ import com.anxin.kitchen.bean.LabelBean;
 import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.PrefrenceUtil;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.WaitingDialog;
+import com.google.gson.reflect.TypeToken;
 import com.lcodecore.ILabel;
 import com.lcodecore.LabelLayout;
 import com.umeng.analytics.MobclickAgent;
@@ -36,7 +39,12 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
     private LinearLayout mSignLl;
     private LabelLayout mHotLabelLy;
     private WaitingDialog mDialog;
-
+    private PrefrenceUtil prefrenceUtil;
+    private List<ILabel> historySearch;
+    private LabelLayout mHistLabelLv;
+    private ImageView mBackImg;
+    private LinearLayout mLableLl;
+    private EditText mSearch_et;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +52,35 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
         initView();
         setTitle("搜  索");
         showDialog();
+        getHistory();
         requestHotMeals();
+    }
+
+    private void getHistory() {
+        String histList =  prefrenceUtil.getHisSearchList();
+        if (null!=histList && !"null".equals(histList)){
+            historySearch = mGson.fromJson(histList,new TypeToken<List<LabelBean>>(){}.getType());
+            myLog("------------------>"+historySearch.size());
+
+            mHistLabelLv.setLabels(historySearch);
+            mHistLabelLv.setMaxCheckCount(1);
+            mHistLabelLv.setOnCheckChangedListener(new LabelLayout.OnCheckChangeListener() {
+                @Override
+                public void onCheckChanged(ILabel label, boolean isChecked) {
+                    if (isChecked) {
+                        mHotLabelLy.setVisibility(View.GONE);
+                        mNoContentsImg.setVisibility(View.VISIBLE);
+                        mHotLabelLy.setSelected(false);
+
+                    }
+                }
+
+                @Override
+                public void onBeyondMaxCheckCount() {
+
+                }
+            });
+        }
     }
 
     private void showDialog() {
@@ -76,10 +112,16 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
     }
 
     private void initView() {
+        mSearch_et = findViewById(R.id.search_et);
+        mLableLl = findViewById(R.id.tag_ll);
+        mBackImg = findViewById(R.id.back_img);
+        mBackImg.setOnClickListener(this);
+        prefrenceUtil = new PrefrenceUtil(this);
         mSearchView = findViewById(R.id.search_et);
         mSearchTv = findViewById(R.id.search_tv);
         mNoContentsImg = findViewById(R.id.no_content_img);
         mHotLabelLy = findViewById(R.id.hot_layout);
+        mHistLabelLv = findViewById(R.id.history_layout);
         mSearchTv.setOnClickListener(this);
         mSearchView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -98,6 +140,7 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
                 if (numSt == null || numSt.length() < 1) {
                     mNoContentsImg.setVisibility(View.GONE);
                     mHotLabelLy.setVisibility(View.VISIBLE);
+                    mLableLl.setVisibility(View.VISIBLE);
                     return;
                 }
 
@@ -106,11 +149,50 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myLog("--------------->"+mGson.toJson(historySearch));
+        prefrenceUtil.setHisSearchList(mGson.toJson(historySearch));
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.search_tv:
+                boolean hasItInHis = false;
+                String searchSt = mSearch_et.getText().toString();
+                if (null != historySearch && historySearch.size()>0){
+                    for (ILabel lable1:historySearch){
+                        if (null != lable1 && null != lable1.getName() ) {
+                            if (lable1.getName().equals(searchSt)) {
+                                hasItInHis = true;
+                                historySearch.set(0, lable1);
+                                break;
+                            }
+                        }
+                    }
+                    if (!hasItInHis){
+                        LabelBean bean = new LabelBean();
+                        bean.setName(searchSt);
+                        bean.setId("sdas");
+                        myLog("--------------");
+                        historySearch.add(bean);
+                    }
+                }else {
+                    historySearch = new ArrayList<>();
+                    LabelBean bean = new LabelBean();
+                    bean.setName(searchSt);
+                    bean.setId("sdas");
+
+                    historySearch.add(bean);
+                }
+
+                mLableLl.setVisibility(View.GONE);
                 mHotLabelLy.setVisibility(View.GONE);
                 mNoContentsImg.setVisibility(View.VISIBLE);
+                break;
+            case R.id.back_img:
+                finish();
                 break;
         }
     }
@@ -135,7 +217,19 @@ public class SearchMealActivityActivity extends BaseActivity implements View.OnC
             mHotLabelLy.setOnCheckChangedListener(new LabelLayout.OnCheckChangeListener() {
                 @Override
                 public void onCheckChanged(ILabel label, boolean isChecked) {
+                    boolean hasItInHis = false;
                     if (isChecked) {
+                        for (ILabel lable1:historySearch){
+                            if (lable1.getName().equals(label.getName())){
+                                hasItInHis = true;
+                                historySearch.set(0,lable1);
+                                break;
+                            }
+                        }
+                        if (!hasItInHis){
+                            historySearch.add(label);
+                        }
+                        mLableLl.setVisibility(View.GONE);
                         mHotLabelLy.setVisibility(View.GONE);
                         mNoContentsImg.setVisibility(View.VISIBLE);
                         mHotLabelLy.setSelected(false);

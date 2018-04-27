@@ -11,8 +11,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.anxin.kitchen.bean.ContactEntity;
 import com.anxin.kitchen.bean.FriendsBean;
+import com.anxin.kitchen.decoration.IndexStickyViewDecoration;
 import com.anxin.kitchen.user.R;
+import com.anxin.kitchen.utils.FrinedsSearch;
+import com.anxin.kitchen.utils.LocalContactSearch;
 import com.anxin.kitchen.utils.PrefrenceUtil;
 
 import java.util.ArrayList;
@@ -24,6 +28,8 @@ public class SearchFrinedActivity extends BaseActivity implements View.OnClickLi
     private TextView mSearchTv;
     private ListView mFrindsLv;
     private PrefrenceUtil prefrenceUtil;
+    private ArrayList<FriendsBean.Data> friends;
+    private FriendAdapter mAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,38 +41,69 @@ public class SearchFrinedActivity extends BaseActivity implements View.OnClickLi
         mSearchTv = findViewById(R.id.search_tv);
         mFrindsLv = findViewById(R.id.friends_lv);
         initAdapter();
+        mSearchTv.setOnClickListener(this);
         mBackImg.setOnClickListener(this);
     }
 
     private void initAdapter() {
-
+        String friendSt = prefrenceUtil.getFriends();
+        FriendsBean bean = null;
+        if (null!=friendSt && !"null".equals(friendSt)) {
+            bean = mGson.fromJson(friendSt,FriendsBean.class);
+        }
+        if (null!=bean) {
+            friends = (ArrayList<FriendsBean.Data>) bean.getData();
+        }else {
+            friends = new ArrayList<>();
+        }
+        mAdapter = new FriendAdapter(friends);
+        mFrindsLv.setAdapter(mAdapter);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.search_tv:
+                String searchSt = mSearchEt.getText().toString();
+                myLog("---------------->searchSt "+searchSt);
+
+                if (searchSt != null && searchSt.length() > 0) {
+                    ArrayList<FriendsBean.Data> listG = FrinedsSearch.searchContact(searchSt, friends);
+                    myLog("--------------"+listG.size());
+                    mAdapter = new FriendAdapter(listG);
+                    mFrindsLv.setAdapter(mAdapter);
+                } else {
+                    myLog("--------------------------");
+                    if (searchSt==null || searchSt.length()==0){
+                        if (null != friends){
+                            mAdapter = new FriendAdapter(friends);
+                            mFrindsLv.setAdapter(mAdapter);
+
+                        }
+                    }
+                }
+                break;
+
+            case R.id.back_img:
+                finish();
                 break;
         }
     }
 
     class FriendAdapter extends BaseAdapter{
-        private List<FriendsBean.Data> friends;
 
+        ArrayList<FriendsBean.Data> listG;
         public FriendAdapter() {
-            String friendSt = prefrenceUtil.getFriends();
-            FriendsBean bean = null;
-            if (null!=friendSt && !"null".equals(friendSt)) {
-                bean = mGson.fromJson(friendSt,FriendsBean.class);
-            }
-            if (null!=bean) {
-                this.friends = bean.getData();
-            }
+
+        }
+
+        public FriendAdapter(ArrayList<FriendsBean.Data> listG) {
+         this.listG = listG;
         }
 
         @Override
         public int getCount() {
-            return 0;
+            return listG.size();
         }
 
         @Override
@@ -82,7 +119,12 @@ public class SearchFrinedActivity extends BaseActivity implements View.OnClickLi
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = LayoutInflater.from(SearchFrinedActivity.this).inflate(R.layout.contact_item, viewGroup, false);
-            return null;
+            FriendsBean.Data friend = listG.get(i);
+            TextView nameTv = view.findViewById(R.id.tv_name);
+            TextView mobielTv = view.findViewById(R.id.tv_mobile);
+            nameTv.setText(friend.getTrueName());
+            mobielTv.setText(friend.getPhone());
+            return view;
         }
     }
 }

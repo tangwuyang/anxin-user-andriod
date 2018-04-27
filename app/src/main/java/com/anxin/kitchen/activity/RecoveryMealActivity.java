@@ -247,7 +247,9 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
 
     private void setTitleBar() {
         setTitle("康复食疗");
-        findViewById(R.id.search_img).setVisibility(View.VISIBLE);
+        ImageView search = findViewById(R.id.search_img);
+        search.setVisibility(View.VISIBLE);
+        search.setOnClickListener(this);
         RelativeLayout bottom_rl = findViewById(R.id.bottom_rl);
     }
 
@@ -314,6 +316,8 @@ public class RecoveryMealActivity extends BaseActivity implements SwipeRefreshLa
                 intent.putExtra("chosedMeal", chosedMeal);
                 startActivity(intent);
                 break;
+            case R.id.search_img:
+                startNewActivity(SearchMealActivityActivity.class);
         }
     }
 
