@@ -1,6 +1,9 @@
 package com.anxin.kitchen.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.menu.MenuAdapter;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
+import com.anxin.kitchen.activity.order.OrderActivity;
 import com.anxin.kitchen.activity.order.OrderDetailActivity;
 import com.anxin.kitchen.activity.order.PayActivity;
 import com.anxin.kitchen.bean.AddressBean;
@@ -77,6 +81,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
     private AddressBean addressBean = null;
     private MyListView mPayWayLv;
     private TextView sendTimeTv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +89,10 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         initView();
         getTableWare();
         initDate();
+        //微信支付成功
+        IntentFilter filterSucceed = new IntentFilter();
+        filterSucceed.addAction(Constant.BROADCAST_PAY_Complete);
+        registerReceiver(mReciverSucceed, filterSucceed);
     }
 
     private void initDate() {
@@ -161,7 +170,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         mChosedMeals = mGson.fromJson(chosedMealSt, new TypeToken<LinkedHashMap<String, RecoverBean.Data>>() {
         }.getType());
         mMealLv.setAdapter(new MealAdapter());
-         mPayWayLv.setAdapter(new PaymentAdapter());
+        mPayWayLv.setAdapter(new PaymentAdapter());
         mTitleTv.setText("确认订单");
         kitchenId = new PrefrenceUtil(this).getKitchenId();
         mCache = new Cache(this);
@@ -181,7 +190,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         int dayOfMonth = now.get(Calendar.DAY_OF_MONTH);  //这个月的总天数
         int hour = now.get(Calendar.HOUR_OF_DAY);
         int fen = now.get(Calendar.MINUTE);
-        String sendtime = "送餐时间： "+(hour +1) + ":"+fen;
+        String sendtime = "送餐时间： " + (hour + 1) + ":" + fen;
         sendTimeTv = findViewById(R.id.send_time_tv);
         sendTimeTv.setText(sendtime);
     }
@@ -253,18 +262,32 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
             //要修改  跳转到订单活动
 //            startNewActivity(MainActivity.class);
         } else if (requestCode == PAY_MONEY && (!status.equals(Constant.REQUEST_SUCCESS))) {
-           // Toast.makeText(this, "付款失败" + status, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, "付款失败" + status, Toast.LENGTH_SHORT).show();
             mdialog.stopAnimation();
             mdialog.dismiss();
             Intent intent = new Intent(this, PayActivity.class);
-            intent.putExtra("orderIds",Long.valueOf(ids));
-            intent.putExtra("makeType",1);
-            intent.putExtra("payType",payType);
+            intent.putExtra("orderIds", Long.valueOf(ids));
+            intent.putExtra("makeType", 1);
+            intent.putExtra("payType", payType);
             startActivity(intent);
         }
 
 
     }
+
+    private BroadcastReceiver mReciverSucceed = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            BaseDialog dialog = BaseDialog.showDialog(EnsureOrderActivity.this, R.layout.orderplay_dialog, Gravity.CENTER, 0);
+            mdialog.stopAnimation();
+            mdialog.dismiss();
+            clearCache();
+            Intent intentPayOrder = new Intent(EnsureOrderActivity.this, OrderDetailActivity.class);
+            intentPayOrder.putExtra("orderId", Long.valueOf(ids));
+            intentPayOrder.putExtra("closeType", 1);
+            startActivity(intentPayOrder);
+        }
+    };
 
     private void payMoney(RecorveOrderBean bean) {
         Map<String, Object> dataMap = new HashMap<>();
@@ -325,7 +348,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
 
     private void createOrder() {
         //先去再次请求订餐金钱
-        if (addressBean == null){
+        if (addressBean == null) {
             Toast.makeText(this, "请选择送餐地址", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -339,7 +362,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         String tempPackages = "";
         for (String key : mChosedMeals.keySet()) {
             double littlePrice = mChosedMeals.get(key).getPrice() * mChosedMeals.get(key).getNums();
-            myLog("-------------->"+ littlePrice);
+            myLog("-------------->" + littlePrice);
             BigDecimal b = new BigDecimal(littlePrice);
             double price = b.setScale(2, BigDecimal.ROUND_UP).doubleValue();
             tempPackages = tempPackages + mChosedMeals.get(key).getPackageId() + "*"
@@ -451,7 +474,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
                 num = num + mChosedMeals.get(key).getNums();
             }
             numsTv.setText("✘" + num);
-            moneyTv.setText("￥" + num * data.getUsePrice() );
+            moneyTv.setText("￥" + num * data.getUsePrice());
             if (selectMark.get(i)) {
                 tablewareId = data.getId();
                 getPreMoney();

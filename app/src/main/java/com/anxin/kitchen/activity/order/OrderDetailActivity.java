@@ -3,6 +3,7 @@ package com.anxin.kitchen.activity.order;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -101,14 +102,19 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if (closeType != -1 && closeType == 1) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        } else
-            finish();
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) { //表示按返回键 时的操作
+                // 监听到返回按钮点击事件
+                if (closeType != -1 && closeType == 1) {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } else
+                    finish();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

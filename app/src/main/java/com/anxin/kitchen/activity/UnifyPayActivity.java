@@ -1,6 +1,9 @@
 package com.anxin.kitchen.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
@@ -110,6 +113,10 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         initData();
         getPreMoney();
         initView();
+        //微信支付成功
+        IntentFilter filterSucceed = new IntentFilter();
+        filterSucceed.addAction(Constant.BROADCAST_PAY_Complete);
+        registerReceiver(mReciverSucceed, filterSucceed);
         // getTableWare();
     }
 
@@ -209,7 +216,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         int dayOfMonth = now.get(Calendar.DAY_OF_MONTH);  //这个月的总天数
         int hour = now.get(Calendar.HOUR_OF_DAY);
         int fen = now.get(Calendar.MINUTE);
-        String sendtime = (hour +1) + ":"+fen;
+        String sendtime = (hour + 1) + ":" + fen;
 
     }
 
@@ -279,14 +286,14 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             startActivity(intent1);
 //            startNewActivity(MainActivity.class);
         } else if (requestCode == PAY_MONEY && (!status.equals(Constant.REQUEST_SUCCESS))) {
-            Toast.makeText(this, "付款失败", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "余额不足", Toast.LENGTH_SHORT).show();
             mdialog.stopAnimation();
             mdialog.dismiss();
 
             Intent intent = new Intent(this, PayActivity.class);
-            intent.putExtra("orderIds",Long.valueOf(ids));
-            intent.putExtra("makeType",1);
-            intent.putExtra("payType",payType);
+            intent.putExtra("orderIds", Long.valueOf(ids));
+            intent.putExtra("makeType", 1);
+            intent.putExtra("payType", payType);
             startActivity(intent);
         }
 
@@ -297,6 +304,19 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
+    private BroadcastReceiver mReciverSucceed = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            BaseDialog dialog = BaseDialog.showDialog(UnifyPayActivity.this, R.layout.orderplay_dialog, Gravity.CENTER, 0);
+            mdialog.stopAnimation();
+            mdialog.dismiss();
+            //要修改  跳转到订单活动
+            new PrefrenceUtil(UnifyPayActivity.this).setPreserveList("");
+            Intent intent1 = new Intent(UnifyPayActivity.this, OrderActivity.class);
+            intent1.putExtra("closeType", 1);
+            startActivity(intent1);
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -347,7 +367,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
 
     private void createOrder() {
         //获取所有套餐信息
-        if (null == addressBean){
+        if (null == addressBean) {
             Toast.makeText(this, "请选择送餐地址", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -446,6 +466,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         }
         return null;
     }
+
     private void getAllMoney() {
         for (int i = 0; i < mMeals.size(); i++) {
             MealBean.Data meal = mMeals.get(i);
@@ -513,7 +534,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             String date = getDate(meal.getMenuDay());
 
             String type = null;
-            switch (meal.getEatType()){
+            switch (meal.getEatType()) {
                 case 1:
                     type = "午餐";
                     break;
@@ -524,7 +545,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
                     type = "错误";
                     break;
             }
-            holder.sendTimeTv.setText( date + " " + transToWeekDay(date) + " " +type);
+            holder.sendTimeTv.setText(date + " " + transToWeekDay(date) + " " + type);
             holder.mealNums.setText("✘" + meal.getNums());
             holder.mealTitleTv.setText(meal.getPackageName());
             holder.mealContentTv.setText(meal.getFoodList().get(0).getDishName());
@@ -564,11 +585,11 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-    private String transDouble(double num){
-        DecimalFormat    df   = new DecimalFormat("######0.00");
-       return df.format(num);
+    private String transDouble(double num) {
+        DecimalFormat df = new DecimalFormat("######0.00");
+        return df.format(num);
 
-}
+    }
 
     class ViewHolder {
         View view;
