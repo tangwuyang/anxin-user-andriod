@@ -58,7 +58,7 @@ public class TablewareBean {
         private String brand;
         private String model;
         private double cost;
-        private int usePrice;
+        private double usePrice;
         private double deposit;
         private String img;
         private long createTime;
@@ -118,10 +118,10 @@ public class TablewareBean {
             return cost;
         }
 
-        public void setUsePrice(int usePrice) {
+        public void setUsePrice(double usePrice) {
             this.usePrice = usePrice;
         }
-        public int getUsePrice() {
+        public double getUsePrice() {
             return usePrice;
         }
 

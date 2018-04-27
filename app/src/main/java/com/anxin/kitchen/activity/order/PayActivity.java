@@ -84,6 +84,7 @@ public class PayActivity extends BaseActivity implements ListenerBack {
 
         orderIds = getIntent().getLongExtra("orderIds", 0);
         makeType = getIntent().getIntExtra("makeType", 0);
+        payType = getIntent().getIntExtra("payType",1);
 //        mOrder = (Order) getIntent().getSerializableExtra("data");
 
 //        payMoney = getIntent().getDoubleExtra("payMoney", 0);

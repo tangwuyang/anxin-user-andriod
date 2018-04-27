@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.order.OrderDetailActivity;
+import com.anxin.kitchen.activity.order.PayActivity;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.OrderInfoBean;
 import com.anxin.kitchen.bean.PreMoneyBean;
@@ -252,9 +253,14 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
             //要修改  跳转到订单活动
 //            startNewActivity(MainActivity.class);
         } else if (requestCode == PAY_MONEY && (!status.equals(Constant.REQUEST_SUCCESS))) {
-            Toast.makeText(this, "付款失败" + status, Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "付款失败" + status, Toast.LENGTH_SHORT).show();
             mdialog.stopAnimation();
             mdialog.dismiss();
+            Intent intent = new Intent(this, PayActivity.class);
+            intent.putExtra("orderIds",Long.valueOf(ids));
+            intent.putExtra("makeType",1);
+            intent.putExtra("payType",payType);
+            startActivity(intent);
         }
 
 
@@ -333,10 +339,11 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         String tempPackages = "";
         for (String key : mChosedMeals.keySet()) {
             double littlePrice = mChosedMeals.get(key).getPrice() * mChosedMeals.get(key).getNums();
+            myLog("-------------->"+ littlePrice);
             BigDecimal b = new BigDecimal(littlePrice);
             double price = b.setScale(2, BigDecimal.ROUND_UP).doubleValue();
             tempPackages = tempPackages + mChosedMeals.get(key).getPackageId() + "*"
-                    + mChosedMeals.get(key).getNums() + "*" + price + "0,";
+                    + mChosedMeals.get(key).getNums() + "*" + littlePrice + ",";
         }
         String packages = tempPackages.substring(0, tempPackages.lastIndexOf(","));
         dataMap.put("packages", packages);
@@ -444,7 +451,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
                 num = num + mChosedMeals.get(key).getNums();
             }
             numsTv.setText("✘" + num);
-            moneyTv.setText("￥" + num * data.getUsePrice() + ".00");
+            moneyTv.setText("￥" + num * data.getUsePrice() );
             if (selectMark.get(i)) {
                 tablewareId = data.getId();
                 getPreMoney();

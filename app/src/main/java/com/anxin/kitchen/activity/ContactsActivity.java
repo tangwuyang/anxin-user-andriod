@@ -2,6 +2,7 @@ package com.anxin.kitchen.activity;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,13 +10,19 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,6 +35,7 @@ import com.anxin.kitchen.interface_.RequestNetListener;
 import com.anxin.kitchen.user.R;
 import com.anxin.kitchen.utils.Cache;
 import com.anxin.kitchen.utils.Constant;
+import com.anxin.kitchen.utils.LocalContactSearch;
 import com.anxin.kitchen.utils.StringUtils;
 import com.anxin.kitchen.utils.SystemUtility;
 import com.anxin.kitchen.view.RequestLocationPermissionDialog;
@@ -55,7 +63,25 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
     private ImageView mBackImg;
     private String mToken;
     private boolean isAdd = false;
-
+    ArrayList<ContactEntity> list;
+    private Handler mhander = new Handler(){
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:
+                    boolean hasContactsPermission = msg.getData().getBoolean("hasPermission",false);
+                    myLog("-------------->" + hasContactsPermission);
+                    if (!hasContactsPermission) {
+                        popRequestWindow();
+                    }else {
+                        setFriends();
+                    }
+                    break;
+            }
+        }
+    };
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,31 +100,51 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
         mToken = new Cache(this).getAMToken();
         mBackImg.setOnClickListener(this);
         mIndexStickyView = findViewById(R.id.indexStickyView);
-        setFriends();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestPermission() {
-        boolean hasContactsPermission = getContactsPermission();
-        myLog("-------------->" + hasContactsPermission);
-        if (!hasContactsPermission) {
-            popRequestWindow();
-        }
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                boolean hasContactsPermission = getContactsPermission();
+                Message message = new Message();
+                message.what = 1;
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("hasPermission",hasContactsPermission);
+                message.setData(bundle);
+                mhander.sendMessage(message);
+            }
+        }.start();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void popRequestWindow() {
 
         requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, BAIDU_READ_PHONE_STATE);
-        RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
+       /* RequestLocationPermissionDialog dialog = new RequestLocationPermissionDialog(this, new OnGivedPermissionListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onGivedPermssion() {
                 //ActivityCompat.requestPermissions(ContactsActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, BAIDU_READ_PHONE_STATE);
-                requestPermissions(new String[]{Manifest.permission.WRITE_CONTACTS}, BAIDU_READ_PHONE_STATE);
+                ActivityCompat.requestPermissions(ContactsActivity.this,new String[]{Manifest.permission.WRITE_CONTACTS,Manifest.permission.READ_CONTACTS}, BAIDU_READ_PHONE_STATE);
             }
-        });
-        dialog.show();
+        });*/
+        //dialog.show();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        setFriends();
     }
 
     @Override
@@ -237,7 +283,7 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
     }
 
     private List<ContactEntity> getContactsList() {
-        List<ContactEntity> list = new ArrayList<>();
+        list = new ArrayList<>();
         //获取联系人信息的Uri
         Uri uri = ContactsContract.Contacts.CONTENT_URI;
         //获取ContentResolver
@@ -276,7 +322,7 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
 
-                View view = LayoutInflater.from(ContactsActivity.this).inflate(R.layout.indexsticky_header_contact_banner, parent, false);
+                View view = LayoutInflater.from(ContactsActivity.this).inflate(R.layout.top_search_layout, parent, false);
                 ImageViewVH vh = new ImageViewVH(view);
 
                 return vh;
@@ -285,24 +331,67 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, BaseEntity itemData) {
                 ImageViewVH imageViewVH = (ImageViewVH) holder;
-                ((ImageViewVH) holder).search_rl.setOnClickListener(new View.OnClickListener() {
+               /* ((ImageViewVH) holder).search_rl.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Toast.makeText(ContactsActivity.this, "search", Toast.LENGTH_SHORT).show();
                     }
-                });
+                });*/
             }
 
             class ImageViewVH extends RecyclerView.ViewHolder {
-                RelativeLayout search_rl;
-
+                EditText searchEt;
+                TextView searchTv;
                 public ImageViewVH(View itemView) {
                     super(itemView);
-                    search_rl = (RelativeLayout) itemView.findViewById(R.id.search_rl);
-                    search_rl.setOnClickListener(new View.OnClickListener() {
+                    searchEt = (EditText) itemView.findViewById(R.id.search_et);
+                    /*searchEt.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Toast.makeText(ContactsActivity.this, "search", Toast.LENGTH_SHORT).show();
+                        }
+                    });*/
+                    searchEt.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+
+                        }
+                    });
+                    searchTv = itemView.findViewById(R.id.search_tv);
+                    searchTv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String searchSt = searchEt.getText().toString();
+                            myLog("---------------->searchSt "+searchSt);
+
+                            if (searchSt != null && searchSt.length() > 0) {
+                                ArrayList<ContactEntity> listG = LocalContactSearch.searchContact(searchSt, list);
+                                myLog("--------------"+listG.size());
+                                mAdapter = new MyIndexStickyViewAdapter(listG);
+                                mIndexStickyView.setAdapter(mAdapter);
+                                mIndexStickyView.addItemDecoration(new IndexStickyViewDecoration(ContactsActivity.this));
+                                setSearch();
+                            } else {
+                                myLog("--------------------------");
+                                if (searchSt==null || searchSt.length()==0){
+                                    if (null != list){
+                                        mAdapter = new MyIndexStickyViewAdapter(list);
+                                        mIndexStickyView.setAdapter(mAdapter);
+                                        mIndexStickyView.addItemDecoration(new IndexStickyViewDecoration(ContactsActivity.this));
+                                        setSearch();
+                                    }
+                                }
+                            }
                         }
                     });
                 }

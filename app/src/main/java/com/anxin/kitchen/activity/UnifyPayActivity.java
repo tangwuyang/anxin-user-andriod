@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.anxin.kitchen.MyApplication;
 import com.anxin.kitchen.activity.order.OrderActivity;
+import com.anxin.kitchen.activity.order.PayActivity;
 import com.anxin.kitchen.bean.AddressBean;
 import com.anxin.kitchen.bean.MealBean;
 import com.anxin.kitchen.bean.OrderInfoBean;
@@ -281,6 +282,12 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
             Toast.makeText(this, "付款失败", Toast.LENGTH_SHORT).show();
             mdialog.stopAnimation();
             mdialog.dismiss();
+
+            Intent intent = new Intent(this, PayActivity.class);
+            intent.putExtra("orderIds",Long.valueOf(ids));
+            intent.putExtra("makeType",1);
+            intent.putExtra("payType",payType);
+            startActivity(intent);
         }
 
         if (requestCode == GET_PRE_MONEY && status.equals(Constant.REQUEST_SUCCESS)) {
@@ -375,7 +382,7 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
                 dateSt = transData(dateTem + " 18:00");
             }
             tempPackages = tempPackages + "0*" + dateSt + "*" + meal.getEatType() + "*" + meal.getPackageId() + "*"
-                    + meal.getNums() + "*" + price + "0,";
+                    + meal.getNums() + "*" + littlePrice + ",";
         }
         return tempPackages.substring(0, tempPackages.lastIndexOf(","));
     }

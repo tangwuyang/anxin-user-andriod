@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:background="@color/main_bg_color"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="57dp">
+    <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:background="@color/main_bg_color"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="@dimen/bar_left_right_padding"
+            android:background="@drawable/search_bg"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            >
+            <ImageView
+                android:paddingLeft="@dimen/bar_left_right_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/search_drawable"
+                />
+
+            <EditText
+                android:paddingLeft="@dimen/bar_left_right_padding"
+                android:background="@color/white"
+                android:id="@+id/search_et"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:hint="搜索"
+                android:layout_marginRight="20dp"
+                android:textColorHint="@color/color_text_unselected"
+                ></EditText>
+        </LinearLayout>
+
+
+
+        <TextView
+            android:layout_marginRight="@dimen/bar_left_right_padding"
+            android:id="@+id/search_tv"
+            android:padding="@dimen/bar_left_right_padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="搜索"
+            android:textColor="@color/main_text_color"
+            />
+    </LinearLayout>
+
+</LinearLayout>
