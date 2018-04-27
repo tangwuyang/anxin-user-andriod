@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -106,22 +107,27 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if (isLoginMain) {
-            if (tag) {
-                finishToLastActivity(188);
-            } else {
-                finish();
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) { //表示按返回键 时的操作
+                // 监听到返回按钮点击事件
+                if (isLoginMain) {
+                    if (tag) {
+                        finishToLastActivity(188);
+                    } else {
+                        finish();
+                    }
+                } else {
+                    isLoginMain = true;
+                    thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
+                    titleCenterName.setText("登录注册");
+                    loginBtn.setText("登录");
+                    userPhoneEdit.setText("");
+                    phoneCodeEdit.setText("");
+                }
             }
-        } else {
-            isLoginMain = true;
-            thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
-            titleCenterName.setText("登录注册");
-            loginBtn.setText("登录");
-            userPhoneEdit.setText("");
-            phoneCodeEdit.setText("");
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
