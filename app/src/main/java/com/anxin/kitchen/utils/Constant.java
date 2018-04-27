@@ -25,4 +25,5 @@ public class Constant {
     public static final String BROADCAST_PAY_SUCCEED = "com.anxin.kitchen.pay_succeed";
     public static final String BROADCAST_PAY_FAILED = "com.anxin.kitchen.pay_succeed";
     public static final String BROADCAST_REFRESH_ORDER_LIST = "com.anxin.kitchen.refresh_orders";
+    public static final String BROADCAST_PAY_Complete = "com.anxin.kitchen.pay_complete";
 }

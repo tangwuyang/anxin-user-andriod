@@ -174,9 +174,14 @@ public class PayActivity extends BaseActivity implements ListenerBack {
                     Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
                     intentPayOrder.putExtra("orderId", orderIds);
                     mActivity.startActivity(intentPayOrder);
+                }else{
+                    Intent intentOrder = new Intent(mActivity, OrderActivity.class);
+                    mActivity.startActivity(intentOrder);
                 }
+                Intent intentCompelete = new Intent();
+                intentCompelete.setAction(Constant.BROADCAST_PAY_Complete);
+                sendBroadcast(intentCompelete);
                 finish();
-
             }
         } else {
             if (response != null) {
@@ -186,7 +191,13 @@ public class PayActivity extends BaseActivity implements ListenerBack {
                 Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
                 intentPayOrder.putExtra("orderId", orderIds);
                 mActivity.startActivity(intentPayOrder);
+            }else{
+                Intent intentOrder = new Intent(mActivity, OrderActivity.class);
+                mActivity.startActivity(intentOrder);
             }
+            Intent intentCompelete = new Intent();
+            intentCompelete.setAction(Constant.BROADCAST_PAY_Complete);
+            sendBroadcast(intentCompelete);
             finish();
 
         }
@@ -199,7 +210,13 @@ public class PayActivity extends BaseActivity implements ListenerBack {
             Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
             intentPayOrder.putExtra("orderId", orderIds);
             mActivity.startActivity(intentPayOrder);
+        }else{
+            Intent intentOrder = new Intent(mActivity, OrderActivity.class);
+            mActivity.startActivity(intentOrder);
         }
+        Intent intentCompelete = new Intent();
+        intentCompelete.setAction(Constant.BROADCAST_PAY_Complete);
+        sendBroadcast(intentCompelete);
         finish();
 
     }
@@ -332,7 +349,13 @@ public class PayActivity extends BaseActivity implements ListenerBack {
                         Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
                         intentPayOrder.putExtra("orderId", orderIds);
                         mActivity.startActivity(intentPayOrder);
+                    }else{
+                        Intent intentOrder = new Intent(mActivity, OrderActivity.class);
+                        mActivity.startActivity(intentOrder);
                     }
+                    Intent intentCompelete = new Intent();
+                    intentCompelete.setAction(Constant.BROADCAST_PAY_Complete);
+                    sendBroadcast(intentCompelete);
                     finish();
                     break;
             }
@@ -347,13 +370,13 @@ public class PayActivity extends BaseActivity implements ListenerBack {
                 break;
             case R.id.ll_pay_weixin:
                 payType = 1;
-//                createOrder(mActivity, (int) (rechargeMoney * 100), payType);
-                createOrder(mActivity, 1, payType);
+                createOrder(mActivity, (int) (rechargeMoney * 100), payType);
+//                createOrder(mActivity, 1, payType);
                 break;
             case R.id.ll_pay_zhifubao:
                 payType = 2;
-//                createOrder(mActivity, (int) (rechargeMoney * 100), payType);
-                createOrder(mActivity, 1, payType);
+                createOrder(mActivity, (int) (rechargeMoney * 100), payType);
+//                createOrder(mActivity, 1, payType);
                 break;
         }
     }
@@ -396,11 +419,13 @@ public class PayActivity extends BaseActivity implements ListenerBack {
                 Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
                 intentPayOrder.putExtra("orderId", orderIds);
                 mActivity.startActivity(intentPayOrder);
-            } else {
-//                    Intent intentPayOrder = new Intent(mActivity, OrderDetailActivity.class);
-//                    intentPayOrder.putExtra("orderId", orderIds);
-//                    mActivity.startActivity(intentPayOrder);
+            } else{
+                Intent intentOrder = new Intent(mActivity, OrderActivity.class);
+                mActivity.startActivity(intentOrder);
             }
+            Intent intentCompelete = new Intent();
+            intentCompelete.setAction(Constant.BROADCAST_PAY_Complete);
+            sendBroadcast(intentCompelete);
             finish();
         }
     };
