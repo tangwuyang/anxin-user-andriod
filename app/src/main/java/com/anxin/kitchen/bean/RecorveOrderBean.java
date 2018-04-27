@@ -41,12 +41,12 @@ public class RecorveOrderBean {
         private int makeType;
         private int num;
         private int payType;
-        private int money;
-        private int mealFee;
+        private double money;
+        private double mealFee;
         private int tablewareId;
         private int tablewareType;
-        private int tablewareFee;
-        private int deliveryFee;
+        private double tablewareFee;
+        private double deliveryFee;
         private int deposit;
         private String contactPhone;
         private String contactName;
@@ -123,17 +123,17 @@ public class RecorveOrderBean {
             return payType;
         }
 
-        public void setMoney(int money) {
+        public void setMoney(double money) {
             this.money = money;
         }
-        public int getMoney() {
+        public double getMoney() {
             return money;
         }
 
-        public void setMealFee(int mealFee) {
+        public void setMealFee(double mealFee) {
             this.mealFee = mealFee;
         }
-        public int getMealFee() {
+        public double getMealFee() {
             return mealFee;
         }
 
@@ -151,17 +151,17 @@ public class RecorveOrderBean {
             return tablewareType;
         }
 
-        public void setTablewareFee(int tablewareFee) {
+        public void setTablewareFee(double tablewareFee) {
             this.tablewareFee = tablewareFee;
         }
-        public int getTablewareFee() {
+        public double getTablewareFee() {
             return tablewareFee;
         }
 
-        public void setDeliveryFee(int deliveryFee) {
+        public void setDeliveryFee(double deliveryFee) {
             this.deliveryFee = deliveryFee;
         }
-        public int getDeliveryFee() {
+        public double getDeliveryFee() {
             return deliveryFee;
         }
 

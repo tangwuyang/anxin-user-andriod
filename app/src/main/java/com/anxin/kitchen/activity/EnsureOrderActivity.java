@@ -37,6 +37,7 @@ import com.umeng.analytics.MobclickAgent;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -73,7 +74,8 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
     private RelativeLayout mLocationRl;
     private TextView mLocationTv;
     private AddressBean addressBean = null;
-
+    private MyListView mPayWayLv;
+    private TextView sendTimeTv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,6 +145,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         mLocationTv = findViewById(R.id.location_tv);
         mLocationRl = findViewById(R.id.user_address_rlt);
         mToken = mCache.getAMToken();
+        mPayWayLv = findViewById(R.id.payment_lv);
         mdialog = new WaitingDialog(this, 100);
         mBackImg = findViewById(R.id.back_img);
         mTitleTv = findViewById(R.id.title_tv);
@@ -157,7 +160,7 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         mChosedMeals = mGson.fromJson(chosedMealSt, new TypeToken<LinkedHashMap<String, RecoverBean.Data>>() {
         }.getType());
         mMealLv.setAdapter(new MealAdapter());
-//        mPayWayLv.setAdapter(new PaymentAdapter());
+         mPayWayLv.setAdapter(new PaymentAdapter());
         mTitleTv.setText("确认订单");
         kitchenId = new PrefrenceUtil(this).getKitchenId();
         mCache = new Cache(this);
@@ -167,6 +170,19 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
         mEnsurePayTv.setOnClickListener(this);
         tablewareAdapter = new TablewareAdapter();
         mLocationRl.setOnClickListener(this);
+
+
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = (now.get(Calendar.MONTH) + 1);
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        now.set(year, month, 0);
+        int dayOfMonth = now.get(Calendar.DAY_OF_MONTH);  //这个月的总天数
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int fen = now.get(Calendar.MINUTE);
+        String sendtime = "送餐时间： "+(hour +1) + ":"+fen;
+        sendTimeTv = findViewById(R.id.send_time_tv);
+        sendTimeTv.setText(sendtime);
     }
 
 
@@ -303,6 +319,10 @@ public class EnsureOrderActivity extends BaseActivity implements View.OnClickLis
 
     private void createOrder() {
         //先去再次请求订餐金钱
+        if (addressBean == null){
+            Toast.makeText(this, "请选择送餐地址", Toast.LENGTH_SHORT).show();
+            return;
+        }
         mdialog.show();
         mdialog.startAnimation();
         Map<String, Object> dataMap = new HashMap<>();

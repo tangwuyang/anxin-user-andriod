@@ -45,6 +45,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -197,6 +198,18 @@ public class UnifyPayActivity extends BaseActivity implements View.OnClickListen
         mBackImg.setOnClickListener(this);
         mEnsurePayTv.setOnClickListener(this);
         mLocationRl.setOnClickListener(this);
+
+
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = (now.get(Calendar.MONTH) + 1);
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        now.set(year, month, 0);
+        int dayOfMonth = now.get(Calendar.DAY_OF_MONTH);  //这个月的总天数
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int fen = now.get(Calendar.MINUTE);
+        String sendtime = (hour +1) + ":"+fen;
+
     }
 
     String ids = "";
