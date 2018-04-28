@@ -39,7 +39,7 @@ public class PopupUtil {
     public void show(Activity a, View v, ListenerBack listener) {
         this.mListener = listener;
         this.mActivity = a;
-        if (mPopupWindow == null || mView == null) {
+//        if (mPopupWindow == null || mView == null) {
             mView = LayoutInflater.from(mActivity).inflate(R.layout.pop_pay, null);
             mView.findViewById(R.id.rl_tableware_deposit_account).setOnClickListener(clickListener);
             mView.findViewById(R.id.ll_pay_weixin).setOnClickListener(clickListener);
@@ -51,7 +51,7 @@ public class PopupUtil {
             mPopupWindow.setFocusable(false);
             mPopupWindow.update();
             mPopupWindow.setAnimationStyle(R.style.PopupBottomAnimation);
-        }
+//        }
 //        mPopupWindow.showAsDropDown(v);
         mPopupWindow.showAtLocation(v, Gravity.BOTTOM, 0, 0);
     }

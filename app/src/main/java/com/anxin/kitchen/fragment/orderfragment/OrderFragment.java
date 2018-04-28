@@ -86,10 +86,17 @@ public class OrderFragment extends BaseFragment implements RefreshLayout.OnRefre
 
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-                if (i == 0)
-                    refreshOrder.setEnabled(true);
-                else
-                    refreshOrder.setEnabled(false);
+//                if (i == 0)
+//                    refreshOrder.setEnabled(true);
+//                else
+//                    refreshOrder.setEnabled(false);
+                boolean enable = false;
+                if(lvOrder != null && lvOrder.getChildCount() > 0){
+                    boolean firstItemVisible = lvOrder.getFirstVisiblePosition() == 0;
+                    boolean topOfFirstItemVisible = lvOrder.getChildAt(0).getTop() == 0;
+                    enable = firstItemVisible && topOfFirstItemVisible;
+                }
+                refreshOrder.setEnabled(enable);
             }
         });
 //        getOrderList(page);

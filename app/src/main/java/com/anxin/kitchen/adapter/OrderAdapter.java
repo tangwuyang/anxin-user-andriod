@@ -573,15 +573,20 @@ public class OrderAdapter extends BaseAdapter {
     }
 
     private int getDataType(Order order) {
-        if (order.getGroup() == null) {
-            return TYPE_USER;
-        } else {
-            if (order.getGroup().getUserId() == order.getUser().getUserId()) {
+        if(order.getUser().getMakeType()==1){
+            if (order.getGroup() == null) {
                 return TYPE_GROUP_LEADER;
             } else {
-                return TYPE_GROUP_MEMBER;
+                if (order.getGroup().getUserId() == order.getUser().getUserId()) {
+                    return TYPE_GROUP_LEADER;
+                } else {
+                    return TYPE_GROUP_MEMBER;
+                }
             }
+        }else{
+            return TYPE_USER;
         }
+
     }
 
     private void setPackageData(LinearLayout llContent, List<PackageOrder> list) {

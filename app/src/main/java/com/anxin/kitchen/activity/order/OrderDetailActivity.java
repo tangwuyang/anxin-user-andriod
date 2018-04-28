@@ -349,11 +349,16 @@ public class OrderDetailActivity extends BaseOrderActivity implements View.OnCli
                         tvOrderDetailOrderStatus.setText("AA待付款");
                     }
                     tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.red));
-                    tvCancel.setVisibility(View.VISIBLE);
+                    if(info.getGroup().getUserId()==info.getUser().getUserId()){
+                        tvCancel.setVisibility(View.VISIBLE);
+                    }
                     break;
                 case 1:
                     tvOrderDetailOrderStatus.setText("已付款");
                     tvOrderDetailOrderStatus.setTextColor(mActivity.getResources().getColor(R.color.tv_gray));
+                    if(info.getGroup().getUserId()==info.getUser().getUserId()){
+                        tvCancel.setVisibility(View.VISIBLE);
+                    }
                     break;
                 case 2:
                     tvOrderDetailOrderStatus.setText("已发货");
