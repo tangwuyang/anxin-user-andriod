@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,6 +83,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
     private String tablewareType = "";
     private String mGroupList;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +118,7 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
         dialog.show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void initData() {
         Intent intent = getIntent();
         if (null != intent) {
@@ -145,6 +148,8 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             tellRule();
         }
 
+
+
         //一周的时间跟周之间的对应
         for (int i = 0; i < days.size(); i++) {
             Long day = days.get(i);
@@ -160,6 +165,30 @@ public class PreserveActivity extends BaseActivity implements View.OnClickListen
             }
         }
 
+
+        for (Long key:preMealMaps.keySet()){
+            myLog("-------->"+key);
+        }
+
+        String clickmeal = getIntent().getStringExtra("mealSt");
+        if (null != clickmeal && clickmeal.length()>10){
+            myLog("---------->meal" + clickmeal);
+            MealBean.Data meal = mGson.fromJson(clickmeal,MealBean.Data.class);
+            meal.setSelectByMaster(true);
+            if (meal.getEatType()==1){
+                if(preMealMaps.get(meal.getMenuDay()).containsKey("午餐")){
+                    preMealMaps.get(meal.getMenuDay()).replace("午餐",meal);
+                }else {
+                    preMealMaps.get(meal.getMenuDay()).put("午餐",meal);
+                }
+            }else {
+                if(preMealMaps.get(meal.getMenuDay()).containsKey("晚餐")){
+                    preMealMaps.get(meal.getMenuDay()).replace("晚餐",meal);
+                }else {
+                    preMealMaps.get(meal.getMenuDay()).put("晚餐",meal);
+                }
+            }
+        }
         long lastDay = 0;
         /*if (!((null == mealListSt) || mealListSt.equals(Constant.NULL))) {
             for (MealBean.Data mel :

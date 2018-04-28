@@ -9,8 +9,10 @@
     <include layout="@layout/title_bar"/>
     <include layout="@layout/top_search_layout"/>
     <ListView
+        android:background="@color/white"
         android:id="@+id/friends_lv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+
         android:layout_weight="1"></ListView>
 </LinearLayout>

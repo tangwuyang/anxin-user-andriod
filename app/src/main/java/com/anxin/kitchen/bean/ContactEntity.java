@@ -16,12 +16,22 @@ public class ContactEntity implements BaseEntity {
     private int groupId;
     private String userLogo;
     private int groupUserId;
+    private boolean hasContained = false;
     public ContactEntity(String name, String mobile) {
         this.name = name;
         this.mobile = mobile;
     }
 
-    public ContactEntity(String name,  String mobile, int groupId, String userLogo) {
+
+    public boolean isHasContained() {
+        return hasContained;
+    }
+
+    public void setHasContained(boolean hasContained) {
+        this.hasContained = hasContained;
+    }
+
+    public ContactEntity(String name, String mobile, int groupId, String userLogo) {
         this.name = name;
         this.mobile = mobile;
         this.groupId = groupId;

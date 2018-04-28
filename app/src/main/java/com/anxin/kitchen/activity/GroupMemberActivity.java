@@ -179,22 +179,26 @@ public class GroupMemberActivity extends BaseActivity implements View.OnClickLis
                     intent1.putExtra("groupId", mGroupId);
                     intent1.putExtra("groupName", mGroupName);
                     startActivityForResult(intent1, GROUP_MAIN_REQEST_CODE);
+                    popWnd.dismiss();
                     break;
                 case 1:
                     //通讯录导入
                     Intent contactIntent = new Intent(GroupMemberActivity.this, ContactsActivity.class);
                     contactIntent.putExtra("groupId", mGroupId);
                     contactIntent.putExtra("groupName", mGroupName);
+                    contactIntent.putExtra("friends",mGson.toJson(friendList));
                     startActivityForResult(contactIntent, GROUP_MAIN_REQEST_CODE);
+                    popWnd.dismiss();
                     break;
                 case 2:
                     //通讯录导入
                     //新增团友
                     Intent intent2 = new Intent(GroupMemberActivity.this, AddNewFriendActivity.class);
                     startActivityForResult(intent2, GROUP_MAIN_REQEST_CODE);
+                    popWnd.dismiss();
                     break;
                 case 3:
-
+                    popWnd.dismiss();
                     break;
                 default:
                     break;

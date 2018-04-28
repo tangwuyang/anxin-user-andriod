@@ -675,7 +675,7 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
+        public View getView(final int i, View view, ViewGroup viewGroup) {
             MealViewHolder holder = null;
             if (null == view) {
                 view = LayoutInflater.from(getContext()).inflate(R.layout.preserver_food_item, viewGroup, false);
@@ -713,6 +713,21 @@ public class MealMainFragment extends HomeBaseFragment implements View.OnClickLi
                 foodBf.append(foodList.getDishName() + "\r\n");
             }
             holder.contextTv.setText(foodBf.toString());
+
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Gson gson = new Gson();
+
+                    String meal = gson.toJson(dataList.get(i));
+                    activity.myLog("-------"+meal);
+                    Intent intent = new Intent(mContext,PreserveActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("mealSt",meal);
+                    startActivity(intent);
+                }
+            });
             return view;
         }
     }

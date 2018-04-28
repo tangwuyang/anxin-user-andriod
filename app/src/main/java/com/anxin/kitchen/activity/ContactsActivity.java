@@ -44,6 +44,7 @@ import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexHeaderFooterAdapter;
 import com.bluetooth.tangwuyang.fantuanlibrary.adapter.IndexStickyViewAdapter;
 import com.bluetooth.tangwuyang.fantuanlibrary.entity.BaseEntity;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
     private String mToken;
     private boolean isAdd = false;
     ArrayList<ContactEntity> list;
+    private List<ContactEntity> friends;
     private Handler mhander = new Handler(){
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
@@ -94,6 +96,8 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
         if (null != intent) {
             mGroupId = intent.getIntExtra("groupId", 0);
             mGroupName = intent.getStringExtra("groupName");
+            String friendsSt = intent.getStringExtra("friends");
+            friends = mGson.fromJson(friendsSt,new TypeToken<ArrayList<ContactEntity>>(){}.getType());
         }
 
         requestPermission();
@@ -219,10 +223,27 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
 
         @Override
         public void onBindContentViewHolder(RecyclerView.ViewHolder holder, int position, final ContactEntity itemData) {
-
             final ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
             contentViewHolder.mMobile.setText(itemData.getMobile());
             contentViewHolder.mName.setText(itemData.getName());
+            myLog("--------------->position" + position + itemData.isHasContained());
+            if (null != friends && friends.size()>0) {
+                    if (itemData.isHasContained()){
+                        contentViewHolder.mAddTv.setEnabled(false);
+                        contentViewHolder.mAddTv.setBackgroundColor(getResources().getColor(R.color.white));
+                        contentViewHolder.mAddTv.setText("已添加");
+                        contentViewHolder.mAddTv.setTextColor(getResources().getColor(R.color.shallow_black));
+                        contentViewHolder.mAddTv.setClickable(false);
+                    }else{
+                        contentViewHolder.mAddTv.setEnabled(true);
+                        contentViewHolder.mAddTv.setBackground(getResources().getDrawable(R.drawable.add_contact_bg));
+                        contentViewHolder.mAddTv.setText("添加");
+                        contentViewHolder.mAddTv.setTextColor(getResources().getColor(R.color.title_bar_color));
+                        contentViewHolder.mAddTv.setClickable(true);
+                    }
+            }
+
+
             contentViewHolder.mAddTv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -311,6 +332,23 @@ public class ContactsActivity extends BaseActivity implements View.OnClickListen
                 list.add(contactEntity);
             }
             phones.close();
+        }
+
+        if (null != friends && friends.size()>0) {
+
+
+            for (int i = 0; i <friends.size(); i++){
+                int tag = 0;
+                ContactEntity entity = friends.get(i);
+                for (int j = 0; j <list.size(); j++){
+                    ContactEntity itemData = list.get(j);
+                    if (entity.getName().equals(itemData.getName()) && entity.getMobile().equals(itemData.getMobile())){
+                        list.get(j).setHasContained(true);
+                        myLog("----------------->"+ (++tag));
+                        break;
+                    }
+                }
+            }
         }
 
         return list;
