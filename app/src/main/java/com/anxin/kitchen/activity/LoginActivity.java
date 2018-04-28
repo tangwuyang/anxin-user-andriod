@@ -72,6 +72,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
     private static final String sendUserPhoneLogin_http = "sendUserPhoneLogin";
     private static final String sendUserPhoneLocking_http = "sendUserPhoneLocking";
     private WaitingDialog mWaitingDiag;
+    private ImageView back_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +93,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
      * 初始化绑定控件
      */
     private void initView() {
-        ImageView back_btn = (ImageView) findViewById(R.id.back_btn);//返回按钮
+         back_btn = (ImageView) findViewById(R.id.back_btn);//返回按钮
         back_btn.setOnClickListener(this);
         WXloginBtn = (ImageView) findViewById(R.id.wx_login);//微信登陆按钮
         WXloginBtn.setOnClickListener(this);
@@ -119,12 +120,13 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         finish();
                     }
                 } else {
-                    isLoginMain = true;
-                    thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
-                    titleCenterName.setText("登录注册");
-                    loginBtn.setText("登录");
-                    userPhoneEdit.setText("");
-                    phoneCodeEdit.setText("");
+                    return false;
+//                    isLoginMain = true;
+//                    thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
+//                    titleCenterName.setText("登录注册");
+//                    loginBtn.setText("登录");
+//                    userPhoneEdit.setText("");
+//                    phoneCodeEdit.setText("");
                 }
             }
         }
@@ -142,12 +144,13 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         finish();
                     }
                 } else {
-                    isLoginMain = true;
-                    thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
-                    titleCenterName.setText("登录注册");
-                    loginBtn.setText("登录");
-                    userPhoneEdit.setText("");
-                    phoneCodeEdit.setText("");
+                    break;
+//                    isLoginMain = true;
+//                    thirdPartyLogin_lyt.setVisibility(View.VISIBLE);
+//                    titleCenterName.setText("登录注册");
+//                    loginBtn.setText("登录");
+//                    userPhoneEdit.setText("");
+//                    phoneCodeEdit.setText("");
                 }
                 break;
             case R.id.wx_login://微信登陆
@@ -201,6 +204,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             thirdPartyLogin_lyt.setVisibility(View.GONE);
             titleCenterName.setText("绑定手机号码");
             loginBtn.setText("绑定");
+            back_btn.setVisibility(View.GONE);
         }
         if (platId.equals("1")) {
             if (openID != null && openID.length() != 0) {
